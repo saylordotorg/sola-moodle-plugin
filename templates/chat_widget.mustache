@@ -1,0 +1,228 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_course_assistant/chat_widget
+
+    Chat widget with floating avatar button and slide-in drawer.
+
+    Context variables required for this template:
+    * courseid - The course ID
+    * sesskey - Session key for CSRF protection
+    * avatarurl - URL to the avatar SVG
+    * positionclass - CSS position class (bottom-right or bottom-left)
+    * userrole - User role (student or teacher)
+    * sseurl - URL for the SSE streaming endpoint
+}}
+<div id="local-ai-course-assistant"
+     class="local-ai-course-assistant local-ai-course-assistant--{{positionclass}}"
+     data-courseid="{{courseid}}"
+     data-sesskey="{{sesskey}}"
+     data-userrole="{{userrole}}"
+     data-sseurl="{{sseurl}}"
+     data-avatarurl="{{avatarurl}}"
+     data-quiz-topics="{{quiztopics}}"
+     data-learning-objectives="{{learningobjectives}}"
+     data-module-titles="{{moduletitles}}"
+     data-offset-x="{{offsetx}}"
+     data-offset-y="{{offsety}}"
+     data-firstname="{{firstname}}"
+     data-current-page-id="{{currentpageid}}"
+     data-current-page-title="{{currentpagetitle}}">
+
+    {{! Floating avatar button }}
+    <button id="local-ai-course-assistant-toggle"
+            class="local-ai-course-assistant__toggle"
+            aria-expanded="false"
+            aria-controls="local-ai-course-assistant-drawer"
+            title="{{#str}}chat:open, local_ai_course_assistant{{/str}}">
+        <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__avatar-img" aria-hidden="true" />
+    </button>
+
+    {{! Chat drawer }}
+    <div id="local-ai-course-assistant-drawer"
+         class="local-ai-course-assistant__drawer"
+         role="dialog"
+         aria-label="{{#str}}chat:title, local_ai_course_assistant{{/str}}"
+         aria-hidden="true">
+
+        {{! Header }}
+        <div class="local-ai-course-assistant__header">
+            <div class="local-ai-course-assistant__header-title">
+                <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__header-avatar" aria-hidden="true" />
+                <span>{{#str}}chat:title, local_ai_course_assistant{{/str}}</span>
+            </div>
+            <div class="local-ai-course-assistant__header-actions">
+                {{#cansiteconfig}}
+                <a href="{{coursesettingsurl}}"
+                   class="local-ai-course-assistant__btn-settings"
+                   title="{{#str}}chat:settings, local_ai_course_assistant{{/str}}"
+                   aria-label="{{#str}}chat:settings, local_ai_course_assistant{{/str}}"
+                   target="_blank">
+                    {{#pix}}i/settings, core, {{#str}}chat:settings, local_ai_course_assistant{{/str}}{{/pix}}
+                </a>
+                {{/cansiteconfig}}
+                {{#canviewanalytics}}
+                <a href="{{analyticsurl}}"
+                   class="local-ai-course-assistant__btn-analytics"
+                   title="{{#str}}analytics:viewdashboard, local_ai_course_assistant{{/str}}"
+                   aria-label="{{#str}}analytics:viewdashboard, local_ai_course_assistant{{/str}}"
+                   target="_blank">
+                    {{#pix}}i/stats, core, {{#str}}analytics:viewdashboard, local_ai_course_assistant{{/str}}{{/pix}}
+                </a>
+                {{/canviewanalytics}}
+                <button class="local-ai-course-assistant__btn-copy"
+                        title="{{#str}}chat:copy, local_ai_course_assistant{{/str}}"
+                        aria-label="{{#str}}chat:copy, local_ai_course_assistant{{/str}}">
+                    {{#pix}}t/copy, core, {{#str}}chat:copy, local_ai_course_assistant{{/str}}{{/pix}}
+                </button>
+                <button class="local-ai-course-assistant__btn-clear"
+                        title="{{#str}}chat:clear, local_ai_course_assistant{{/str}}"
+                        aria-label="{{#str}}chat:clear, local_ai_course_assistant{{/str}}">
+                    {{#pix}}t/delete, core, {{#str}}chat:clear, local_ai_course_assistant{{/str}}{{/pix}}
+                </button>
+                <button class="local-ai-course-assistant__btn-reset"
+                        title="{{#str}}chat:reset, local_ai_course_assistant{{/str}}"
+                        aria-label="{{#str}}chat:reset, local_ai_course_assistant{{/str}}">
+                    {{! Home icon — return to conversation starters }}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </button>
+                <button class="local-ai-course-assistant__btn-expand"
+                        title="{{#str}}chat:expand, local_ai_course_assistant{{/str}}"
+                        aria-label="{{#str}}chat:expand, local_ai_course_assistant{{/str}}">
+                    {{! Expand: two arrows pointing away from each other (unfold) }}
+                    <span class="aica-icon-expand" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/>
+                        </svg>
+                    </span>
+                    {{! Collapse: two arrows pointing toward each other (fold) }}
+                    <span class="aica-icon-collapse" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M7.41 18.59L8.83 20 12 16.83 15.17 20l1.41-1.41L12 14l-4.59 4.59zm9.18-13.18L15.17 4 12 7.17 8.83 4 7.41 5.41 12 10l4.59-4.59z"/>
+                        </svg>
+                    </span>
+                </button>
+                <button class="local-ai-course-assistant__btn-close"
+                        title="{{#str}}chat:close, local_ai_course_assistant{{/str}}"
+                        aria-label="{{#str}}chat:close, local_ai_course_assistant{{/str}}">
+                    {{! Close: standard X }}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{! Language banner — shown by JS when browser language is detected }}
+        <div class="local-ai-course-assistant__lang-banner" aria-hidden="true">
+            <span class="local-ai-course-assistant__lang-banner-text"></span>
+            <div class="local-ai-course-assistant__lang-banner-actions">
+                <button class="local-ai-course-assistant__lang-accept">
+                    {{#str}}lang:switch, local_ai_course_assistant{{/str}}
+                </button>
+                <button class="local-ai-course-assistant__lang-dismiss">
+                    {{#str}}lang:dismiss, local_ai_course_assistant{{/str}}
+                </button>
+            </div>
+        </div>
+
+        {{! Messages area }}
+        <div class="local-ai-course-assistant__messages"
+             role="log"
+             aria-live="polite"
+             aria-label="{{#str}}chat:title, local_ai_course_assistant{{/str}}">
+        </div>
+
+        {{! Conversation starters — hidden once a message is sent }}
+        <div class="local-ai-course-assistant__starters" aria-label="{{#str}}chat:starters_label, local_ai_course_assistant{{/str}}">
+            <button class="local-ai-course-assistant__starter" data-starter="help-lesson">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_help_lesson, local_ai_course_assistant{{/str}}</span>
+            </button>
+            <button class="local-ai-course-assistant__starter" data-starter="quiz">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_quiz, local_ai_course_assistant{{/str}}</span>
+            </button>
+            <button class="local-ai-course-assistant__starter" data-starter="study-plan">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_study_plan, local_ai_course_assistant{{/str}}</span>
+            </button>
+            <button class="local-ai-course-assistant__starter" data-starter="prompt-coach">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12zm7.5 4.5-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_prompt_coach, local_ai_course_assistant{{/str}}</span>
+            </button>
+        </div>
+
+        {{! Typing indicator }}
+        <div class="local-ai-course-assistant__typing" aria-hidden="true">
+            <span class="local-ai-course-assistant__typing-dot"></span>
+            <span class="local-ai-course-assistant__typing-dot"></span>
+            <span class="local-ai-course-assistant__typing-dot"></span>
+        </div>
+
+        {{! Input area }}
+        <div class="local-ai-course-assistant__input-area">
+            <textarea class="local-ai-course-assistant__input"
+                      placeholder="{{#str}}chat:placeholder, local_ai_course_assistant{{/str}}"
+                      rows="1"
+                      aria-label="{{#str}}chat:placeholder, local_ai_course_assistant{{/str}}"></textarea>
+            <button class="local-ai-course-assistant__btn-mic"
+                    title="{{#str}}chat:mic, local_ai_course_assistant{{/str}}"
+                    aria-label="{{#str}}chat:mic, local_ai_course_assistant{{/str}}"
+                    type="button">
+                {{! Mic icon — inline SVG for reliability across Moodle versions }}
+                <svg class="aica-icon-mic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                    <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
+                </svg>
+                <svg class="aica-icon-mic-stop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                    <path d="M19 11h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11zM9 5a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0V5z" opacity=".3"/>
+                    <rect x="9" y="9" width="6" height="6" rx="1"/>
+                </svg>
+            </button>
+            <button class="local-ai-course-assistant__btn-send"
+                    title="{{#str}}chat:send, local_ai_course_assistant{{/str}}"
+                    aria-label="{{#str}}chat:send, local_ai_course_assistant{{/str}}"
+                    disabled>
+                {{#pix}}t/go, core, {{#str}}chat:send, local_ai_course_assistant{{/str}}{{/pix}}
+            </button>
+        </div>
+        {{! Resize handles — drag top/left edges to resize the drawer }}
+        <div class="aica-resize-handle aica-resize-handle--n" aria-hidden="true"></div>
+        <div class="aica-resize-handle aica-resize-handle--w" aria-hidden="true"></div>
+        <div class="aica-resize-handle aica-resize-handle--nw" aria-hidden="true"></div>
+
+        <div class="local-ai-course-assistant__hint">
+            {{#str}}chat:newline_hint, local_ai_course_assistant{{/str}}
+            <button class="local-ai-course-assistant__btn-lang"
+                    title="{{#str}}lang:change, local_ai_course_assistant{{/str}}"
+                    aria-label="{{#str}}lang:change, local_ai_course_assistant{{/str}}">
+                <span class="aica-lang-label">{{#str}}lang:english, local_ai_course_assistant{{/str}}</span>
+            </button>
+        </div>
+    </div>
+</div>

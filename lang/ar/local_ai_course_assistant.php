@@ -1,0 +1,246 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+// AI-generated translation. Professional review recommended.
+
+/**
+ * Language strings for local_ai_course_assistant — Arabic.
+ *
+ * @package    local_ai_course_assistant
+ * @copyright  2025 AI Course Assistant
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['pluginname'] = 'مساعد الذكاء الاصطناعي للمقررات';
+$string['privacy:metadata:local_ai_course_assistant_convs'] = 'يخزّن محادثات المدرّس الافتراضي بالذكاء الاصطناعي لكل مستخدم ومقرر.';
+$string['privacy:metadata:local_ai_course_assistant_convs:userid'] = 'معرّف المستخدم الذي يمتلك المحادثة.';
+$string['privacy:metadata:local_ai_course_assistant_convs:courseid'] = 'معرّف المقرر الذي تنتمي إليه المحادثة.';
+$string['privacy:metadata:local_ai_course_assistant_convs:title'] = 'عنوان المحادثة.';
+$string['privacy:metadata:local_ai_course_assistant_convs:timecreated'] = 'وقت إنشاء المحادثة.';
+$string['privacy:metadata:local_ai_course_assistant_convs:timemodified'] = 'وقت آخر تعديل للمحادثة.';
+$string['privacy:metadata:local_ai_course_assistant_msgs'] = 'يخزّن الرسائل الفردية في محادثات المدرّس الافتراضي بالذكاء الاصطناعي.';
+$string['privacy:metadata:local_ai_course_assistant_msgs:userid'] = 'معرّف المستخدم الذي أرسل الرسالة.';
+$string['privacy:metadata:local_ai_course_assistant_msgs:courseid'] = 'معرّف المقرر الذي تنتمي إليه الرسالة.';
+$string['privacy:metadata:local_ai_course_assistant_msgs:role'] = 'دور مرسل الرسالة (مستخدم أو مساعد).';
+$string['privacy:metadata:local_ai_course_assistant_msgs:message'] = 'محتوى الرسالة.';
+$string['privacy:metadata:local_ai_course_assistant_msgs:tokens_used'] = 'عدد الرموز المستخدمة في الرسالة.';
+$string['privacy:metadata:local_ai_course_assistant_msgs:timecreated'] = 'وقت إنشاء الرسالة.';
+$string['ai_course_assistant:use'] = 'استخدام دردشة المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['ai_course_assistant:viewanalytics'] = 'عرض تحليلات دردشة المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['ai_course_assistant:manage'] = 'إدارة إعدادات دردشة المدرّس الافتراضي بالذكاء الاصطناعي (دور المسؤول)';
+$string['settings:enabled'] = 'تفعيل مساعد الذكاء الاصطناعي للمقررات';
+$string['settings:enabled_desc'] = 'تفعيل أو تعطيل أداة مساعد الذكاء الاصطناعي للمقررات في صفحات المقررات.';
+$string['settings:provider'] = 'مزوّد الذكاء الاصطناعي';
+$string['settings:provider_desc'] = 'اختر مزوّد الذكاء الاصطناعي المستخدم لإكمال المحادثات.';
+$string['settings:provider_claude'] = 'كلود (Anthropic)';
+$string['settings:provider_openai'] = 'OpenAI';
+$string['settings:provider_deepseek'] = 'DeepSeek';
+$string['settings:provider_ollama'] = 'Ollama (محلي)';
+$string['settings:provider_minimax'] = 'MiniMax';
+$string['settings:provider_custom'] = 'مخصص (متوافق مع OpenAI)';
+$string['settings:apikey'] = 'مفتاح API';
+$string['settings:apikey_desc'] = 'مفتاح API للمزوّد المختار. غير مطلوب لـ Ollama.';
+$string['settings:model'] = 'اسم النموذج';
+$string['settings:model_desc'] = 'النموذج المراد استخدامه. القيمة الافتراضية تعتمد على المزوّد (مثل claude-sonnet-4-5-20250929 أو gpt-4o أو llama3 أو MiniMax-Text-01).';
+$string['settings:apibaseurl'] = 'عنوان URL الأساسي لـ API';
+$string['settings:apibaseurl_desc'] = 'عنوان URL الأساسي لـ API. يُملأ تلقائيًا وفق المزوّد لكن يمكن تجاوزه. اتركه فارغًا لاستخدام الافتراضي.';
+$string['settings:systemprompt'] = 'قالب النظام التوجيهي';
+$string['settings:systemprompt_desc'] = 'النظام التوجيهي المرسل إلى الذكاء الاصطناعي. استخدم العناصر النائبة: {{coursename}}، {{userrole}}، {{coursetopics}}.';
+$string['settings:systemprompt_default'] = 'أنت مدرّس افتراضي مفيد بالذكاء الاصطناعي لمقرر "{{coursename}}". دور الطالب هو {{userrole}}.
+
+موضوعات المقرر المغطاة:
+{{coursetopics}}
+
+ساعد الطالب على فهم محتوى المقرر. كن مشجعًا وواضحًا وسليمًا من الناحية التربوية.';
+$string['settings:temperature'] = 'درجة الحرارة (التلقائية)';
+$string['settings:temperature_desc'] = 'تتحكم في العشوائية. القيم المنخفضة أكثر تركيزًا والقيم العالية أكثر إبداعًا. النطاق: 0.0 إلى 2.0.';
+$string['settings:maxhistory'] = 'الحد الأقصى لسجل المحادثة';
+$string['settings:maxhistory_desc'] = 'الحد الأقصى لعدد أزواج الرسائل المضمّنة في طلبات API. يتم حذف الرسائل الأقدم.';
+$string['settings:avatar'] = 'صورة رمزية للدردشة';
+$string['settings:avatar_desc'] = 'اختر أيقونة الصورة الرمزية لزر أداة الدردشة.';
+$string['settings:avatar_saylor'] = 'شعار أكاديمية سيلور (الافتراضي)';
+$string['settings:position'] = 'موضع الأداة';
+$string['settings:position_desc'] = 'موضع أداة الدردشة على الصفحة.';
+$string['settings:position_br'] = 'أسفل اليمين';
+$string['settings:position_bl'] = 'أسفل اليسار';
+$string['settings:position_tr'] = 'أعلى اليمين';
+$string['settings:position_tl'] = 'أعلى اليسار';
+$string['chat:settings'] = 'إعدادات الإضافة';
+$string['analytics:viewdashboard'] = 'عرض لوحة التحليلات';
+$string['coursesettings:title'] = 'إعدادات الذكاء الاصطناعي للمقرر';
+$string['coursesettings:enabled'] = 'تفعيل تجاوزات المقرر';
+$string['coursesettings:enabled_desc'] = 'عند التفعيل، تتجاوز الإعدادات أدناه تهيئة مزوّد الذكاء الاصطناعي العالمية لهذا المقرر فقط. اترك الحقول فارغة لاستخدام القيمة العالمية.';
+$string['coursesettings:using_global'] = 'يستخدم الإعداد العالمي';
+$string['coursesettings:saved'] = 'تم حفظ إعدادات الذكاء الاصطناعي للمقرر.';
+$string['coursesettings:global_settings_link'] = 'الإعدادات العالمية للذكاء الاصطناعي';
+$string['lang:switch'] = 'نعم، تبديل';
+$string['lang:dismiss'] = 'لا شكرًا';
+$string['lang:change'] = 'تغيير اللغة';
+$string['lang:english'] = 'الإنجليزية';
+$string['chat:title'] = 'المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['chat:placeholder'] = 'اطرح سؤالًا...';
+$string['chat:send'] = 'إرسال';
+$string['chat:close'] = 'إغلاق الدردشة';
+$string['chat:open'] = 'فتح دردشة المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['chat:clear'] = 'مسح السجل';
+$string['chat:clear_confirm'] = 'هل أنت متأكد من رغبتك في مسح سجل دردشتك لهذا المقرر؟';
+$string['chat:copy'] = 'نسخ المحادثة';
+$string['chat:copied'] = 'تم نسخ المحادثة إلى الحافظة';
+$string['chat:copy_failed'] = 'فشل نسخ المحادثة';
+$string['chat:greeting'] = 'مرحبًا! أنا مدرّسك الافتراضي بالذكاء الاصطناعي لهذا المقرر. كيف يمكنني مساعدتك اليوم؟';
+$string['chat:thinking'] = 'جارٍ التفكير...';
+$string['chat:error'] = 'عذرًا، حدث خطأ ما. يرجى المحاولة مجددًا.';
+$string['chat:error_auth'] = 'خطأ في المصادقة. يرجى التواصل مع مسؤول النظام.';
+$string['chat:error_ratelimit'] = 'طلبات كثيرة جدًا. يرجى الانتظار لحظة ثم المحاولة مجددًا.';
+$string['chat:error_unavailable'] = 'خدمة الذكاء الاصطناعي غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.';
+$string['chat:error_notconfigured'] = 'لم يتم تهيئة المدرّس الافتراضي بالذكاء الاصطناعي بعد. يرجى التواصل مع مسؤول النظام.';
+$string['chat:expand'] = 'توسيع الدردشة';
+$string['chat:collapse'] = 'طي الدردشة';
+$string['chat:mic'] = 'انطق سؤالك';
+$string['chat:mic_error'] = 'خطأ في الميكروفون. يرجى التحقق من أذونات المتصفح.';
+$string['chat:mic_unsupported'] = 'إدخال الكلام غير مدعوم في هذا المتصفح.';
+$string['chat:newline_hint'] = 'Shift+Enter لسطر جديد';
+$string['chat:you'] = 'أنت';
+$string['chat:assistant'] = 'المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['chat:history_loaded'] = 'تم تحميل المحادثة السابقة.';
+$string['chat:history_cleared'] = 'تم مسح سجل الدردشة.';
+$string['chat:offtopic_warning'] = 'يبدو أن سؤالك غير مرتبط بهذا المقرر. يرجى محاولة البقاء في الموضوع حتى أتمكن من مساعدتك على أفضل وجه!';
+$string['chat:offtopic_ended'] = 'تم تعليق وصولك إلى المدرّس الافتراضي بالذكاء الاصطناعي مؤقتًا لمدة {$a} دقائق لأن المحادثة خرجت عن الموضوع مرات كثيرة. يرجى استغلال هذا الوقت لمراجعة مواد المقرر، ويمكنك المحاولة مجددًا لاحقًا.';
+$string['chat:offtopic_locked'] = 'وصولك إلى المدرّس الافتراضي بالذكاء الاصطناعي معلّق مؤقتًا. يمكنك المحاولة مجددًا بعد {$a} دقائق. يرجى التركيز على الأسئلة المتعلقة بالمقرر عند عودتك.';
+$string['chat:escalated_to_support'] = 'لم أتمكن من الإجابة الكاملة على سؤالك، لذا قمت بإنشاء تذكرة دعم نيابةً عنك. سيتابع معك أحد أعضاء فريق الدعم. رقم التذكرة المرجعي هو: {$a}';
+$string['chat:studyplan_intro'] = 'يمكنني مساعدتك في إنشاء خطة دراسة لهذا المقرر! فقط أخبرني بعدد ساعات الدراسة التي يمكنك تخصيصها أسبوعيًا، وسأساعدك في بناء خطة منظمة.';
+$string['settings:faq_heading'] = 'الأسئلة الشائعة والدعم';
+$string['settings:faq_heading_desc'] = 'تهيئة الأسئلة الشائعة المركزية وتكامل تذاكر دعم Zendesk.';
+$string['settings:faq_content'] = 'محتوى الأسئلة الشائعة';
+$string['settings:faq_content_desc'] = 'أدخل إدخالات الأسئلة الشائعة (سطر لكل إدخال بالصيغة: Q: السؤال | A: الجواب). ستُقدَّم للذكاء الاصطناعي للإجابة عن أسئلة الدعم الشائعة.';
+$string['settings:zendesk_enabled'] = 'تفعيل تصعيد Zendesk';
+$string['settings:zendesk_enabled_desc'] = 'عندما يتعذر على الذكاء الاصطناعي حل سؤال دعم، يتم إنشاء تذكرة Zendesk تلقائيًا مع ملخص المحادثة.';
+$string['settings:zendesk_subdomain'] = 'النطاق الفرعي لـ Zendesk';
+$string['settings:zendesk_subdomain_desc'] = 'نطاقك الفرعي في Zendesk (مثل "mycompany" لـ mycompany.zendesk.com).';
+$string['settings:zendesk_email'] = 'البريد الإلكتروني لـ Zendesk API';
+$string['settings:zendesk_email_desc'] = 'عنوان البريد الإلكتروني لمستخدم Zendesk للمصادقة عبر API (مع اللاحقة /token).';
+$string['settings:zendesk_token'] = 'رمز Zendesk API';
+$string['settings:zendesk_token_desc'] = 'رمز API للمصادقة على Zendesk.';
+$string['settings:offtopic_heading'] = 'اكتشاف الخروج عن الموضوع';
+$string['settings:offtopic_heading_desc'] = 'تهيئة كيفية تعامل الدردشة مع المحادثات الخارجة عن الموضوع.';
+$string['settings:offtopic_enabled'] = 'تفعيل اكتشاف الخروج عن الموضوع';
+$string['settings:offtopic_enabled_desc'] = 'توجيه الذكاء الاصطناعي لاكتشاف إعادة توجيه المحادثات الخارجة عن الموضوع.';
+$string['settings:offtopic_max'] = 'الحد الأقصى للرسائل الخارجة عن الموضوع';
+$string['settings:offtopic_max_desc'] = 'عدد الرسائل المتتالية الخارجة عن الموضوع قبل اتخاذ إجراء.';
+$string['settings:offtopic_action'] = 'إجراء الخروج عن الموضوع';
+$string['settings:offtopic_action_desc'] = 'ما يجب فعله عند الوصول إلى حد الخروج عن الموضوع.';
+$string['settings:offtopic_action_warn'] = 'تحذير وإعادة التوجيه';
+$string['settings:offtopic_action_end'] = 'تعليق الوصول مؤقتًا';
+$string['settings:offtopic_lockout_duration'] = 'مدة الحظر (بالدقائق)';
+$string['settings:offtopic_lockout_duration_desc'] = 'المدة (بالدقائق) التي يفقد فيها الطالب الوصول إلى المدرّس الافتراضي بعد تجاوز حد الخروج عن الموضوع. الافتراضي: 30 دقيقة.';
+$string['settings:studyplan_heading'] = 'التخطيط الدراسي والتذكيرات';
+$string['settings:studyplan_heading_desc'] = 'تهيئة ميزات التخطيط الدراسي وإشعارات التذكير.';
+$string['settings:studyplan_enabled'] = 'تفعيل التخطيط الدراسي';
+$string['settings:studyplan_enabled_desc'] = 'السماح للمدرّس الافتراضي بالذكاء الاصطناعي بمساعدة الطلاب في إنشاء خطط دراسية شخصية بناءً على وقتهم المتاح.';
+$string['settings:reminders_email_enabled'] = 'تفعيل التذكيرات بالبريد الإلكتروني';
+$string['settings:reminders_email_enabled_desc'] = 'السماح للطلاب بالاشتراك في تذكيرات الدراسة عبر البريد الإلكتروني.';
+$string['settings:reminders_whatsapp_enabled'] = 'تفعيل تذكيرات WhatsApp';
+$string['settings:reminders_whatsapp_enabled_desc'] = 'السماح للطلاب بالاشتراك في تذكيرات الدراسة عبر WhatsApp (يتطلب تهيئة WhatsApp API).';
+$string['settings:whatsapp_api_url'] = 'عنوان URL لـ WhatsApp API';
+$string['settings:whatsapp_api_url_desc'] = 'نقطة النهاية API لإرسال رسائل WhatsApp (مثل Twilio أو MessageBird). يجب أن يقبل POST بمحتوى JSON يحتوي على حقول "to" و"from" و"body".';
+$string['settings:whatsapp_api_token'] = 'رمز WhatsApp API';
+$string['settings:whatsapp_api_token_desc'] = 'رمز المصادقة لـ WhatsApp API.';
+$string['settings:whatsapp_from_number'] = 'رقم مرسل WhatsApp';
+$string['settings:whatsapp_from_number_desc'] = 'رقم الهاتف المستخدم لإرسال رسائل WhatsApp (مع رمز الدولة، مثل +14155238886).';
+$string['settings:whatsapp_blocked_countries'] = 'دول محظورة من WhatsApp';
+$string['settings:whatsapp_blocked_countries_desc'] = 'رموز الدول وفق ISO 3166-1 alpha-2 مفصولة بفواصل حيث لا يُسمح بتذكيرات WhatsApp بسبب اللوائح المحلية (مثل "CN,IR,KP").';
+$string['reminder:email_subject'] = 'تذكير دراسي: {$a}';
+$string['reminder:email_body'] = 'مرحبًا {$a->firstname}،
+
+هذا تذكيرك الدراسي لـ "{$a->coursename}".
+
+{$a->message}
+
+تقترح خطتك الدراسية {$a->hours_per_week} ساعات أسبوعيًا لهذا المقرر.
+
+استمر في العمل الرائع!
+
+---
+لإلغاء الاشتراك في هذه التذكيرات، انقر هنا: {$a->unsubscribe_url}';
+$string['reminder:whatsapp_body'] = 'تذكير دراسي لـ {$a->coursename}: {$a->message} (إلغاء الاشتراك: {$a->unsubscribe_url})';
+$string['reminder:study_tip_prefix'] = 'تركيز الدراسة اليوم: ';
+$string['unsubscribe:title'] = 'إلغاء الاشتراك في التذكيرات الدراسية';
+$string['unsubscribe:success'] = 'تم إلغاء اشتراكك بنجاح من التذكيرات الدراسية لهذا المقرر.';
+$string['unsubscribe:already'] = 'لقد تم إلغاء اشتراكك مسبقًا من هذه التذكيرات.';
+$string['unsubscribe:invalid'] = 'رابط إلغاء الاشتراك غير صالح أو منتهي الصلاحية.';
+$string['unsubscribe:resubscribe'] = 'هل غيّرت رأيك؟ يمكنك إعادة تفعيل التذكيرات من خلال دردشة المدرّس الافتراضي بالذكاء الاصطناعي.';
+$string['task:send_reminders'] = 'إرسال تذكيرات الدراسة للمدرّس الافتراضي بالذكاء الاصطناعي';
+$string['privacy:metadata:local_ai_course_assistant_plans'] = 'يخزّن خطط الدراسة الخاصة بالطلاب.';
+$string['privacy:metadata:local_ai_course_assistant_plans:userid'] = 'معرّف المستخدم الذي يمتلك خطة الدراسة.';
+$string['privacy:metadata:local_ai_course_assistant_plans:courseid'] = 'المقرر الذي تنتمي إليه خطة الدراسة.';
+$string['privacy:metadata:local_ai_course_assistant_plans:hours_per_week'] = 'عدد الساعات الأسبوعية التي يعتزم الطالب دراستها.';
+$string['privacy:metadata:local_ai_course_assistant_plans:plan_data'] = 'تفاصيل خطة الدراسة بصيغة JSON.';
+$string['privacy:metadata:local_ai_course_assistant_reminders'] = 'يخزّن تفضيلات تذكيرات الدراسة والاشتراكات.';
+$string['privacy:metadata:local_ai_course_assistant_reminders:userid'] = 'معرّف المستخدم المشترك في التذكيرات.';
+$string['privacy:metadata:local_ai_course_assistant_reminders:channel'] = 'قناة التذكير (البريد الإلكتروني أو WhatsApp).';
+$string['privacy:metadata:local_ai_course_assistant_reminders:destination'] = 'عنوان البريد الإلكتروني أو رقم الهاتف للتذكيرات.';
+$string['privacy:metadata:local_ai_course_assistant_reminders:country_code'] = 'رمز بلد المستخدم للامتثال التنظيمي.';
+$string['analytics:title'] = 'تحليلات المدرّس الافتراضي بالذكاء الاصطناعي';
+$string['analytics:overview'] = 'نظرة عامة';
+$string['analytics:total_conversations'] = 'إجمالي المحادثات';
+$string['analytics:total_messages'] = 'إجمالي الرسائل';
+$string['analytics:active_students'] = 'الطلاب النشطون';
+$string['analytics:avg_messages_per_student'] = 'متوسط الرسائل لكل طالب';
+$string['analytics:offtopic_rate'] = 'معدل الخروج عن الموضوع';
+$string['analytics:escalation_count'] = 'تم التصعيد إلى الدعم';
+$string['analytics:studyplan_adoption'] = 'الطلاب الذين لديهم خطط دراسية';
+$string['analytics:usage_trends'] = 'اتجاهات الاستخدام';
+$string['analytics:daily_messages'] = 'حجم الرسائل اليومية';
+$string['analytics:hotspots'] = 'النقاط الساخنة في المقرر';
+$string['analytics:hotspots_desc'] = 'أقسام المقرر الأكثر ورودًا في أسئلة الطلاب. قد تشير الأعداد المرتفعة إلى مناطق يحتاج فيها الطلاب إلى مزيد من الدعم.';
+$string['analytics:section'] = 'القسم';
+$string['analytics:mention_count'] = 'عدد الإشارات';
+$string['analytics:common_prompts'] = 'أنماط الأسئلة الشائعة';
+$string['analytics:common_prompts_desc'] = 'أنماط الأسئلة المتكررة من الطلاب. راجعها لتحديد الثغرات المنهجية في محتوى المقرر.';
+$string['analytics:prompt_pattern'] = 'النمط';
+$string['analytics:frequency'] = 'التكرار';
+$string['analytics:recent_activity'] = 'النشاط الأخير';
+$string['analytics:no_data'] = 'لا توجد بيانات تحليلية بعد. ستظهر البيانات بمجرد بدء الطلاب في استخدام المدرّس الافتراضي بالذكاء الاصطناعي.';
+$string['analytics:timerange'] = 'النطاق الزمني';
+$string['analytics:last_7_days'] = 'آخر 7 أيام';
+$string['analytics:last_30_days'] = 'آخر 30 يومًا';
+$string['analytics:all_time'] = 'كل الوقت';
+$string['analytics:export'] = 'تصدير البيانات';
+$string['analytics:provider_comparison'] = 'مقارنة مزوّدي الذكاء الاصطناعي';
+$string['analytics:provider_comparison_desc'] = 'مقارنة الأداء عبر مزوّدي الذكاء الاصطناعي المستخدمين في هذا المقرر.';
+$string['analytics:provider'] = 'المزوّد';
+$string['analytics:response_count'] = 'الردود';
+$string['analytics:avg_response_length'] = 'متوسط طول الرد';
+$string['analytics:total_tokens'] = 'إجمالي الرموز';
+$string['analytics:avg_tokens'] = 'متوسط الرموز / الرد';
+$string['usersettings:title'] = 'مساعد الذكاء الاصطناعي للمقررات - بياناتك';
+$string['usersettings:intro'] = 'إدارة بيانات دردشة المدرّس الافتراضي بالذكاء الاصطناعي وإعدادات الخصوصية الخاصة بك';
+$string['usersettings:privacy_info'] = 'يتم تخزين محادثاتك مع المدرّس الافتراضي بالذكاء الاصطناعي لتزويدك بدعم مستمر طوال المقرر. لديك تحكم كامل في هذه البيانات ويمكنك حذفها في أي وقت.';
+$string['usersettings:usage_stats'] = 'إحصائيات استخدامك';
+$string['usersettings:total_messages'] = 'إجمالي الرسائل';
+$string['usersettings:total_conversations'] = 'المحادثات';
+$string['usersettings:messages'] = 'الرسائل';
+$string['usersettings:last_activity'] = 'آخر نشاط';
+$string['usersettings:delete_course_data'] = 'حذف بيانات المقرر';
+$string['usersettings:no_data'] = 'لم تستخدم المدرّس الافتراضي بالذكاء الاصطناعي بعد. ستظهر بيانات استخدامك هنا بمجرد بدء الدردشة.';
+$string['usersettings:delete_all_title'] = 'حذف جميع بياناتك';
+$string['usersettings:delete_all_warning'] = 'سيؤدي هذا إلى الحذف الدائم لجميع محادثاتك مع المدرّس الافتراضي بالذكاء الاصطناعي عبر جميع المقررات. لا يمكن التراجع عن هذا الإجراء.';
+$string['usersettings:delete_all_button'] = 'حذف جميع بياناتي';
+$string['usersettings:confirm_delete_course'] = 'هل أنت متأكد من رغبتك في الحذف الدائم لجميع بيانات المدرّس الافتراضي بالذكاء الاصطناعي الخاصة بك لمقرر "{$a}"؟ لا يمكن التراجع عن هذا الإجراء.';
+$string['usersettings:confirm_delete_all'] = 'هل أنت متأكد من رغبتك في الحذف الدائم لجميع بيانات المدرّس الافتراضي بالذكاء الاصطناعي الخاصة بك عبر جميع المقررات؟ لا يمكن التراجع عن هذا الإجراء.';
+$string['usersettings:data_deleted'] = 'تم حذف بياناتك.';

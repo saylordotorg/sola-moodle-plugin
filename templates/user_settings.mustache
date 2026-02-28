@@ -1,0 +1,111 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_course_assistant/user_settings
+
+    Student-facing settings page for AI Course Assistant data management.
+
+    Context variables:
+    * totalmessages - Total number of messages
+    * totalconversations - Total number of conversations
+    * coursedata - Array of per-course data
+    * deleteallurl - URL to delete all data
+}}
+
+<div class="local-ai-course-assistant-settings">
+    <div class="alert alert-info">
+        <p><strong>{{#str}}usersettings:intro, local_ai_course_assistant{{/str}}</strong></p>
+        <p>{{#str}}usersettings:privacy_info, local_ai_course_assistant{{/str}}</p>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3>{{#str}}usersettings:usage_stats, local_ai_course_assistant{{/str}}</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="stat-box">
+                        <div class="stat-label">{{#str}}usersettings:total_messages, local_ai_course_assistant{{/str}}</div>
+                        <div class="stat-value">{{totalmessages}}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-box">
+                        <div class="stat-label">{{#str}}usersettings:total_conversations, local_ai_course_assistant{{/str}}</div>
+                        <div class="stat-value">{{totalconversations}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#coursedata}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4>{{coursename}}</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>{{#str}}usersettings:messages, local_ai_course_assistant{{/str}}:</strong> {{messagecount}}</p>
+                    <p><strong>{{#str}}usersettings:last_activity, local_ai_course_assistant{{/str}}:</strong> {{lastactivity}}</p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="{{deleteurl}}" class="btn btn-danger">
+                        {{#str}}usersettings:delete_course_data, local_ai_course_assistant{{/str}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/coursedata}}
+
+    {{^coursedata}}
+    <div class="alert alert-secondary">
+        {{#str}}usersettings:no_data, local_ai_course_assistant{{/str}}
+    </div>
+    {{/coursedata}}
+
+    <div class="card border-danger mt-4">
+        <div class="card-body">
+            <h3 class="text-danger">{{#str}}usersettings:delete_all_title, local_ai_course_assistant{{/str}}</h3>
+            <p>{{#str}}usersettings:delete_all_warning, local_ai_course_assistant{{/str}}</p>
+            <a href="{{deleteallurl}}" class="btn btn-danger btn-lg">
+                {{#str}}usersettings:delete_all_button, local_ai_course_assistant{{/str}}
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.local-ai-course-assistant-settings .stat-box {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.local-ai-course-assistant-settings .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.local-ai-course-assistant-settings .stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4a6cf7;
+}
+</style>

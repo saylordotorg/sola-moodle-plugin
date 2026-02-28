@@ -1,0 +1,1550 @@
+/* local_ai_course_assistant - Chat widget styles */
+
+/* Container */
+.local-ai-course-assistant {
+    position: fixed;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.local-ai-course-assistant--bottom-right {
+    bottom: 20px;
+    right: 20px;
+}
+
+.local-ai-course-assistant--bottom-left {
+    bottom: 20px;
+    left: 20px;
+}
+
+.local-ai-course-assistant--top-right {
+    top: 20px;
+    right: 20px;
+}
+
+.local-ai-course-assistant--top-left {
+    top: 20px;
+    left: 20px;
+}
+
+/* Toggle button */
+.local-ai-course-assistant__toggle {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.local-ai-course-assistant__toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.local-ai-course-assistant__toggle:focus-visible {
+    outline: 3px solid #4a6cf7;
+    outline-offset: 3px;
+}
+
+.local-ai-course-assistant__avatar-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+}
+
+/* Drawer */
+.local-ai-course-assistant__drawer {
+    position: absolute;
+    width: 360px;
+    min-width: 300px;
+    max-height: 520px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Bottom positions: drawer opens upward */
+.local-ai-course-assistant--bottom-right .local-ai-course-assistant__drawer,
+.local-ai-course-assistant--bottom-left .local-ai-course-assistant__drawer {
+    bottom: 72px;
+    transform: translateY(20px) scale(0.95);
+}
+
+.local-ai-course-assistant--bottom-right .local-ai-course-assistant__drawer {
+    right: 0;
+}
+
+.local-ai-course-assistant--bottom-left .local-ai-course-assistant__drawer {
+    left: 0;
+}
+
+/* Top positions: drawer opens downward */
+.local-ai-course-assistant--top-right .local-ai-course-assistant__drawer,
+.local-ai-course-assistant--top-left .local-ai-course-assistant__drawer {
+    top: 72px;
+    transform: translateY(-20px) scale(0.95);
+}
+
+.local-ai-course-assistant--top-right .local-ai-course-assistant__drawer {
+    right: 0;
+}
+
+.local-ai-course-assistant--top-left .local-ai-course-assistant__drawer {
+    left: 0;
+}
+
+.local-ai-course-assistant__drawer[aria-hidden="false"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* Header */
+.local-ai-course-assistant__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    background: #4a6cf7;
+    color: #fff;
+    flex-shrink: 0;
+    cursor: grab;
+    user-select: none;
+}
+
+.local-ai-course-assistant--dragging .local-ai-course-assistant__header {
+    cursor: grabbing;
+}
+
+.local-ai-course-assistant__header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.local-ai-course-assistant__header-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.local-ai-course-assistant__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.local-ai-course-assistant__header-actions button,
+.local-ai-course-assistant__header-actions a {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+    text-decoration: none;
+}
+
+.local-ai-course-assistant__header-actions button:hover,
+.local-ai-course-assistant__header-actions a:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.local-ai-course-assistant__header-actions button .icon,
+.local-ai-course-assistant__header-actions a .icon {
+    filter: brightness(0) invert(1);
+    width: 16px;
+    height: 16px;
+}
+
+/* Messages area — flex: 1 lets it fill available drawer height automatically */
+.local-ai-course-assistant__messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+}
+
+/* Message bubbles */
+.local-ai-course-assistant__message {
+    display: flex;
+    max-width: 85%;
+    animation: aitc-fade-in 0.2s ease;
+}
+
+.local-ai-course-assistant__message--user {
+    align-self: flex-end;
+}
+
+.local-ai-course-assistant__message--assistant {
+    align-self: flex-start;
+    position: relative; /* anchor for the absolute speak button */
+}
+
+.local-ai-course-assistant__message-content {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.local-ai-course-assistant__message--user .local-ai-course-assistant__message-content {
+    background: #4a6cf7;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content {
+    background: #f0f2f5;
+    color: #1a1a1a;
+    border-bottom-left-radius: 4px;
+}
+
+.local-ai-course-assistant__audio-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Markdown content styling inside assistant messages */
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content h1,
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content h2,
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content h3 {
+    margin: 8px 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content p {
+    margin: 0 0 8px;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content ul,
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content ol {
+    margin: 4px 0;
+    padding-left: 20px;
+}
+
+.local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content a {
+    color: #4a6cf7;
+    text-decoration: underline;
+}
+
+/* Typing indicator */
+.local-ai-course-assistant__typing {
+    display: none;
+    padding: 8px 16px;
+    gap: 4px;
+    align-items: center;
+}
+
+.local-ai-course-assistant__typing[aria-hidden="false"] {
+    display: flex;
+}
+
+.local-ai-course-assistant__typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #b0b0b0;
+    animation: aitc-typing 1.4s infinite both;
+}
+
+.local-ai-course-assistant__typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.local-ai-course-assistant__typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* Input area */
+.local-ai-course-assistant__input-area {
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 10px;
+    border-top: 1px solid #e5e7eb;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.local-ai-course-assistant__input {
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.4;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+
+.local-ai-course-assistant__input:focus {
+    border-color: #4a6cf7;
+}
+
+.local-ai-course-assistant__btn-send {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: #4a6cf7;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.local-ai-course-assistant__btn-send:disabled {
+    background: #d1d5db;
+    cursor: default;
+}
+
+.local-ai-course-assistant__btn-send:not(:disabled):hover {
+    background: #3b5de7;
+}
+
+.local-ai-course-assistant__btn-send .icon {
+    filter: brightness(0) invert(1);
+    width: 16px;
+    height: 16px;
+}
+
+.local-ai-course-assistant__hint {
+    padding: 0 12px 6px;
+    font-size: 11px;
+    color: #9ca3af;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Welcome/intro overlay (first-launch screen) */
+.local-ai-course-assistant__welcome {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 28px 24px 24px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+}
+
+.local-ai-course-assistant__welcome--visible {
+    opacity: 1;
+}
+
+.local-ai-course-assistant__welcome-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    border: 3px solid rgba(74, 108, 247, 0.2);
+    padding: 4px;
+    background: #f0f2f5;
+    flex-shrink: 0;
+}
+
+.local-ai-course-assistant__welcome-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 8px;
+}
+
+.local-ai-course-assistant__welcome-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.local-ai-course-assistant__welcome-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.local-ai-course-assistant__welcome-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #374151;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    line-height: 1.4;
+}
+
+.local-ai-course-assistant__welcome-features li:last-child {
+    border-bottom: none;
+}
+
+.local-ai-course-assistant__welcome-feature-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.local-ai-course-assistant__welcome-cta {
+    width: 100%;
+    padding: 12px;
+    background: #4a6cf7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.local-ai-course-assistant__welcome-cta:hover {
+    background: #3b5de7;
+}
+
+.local-ai-course-assistant__welcome-cta:focus-visible {
+    outline: 3px solid #4a6cf7;
+    outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes aitc-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes aitc-typing {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Mobile (< 600px) */
+@media (max-width: 600px) {
+    .local-ai-course-assistant__drawer {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: 78px;
+        width: auto;
+        max-height: calc(100dvh - 96px);
+        border-radius: 12px;
+    }
+
+    .local-ai-course-assistant__messages {
+        max-height: none;
+        flex: 1;
+    }
+
+    .local-ai-course-assistant__input-area {
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .local-ai-course-assistant__toggle {
+        width: 56px;
+        height: 56px;
+    }
+
+    .local-ai-course-assistant__avatar-img {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Welcome screen — compact layout */
+    .local-ai-course-assistant__welcome {
+        padding: 10px 12px 8px;
+    }
+
+    .local-ai-course-assistant__welcome-avatar {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 7px;
+    }
+
+    .local-ai-course-assistant__welcome-title {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+
+    .local-ai-course-assistant__welcome-subtitle {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+
+    .local-ai-course-assistant__welcome-features {
+        margin-bottom: 8px;
+    }
+
+    .local-ai-course-assistant__welcome-features li {
+        padding: 3px 0;
+        font-size: 11px;
+        gap: 7px;
+    }
+
+    .local-ai-course-assistant__welcome-feature-icon {
+        font-size: 13px;
+    }
+
+    .local-ai-course-assistant__welcome-cta {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    /* Conversation starters — row layout (icon left, text right) */
+    .local-ai-course-assistant__starters {
+        padding: 6px 8px 4px;
+        gap: 5px;
+    }
+
+    .local-ai-course-assistant__starter {
+        flex-direction: row;
+        align-items: center;
+        padding: 7px 9px;
+        gap: 7px;
+        font-size: 11px;
+        border-radius: 10px;
+    }
+
+    .aica-starter-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+
+    .aica-starter-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Reduce messages min-height on mobile */
+    .local-ai-course-assistant__messages {
+        min-height: 80px;
+    }
+}
+
+/* Notification toast */
+.local-ai-course-assistant__notification {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.local-ai-course-assistant__notification--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.local-ai-course-assistant__notification--success {
+    background: #10b981;
+    color: white;
+}
+
+.local-ai-course-assistant__notification--error {
+    background: #ef4444;
+    color: white;
+}
+
+.local-ai-course-assistant--bottom-left .local-ai-course-assistant__notification {
+    left: 20px;
+    right: auto;
+}
+
+@media (max-width: 600px) {
+    .local-ai-course-assistant__notification {
+        left: 20px;
+        right: 20px;
+        bottom: 80px;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   Expanded chat window state (vertical fill)
+   ========================================================= */
+
+/* Drawer transition for smooth expand/collapse */
+.local-ai-course-assistant__drawer {
+    transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease;
+}
+
+/* Expanded: grows to fill most of the viewport height.
+   clamp(min, preferred, max) + dvh handles mobile chrome correctly. */
+.local-ai-course-assistant__drawer--expanded {
+    height: clamp(420px, 70dvh, 760px);
+    max-height: calc(100dvh - 90px);
+}
+
+/* Quiz mode: auto-expand so quiz content never clips at the bottom */
+.local-ai-course-assistant__drawer--quiz {
+    max-height: calc(100vh - 100px);
+}
+
+/* Expand icon toggle: collapse icon hidden by default, shown when expanded */
+.aica-icon-collapse { display: none; }
+
+.local-ai-course-assistant__drawer--expanded .aica-icon-expand   { display: none; }
+.local-ai-course-assistant__drawer--expanded .aica-icon-collapse { display: inline-flex; }
+
+/* Hide expand button on mobile (drawer already fills viewport) */
+@media (max-width: 600px) {
+    .local-ai-course-assistant__btn-expand {
+        display: none;
+    }
+}
+
+/* =========================================================
+   Reset/home button in header
+   ========================================================= */
+
+.local-ai-course-assistant__btn-reset {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+}
+
+.local-ai-course-assistant__btn-reset:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================================================
+   Quiz button in header
+   ========================================================= */
+
+.local-ai-course-assistant__btn-quiz {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+}
+
+.local-ai-course-assistant__btn-quiz:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.local-ai-course-assistant__btn-quiz:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   Topic picker panel (conversation starters — shares quiz-setup child styles)
+   ========================================================= */
+
+.aica-topic-panel {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+/* =========================================================
+   Quiz setup panel
+   ========================================================= */
+
+.aica-quiz-setup {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.aica-quiz-setup__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 12px;
+}
+
+.aica-quiz-setup__label {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 6px;
+}
+
+.aica-quiz-setup__count-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.aica-quiz-setup__count-btn {
+    flex: 1;
+    min-height: 44px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.aica-quiz-setup__count-btn:hover {
+    border-color: #4a6cf7;
+    color: #4a6cf7;
+}
+
+.aica-quiz-setup__count-btn--selected {
+    background: #4a6cf7;
+    border-color: #4a6cf7;
+    color: #fff;
+}
+
+.aica-quiz-setup__topic-select {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font-size: 14px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.aica-quiz-setup__custom-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.aica-quiz-setup__start {
+    width: 100%;
+    min-height: 48px;
+    background: #4a6cf7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: background 0.15s;
+}
+
+.aica-quiz-setup__start:hover {
+    background: #3a5ce4;
+}
+
+.aica-quiz-setup__cancel {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: underline;
+    text-align: center;
+    padding: 4px;
+}
+
+.aica-quiz-setup__cancel:hover {
+    color: #6b7280;
+}
+
+/* =========================================================
+   Quiz card (interactive questions)
+   ========================================================= */
+
+.aica-quiz {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin: 8px 0;
+    padding: 16px;
+    max-width: 100%;
+    background: #fff;
+}
+
+.aica-quiz__progress {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0 0 8px;
+}
+
+.aica-quiz__question {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 12px;
+    line-height: 1.4;
+}
+
+.aica-quiz__choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.aica-quiz__choice {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    line-height: 1.3;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.aica-quiz__choice:hover:not(:disabled) {
+    border-color: #4a6cf7;
+    background: #f0f3ff;
+}
+
+.aica-quiz__choice--correct {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.aica-quiz__choice--wrong {
+    border-color: #dc2626;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.aica-quiz__choice--disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+.aica-quiz__feedback {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 10px 0 4px;
+}
+
+.aica-quiz__feedback--correct {
+    color: #16a34a;
+}
+
+.aica-quiz__feedback--wrong {
+    color: #dc2626;
+}
+
+.aica-quiz__explanation {
+    font-size: 13px;
+    font-style: italic;
+    color: #6b7280;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.aica-quiz__nav {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.aica-quiz__next {
+    background: #4a6cf7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    transition: background 0.15s;
+}
+
+.aica-quiz__next:hover:not(:disabled) {
+    background: #3a5ce4;
+}
+
+.aica-quiz__next:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+.aica-quiz__score {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f0f3ff;
+}
+
+/* =========================================================
+   Mic (STT) button
+   ========================================================= */
+
+.local-ai-course-assistant__btn-mic {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+
+.local-ai-course-assistant__btn-mic:hover {
+    color: #4a6cf7;
+    background: rgba(74, 108, 247, 0.08);
+}
+
+/* Recording state */
+.local-ai-course-assistant__btn-mic--recording {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    animation: aica-mic-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes aica-mic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+/* Mic icon swap: show stop icon while recording */
+.aica-icon-mic-stop { display: none; }
+.local-ai-course-assistant__btn-mic--recording .aica-icon-mic      { display: none; }
+.local-ai-course-assistant__btn-mic--recording .aica-icon-mic-stop { display: block; }
+
+/* =========================================================
+   TTS (speak) button on assistant messages
+   Absolutely positioned overlay — takes no horizontal space
+   ========================================================= */
+
+.local-ai-course-assistant__btn-speak {
+    position: absolute;
+    bottom: 5px;
+    right: 6px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #e5e7eb;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 3px 5px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s, opacity 0.15s;
+    opacity: 0;
+    backdrop-filter: blur(2px);
+}
+
+.local-ai-course-assistant__message--assistant:hover .local-ai-course-assistant__btn-speak,
+.local-ai-course-assistant__btn-speak--active {
+    opacity: 1;
+}
+
+.local-ai-course-assistant__btn-speak:hover {
+    color: #4a6cf7;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.local-ai-course-assistant__btn-speak--active {
+    color: #ef4444;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* Speak/stop icon swap */
+.aica-icon-stop { display: none; }
+.local-ai-course-assistant__btn-speak--active .aica-icon-speak { display: none; }
+.local-ai-course-assistant__btn-speak--active .aica-icon-stop  { display: inline; }
+
+/* =========================================================
+   Language detection banner
+   ========================================================= */
+
+.local-ai-course-assistant__lang-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 14px;
+    background: #eff6ff;
+    border-bottom: 1px solid #bfdbfe;
+    font-size: 13px;
+    color: #1e40af;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+}
+
+.local-ai-course-assistant__lang-banner--visible {
+    max-height: 80px;
+    padding: 8px 14px;
+}
+
+.local-ai-course-assistant__lang-banner-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.local-ai-course-assistant__lang-banner-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.local-ai-course-assistant__lang-accept,
+.local-ai-course-assistant__lang-dismiss {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    color: #1e40af;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 3px 10px;
+    transition: background 0.15s;
+}
+
+.local-ai-course-assistant__lang-accept:hover {
+    background: #1e40af;
+    color: #fff;
+}
+
+.local-ai-course-assistant__lang-dismiss {
+    border-color: #93c5fd;
+    color: #6b7280;
+}
+
+.local-ai-course-assistant__lang-dismiss:hover {
+    background: #f3f4f6;
+}
+
+/* =========================================================
+   Language selector button in hint bar
+   ========================================================= */
+
+
+.local-ai-course-assistant__btn-lang {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+    text-decoration: underline dotted;
+    transition: color 0.15s;
+    display: none; /* shown via JS */
+}
+
+.local-ai-course-assistant__btn-lang:hover {
+    color: #4a6cf7;
+}
+
+/* =========================================================
+   Language picker overlay
+   ========================================================= */
+
+.aica-lang-picker {
+    position: absolute;
+    bottom: 60px;
+    right: 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    width: 180px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+.aica-lang-picker__option {
+    background: none;
+    border: none;
+    color: #374151;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 8px 16px;
+    text-align: left;
+    transition: background 0.1s;
+    width: 100%;
+}
+
+.aica-lang-picker__option:hover {
+    background: #f3f4f6;
+}
+
+.aica-lang-picker__option--active {
+    color: #4a6cf7;
+    font-weight: 600;
+}
+
+/* =========================================================
+   Quiz — choice icon layout (answer feedback)
+   ========================================================= */
+
+.aica-quiz__choice {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.aica-quiz__choice-text {
+    flex: 1;
+}
+
+.aica-quiz__choice-icon {
+    flex-shrink: 0;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    display: none;
+}
+
+.aica-quiz__choice--correct .aica-quiz__choice-icon,
+.aica-quiz__choice--wrong .aica-quiz__choice-icon {
+    display: inline;
+}
+
+.aica-quiz__choice-icon--correct {
+    color: #16a34a;
+}
+
+.aica-quiz__choice-icon--wrong {
+    color: #dc2626;
+}
+
+/* =========================================================
+   Quiz — encouraging message + review card
+   ========================================================= */
+
+.aica-quiz__encourage {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin: 12px 0 16px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f9fafb;
+    line-height: 1.5;
+}
+
+.aica-quiz__encourage--great {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.aica-quiz__encourage--good {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.aica-quiz__review {
+    margin-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+}
+
+.aica-quiz__review-heading {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+}
+
+.aica-quiz__review-item {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.aica-quiz__review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.aica-quiz__review-question {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 6px;
+    line-height: 1.4;
+}
+
+.aica-quiz__review-answer {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.aica-quiz__review-answer--correct {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.aica-quiz__review-answer--wrong {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.aica-quiz__review-explanation {
+    font-size: 12px;
+    font-style: italic;
+    color: #6b7280;
+    margin: 4px 0 0;
+    line-height: 1.4;
+}
+
+.aica-quiz__summary-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.aica-quiz__retake,
+.aica-quiz__exit {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.aica-quiz__retake {
+    background: none;
+    border: 1.5px solid #4a6cf7;
+    color: #4a6cf7;
+}
+
+.aica-quiz__retake:hover {
+    background: #4a6cf7;
+    color: #fff;
+}
+
+.aica-quiz__exit {
+    background: none;
+    border: 1.5px solid #9ca3af;
+    color: #6b7280;
+}
+
+.aica-quiz__exit:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* =========================================================
+   Quiz/topic setup mode — collapse messages, make panel scrollable
+   ========================================================= */
+
+/* Expand the drawer so the setup panel is never clipped */
+.local-ai-course-assistant__drawer--quiz-setup {
+    max-height: calc(100vh - 100px);
+}
+
+/* Hide message/typing/starters while setup panel is open */
+.local-ai-course-assistant__drawer--quiz-setup .local-ai-course-assistant__messages,
+.local-ai-course-assistant__drawer--quiz-setup .local-ai-course-assistant__typing,
+.local-ai-course-assistant__drawer--quiz-setup .local-ai-course-assistant__starters {
+    display: none;
+}
+
+/* Let the setup panel grow and scroll within the available space */
+.local-ai-course-assistant__drawer--quiz-setup .aica-quiz-setup,
+.local-ai-course-assistant__drawer--quiz-setup .aica-topic-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* =========================================================
+   Header — drag handle
+   ========================================================= */
+
+.local-ai-course-assistant__header {
+    cursor: grab;
+    user-select: none;
+}
+
+.local-ai-course-assistant--dragging .local-ai-course-assistant__header {
+    cursor: grabbing;
+}
+
+/* Hint bar also acts as a drag handle */
+.local-ai-course-assistant__hint {
+    cursor: grab;
+    user-select: none;
+}
+
+.local-ai-course-assistant--dragging .local-ai-course-assistant__hint {
+    cursor: grabbing;
+}
+
+/* =========================================================
+   Quiz button — active/toggle state
+   ========================================================= */
+
+.local-ai-course-assistant__btn-quiz--active {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-radius: 4px;
+}
+
+/* =========================================================
+   Conversation starters — 2×2 card grid
+   ========================================================= */
+
+.local-ai-course-assistant__starters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 12px 6px;
+}
+
+.local-ai-course-assistant__starters[aria-hidden="true"],
+.local-ai-course-assistant__starters--hidden {
+    display: none;
+}
+
+.local-ai-course-assistant__starter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    color: #374151;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.35;
+    transition: background 0.15s, border-color 0.15s,
+                box-shadow 0.15s, color 0.15s;
+}
+
+.local-ai-course-assistant__starter:hover {
+    background: #f5f7ff;
+    border-color: #b8c4fb;
+    box-shadow: 0 2px 10px rgba(74, 108, 247, 0.12);
+    color: #3a5ce4;
+}
+
+.aica-starter-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(74, 108, 247, 0.1);
+    color: #4a6cf7;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.local-ai-course-assistant__starter:hover .aica-starter-icon {
+    background: rgba(74, 108, 247, 0.18);
+}
+
+/* ==========================================================
+   Resize handles — drag top/left edges to resize the drawer
+   Optimised for the default bottom-right widget position.
+   ========================================================== */
+
+.aica-resize-handle {
+    position: absolute;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+/* Show handles on hover over the drawer */
+.local-ai-course-assistant__drawer:hover .aica-resize-handle {
+    opacity: 1;
+}
+
+/* Top edge — drag up/down to resize height */
+.aica-resize-handle--n {
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 6px;
+    cursor: ns-resize;
+    background: linear-gradient(to bottom, rgba(74, 108, 247, 0.25), transparent);
+    border-radius: 3px 3px 0 0;
+}
+
+/* Left edge — drag left/right to resize width (bottom-right widget) */
+.aica-resize-handle--w {
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+    width: 6px;
+    cursor: ew-resize;
+    background: linear-gradient(to right, rgba(74, 108, 247, 0.25), transparent);
+    border-radius: 3px 0 0 3px;
+}
+
+/* Top-left corner — drag diagonally to resize both */
+.aica-resize-handle--nw {
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+    background: rgba(74, 108, 247, 0.2);
+    border-radius: 3px 0 3px 0;
+}
+
+/* Hide resize handles when expand is active (CSS-defined size) */
+.local-ai-course-assistant__drawer--expanded .aica-resize-handle {
+    display: none;
+}
+
+/* Hide left/corner handles on bottom-left positioned widgets */
+.local-ai-course-assistant--bottom-left .aica-resize-handle--w,
+.local-ai-course-assistant--bottom-left .aica-resize-handle--nw,
+.local-ai-course-assistant--top-left .aica-resize-handle--w,
+.local-ai-course-assistant--top-left .aica-resize-handle--nw {
+    display: none;
+}
+
+/* Hide resize handles on mobile (fullscreen layout) */
+@media (max-width: 640px) {
+    .aica-resize-handle {
+        display: none;
+    }
+}

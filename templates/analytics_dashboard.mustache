@@ -1,0 +1,290 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_course_assistant/analytics_dashboard
+
+    Analytics dashboard for AI tutor usage.
+}}
+<div class="local-ai-tutor-analytics">
+
+    {{! Time range selector }}
+    <div class="mb-3">
+        <span class="mr-2"><strong>{{#str}}analytics:timerange, local_ai_course_assistant{{/str}}:</strong></span>
+        <div class="btn-group" role="group">
+            <a href="{{url_7}}" class="btn btn-sm {{#range_7_selected}}btn-primary{{/range_7_selected}}{{^range_7_selected}}btn-outline-secondary{{/range_7_selected}}">
+                {{#str}}analytics:last_7_days, local_ai_course_assistant{{/str}}
+            </a>
+            <a href="{{url_30}}" class="btn btn-sm {{#range_30_selected}}btn-primary{{/range_30_selected}}{{^range_30_selected}}btn-outline-secondary{{/range_30_selected}}">
+                {{#str}}analytics:last_30_days, local_ai_course_assistant{{/str}}
+            </a>
+            <a href="{{url_all}}" class="btn btn-sm {{#range_all_selected}}btn-primary{{/range_all_selected}}{{^range_all_selected}}btn-outline-secondary{{/range_all_selected}}">
+                {{#str}}analytics:all_time, local_ai_course_assistant{{/str}}
+            </a>
+        </div>
+    </div>
+
+    {{^has_data}}
+    <div class="alert alert-info">
+        {{#str}}analytics:no_data, local_ai_course_assistant{{/str}}
+    </div>
+    {{/has_data}}
+
+    {{#has_data}}
+
+    {{! Overview cards }}
+    <h3>{{#str}}analytics:overview, local_ai_course_assistant{{/str}}</h3>
+    <div class="card-deck mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:total_conversations, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.total_conversations}}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:total_messages, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.total_messages}}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:active_students, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.active_students}}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:avg_messages_per_student, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.avg_messages_per_student}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-deck mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:offtopic_rate, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.offtopic_rate}}%</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:escalation_count, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.escalation_count}}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title text-muted">{{#str}}analytics:studyplan_adoption, local_ai_course_assistant{{/str}}</h5>
+                <p class="display-4">{{overview.studyplan_adoption}}</p>
+            </div>
+        </div>
+    </div>
+
+    {{! Usage trend chart }}
+    <h3>{{#str}}analytics:usage_trends, local_ai_course_assistant{{/str}}</h3>
+    <div class="card mb-4">
+        <div class="card-body">
+            <canvas id="aitc-usage-chart" height="80" data-daily-usage="{{daily_usage_json}}"></canvas>
+        </div>
+    </div>
+
+    <div class="row">
+        {{! Hotspots }}
+        <div class="col-md-6">
+            <h3>{{#str}}analytics:hotspots, local_ai_course_assistant{{/str}}</h3>
+            <p class="text-muted">{{#str}}analytics:hotspots_desc, local_ai_course_assistant{{/str}}</p>
+            {{#has_hotspots}}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{{#str}}analytics:section, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:mention_count, local_ai_course_assistant{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#hotspots}}
+                    <tr>
+                        <td>{{section}}</td>
+                        <td class="text-right">
+                            <span class="badge badge-warning">{{count}}</span>
+                        </td>
+                    </tr>
+                    {{/hotspots}}
+                </tbody>
+            </table>
+            {{/has_hotspots}}
+            {{^has_hotspots}}
+            <p class="text-muted">No hotspot data available yet.</p>
+            {{/has_hotspots}}
+        </div>
+
+        {{! Common prompts }}
+        <div class="col-md-6">
+            <h3>{{#str}}analytics:common_prompts, local_ai_course_assistant{{/str}}</h3>
+            <p class="text-muted">{{#str}}analytics:common_prompts_desc, local_ai_course_assistant{{/str}}</p>
+            {{#has_common_prompts}}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{{#str}}analytics:prompt_pattern, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:frequency, local_ai_course_assistant{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#common_prompts}}
+                    <tr>
+                        <td><code>{{pattern}}</code></td>
+                        <td class="text-right">
+                            <span class="badge badge-info">{{frequency}}</span>
+                        </td>
+                    </tr>
+                    {{/common_prompts}}
+                </tbody>
+            </table>
+            {{/has_common_prompts}}
+            {{^has_common_prompts}}
+            <p class="text-muted">No recurring prompt patterns detected yet.</p>
+            {{/has_common_prompts}}
+        </div>
+    </div>
+
+    {{! Provider comparison table }}
+    {{#has_provider_comparison}}
+    <h3 class="mt-4">{{#str}}analytics:provider_comparison, local_ai_course_assistant{{/str}}</h3>
+    <p class="text-muted">{{#str}}analytics:provider_comparison_desc, local_ai_course_assistant{{/str}}</p>
+    <div class="card mb-4">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>{{#str}}analytics:provider, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:response_count, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:avg_response_length, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:total_tokens, local_ai_course_assistant{{/str}}</th>
+                        <th class="text-right">{{#str}}analytics:avg_tokens, local_ai_course_assistant{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#provider_comparison}}
+                    <tr>
+                        <td><strong>{{provider}}</strong></td>
+                        <td class="text-right">
+                            <span class="badge badge-primary">{{response_count}}</span>
+                        </td>
+                        <td class="text-right">{{avg_response_length}} chars</td>
+                        <td class="text-right">{{total_tokens}}</td>
+                        <td class="text-right">{{avg_tokens}}</td>
+                    </tr>
+                    {{/provider_comparison}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{/has_provider_comparison}}
+
+    {{! Student activity table }}
+    {{#has_students}}
+    <h3 class="mt-4">{{#str}}analytics:recent_activity, local_ai_course_assistant{{/str}}</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th class="text-right">Messages</th>
+                <th>Last Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#students}}
+            <tr>
+                <td>{{name}}</td>
+                <td class="text-right">{{message_count}}</td>
+                <td>{{last_active}}</td>
+            </tr>
+            {{/students}}
+        </tbody>
+    </table>
+    {{/has_students}}
+
+    {{/has_data}}
+</div>
+
+{{#js}}
+(function() {
+    // Simple bar chart using canvas (no external dependencies).
+    var canvas = document.getElementById('aitc-usage-chart');
+    if (!canvas) return;
+
+    var data = JSON.parse(canvas.getAttribute('data-daily-usage') || '[]');
+    if (!data.length) return;
+
+    var ctx = canvas.getContext('2d');
+    var width = canvas.offsetWidth;
+    var height = canvas.offsetHeight || 200;
+    canvas.width = width;
+    canvas.height = height;
+
+    var maxCount = Math.max(1, Math.max.apply(null, data.map(function(d) { return d.count; })));
+    var barWidth = Math.max(2, (width - 60) / data.length - 1);
+    var chartHeight = height - 40;
+    var originX = 40;
+    var originY = height - 25;
+
+    // Draw axes.
+    ctx.strokeStyle = '#ddd';
+    ctx.beginPath();
+    ctx.moveTo(originX, 10);
+    ctx.lineTo(originX, originY);
+    ctx.lineTo(width - 10, originY);
+    ctx.stroke();
+
+    // Y-axis labels.
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    for (var i = 0; i <= 4; i++) {
+        var val = Math.round(maxCount * i / 4);
+        var y = originY - (chartHeight * i / 4);
+        ctx.fillText(val, originX - 5, y + 4);
+        ctx.strokeStyle = '#f0f0f0';
+        ctx.beginPath();
+        ctx.moveTo(originX, y);
+        ctx.lineTo(width - 10, y);
+        ctx.stroke();
+    }
+
+    // Draw bars.
+    ctx.fillStyle = '#4a6cf7';
+    data.forEach(function(d, idx) {
+        var barH = (d.count / maxCount) * chartHeight;
+        var x = originX + 5 + idx * (barWidth + 1);
+        ctx.fillRect(x, originY - barH, barWidth, barH);
+    });
+
+    // X-axis labels (show every Nth date).
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'center';
+    ctx.font = '10px sans-serif';
+    var labelInterval = Math.max(1, Math.floor(data.length / 7));
+    data.forEach(function(d, idx) {
+        if (idx % labelInterval === 0 || idx === data.length - 1) {
+            var x = originX + 5 + idx * (barWidth + 1) + barWidth / 2;
+            var label = d.date.substring(5); // MM-DD
+            ctx.fillText(label, x, originY + 15);
+        }
+    });
+})();
+{{/js}}
