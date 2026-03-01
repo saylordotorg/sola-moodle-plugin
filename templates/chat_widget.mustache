@@ -105,6 +105,18 @@
                     {{#pix}}i/stats, core, {{#str}}analytics:viewdashboard, local_ai_course_assistant{{/str}}{{/pix}}
                 </a>
                 {{/canviewanalytics}}
+                {{#cansiteconfig}}
+                <a href="{{coursesettingsurl}}"
+                   class="local-ai-course-assistant__btn-settings"
+                   title="{{#str}}chat:settings, local_ai_course_assistant{{/str}}"
+                   aria-label="{{#str}}chat:settings, local_ai_course_assistant{{/str}}"
+                   target="_blank">
+                    {{! Wrench icon — admin/course settings }}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                    </svg>
+                </a>
+                {{/cansiteconfig}}
                 <button class="local-ai-course-assistant__btn-settings-panel"
                         title="{{#str}}chat:settings_panel, local_ai_course_assistant{{/str}}"
                         aria-label="{{#str}}chat:settings_panel, local_ai_course_assistant{{/str}}"
@@ -231,15 +243,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H4a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M4 15h16v1a7 7 0 0 1-7 7H11a7 7 0 0 1-7-7v-1m3 2v1a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4v-1H7z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ai_coach, local_ai_course_assistant{{/str}}</span>
-            </button>
-            {{! Voice starter button — speak your choice aloud }}
-            <button class="aica-starter-voice__btn" type="button"
-                    title="{{#str}}chat:starter_speak, local_ai_course_assistant{{/str}}"
-                    aria-label="{{#str}}chat:starter_speak, local_ai_course_assistant{{/str}}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
-                    <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
-                </svg>
-                <span>{{#str}}chat:starter_speak, local_ai_course_assistant{{/str}}</span>
             </button>
         </div>
 
