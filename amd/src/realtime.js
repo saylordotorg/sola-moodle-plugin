@@ -61,6 +61,14 @@ define([], function() {
     var currentSource = null;
     /** @type {GainNode|null} Master gain — set to 0 to instantly silence all output */
     var masterGain = null;
+    /** @type {number|null} Session cap warning timer */
+    var sessionWarnTimer = null;
+    /** @type {number|null} Session cap disconnect timer */
+    var sessionCapTimer = null;
+    /** Session length cap in ms (15 minutes) */
+    var SESSION_CAP_MS = 15 * 60 * 1000;
+    /** Warning fires 1 minute before cap */
+    var SESSION_WARN_MS = SESSION_CAP_MS - 60 * 1000;
 
     /**
      * Set state and notify callback.
@@ -239,35 +247,97 @@ define([], function() {
     };
 
     /**
-     * Set up microphone capture and send PCM16 audio to the WebSocket.
+     * Set up microphone capture with client-side VAD.
+     * Only transmits audio chunks while the user is speaking — saves ~40% input tokens
+     * compared to sending continuous audio to server_vad.
+     *
+     * Algorithm:
+     *   - Measure RMS energy every 4096-sample block
+     *   - Above threshold → speaking; send audio + mark speechActive
+     *   - Below threshold for SILENCE_FRAMES → commit turn and request response
+     *   - Pre-speech ring buffer holds PREFILL_FRAMES of audio to avoid clipping
+     *     the very start of each utterance
      */
     var startMicCapture = function() {
         navigator.mediaDevices.getUserMedia({audio: true}).then(function(stream) {
             micStream = stream;
-            // audioCtx already created (or passed in) before this point.
-            // Resume in case it was suspended (can happen on iOS after creation).
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume().catch(function() {/**/});
             }
+
+            var SPEECH_THRESHOLD = 0.012;  // RMS energy threshold (0–1 normalised)
+            var SILENCE_FRAMES   = 20;     // ~1.7 s of silence before committing turn
+            var PREFILL_FRAMES   = 3;      // frames of pre-speech to prepend (avoids clipping)
+
+            var silenceCount  = 0;
+            var speechActive  = false;
+            var prefillBuffer = [];        // ring buffer of recent encoded chunks
+
             var source = audioCtx.createMediaStreamSource(stream);
-            // ScriptProcessor is deprecated but universally supported including WKWebView.
-            // TODO: migrate to AudioWorklet when broader support is confirmed.
             scriptProcessor = audioCtx.createScriptProcessor(4096, 1, 1);
             var nativeRate = audioCtx.sampleRate;
+
             scriptProcessor.onaudioprocess = function(e) {
                 if (!ws || ws.readyState !== WebSocket.OPEN) { return; }
-                var float32 = resampleTo24k(e.inputBuffer.getChannelData(0), nativeRate);
-                var int16 = float32ToInt16(float32);
-                var b64 = arrayBufferToBase64(int16.buffer);
-                ws.send(JSON.stringify({
-                    type: 'input_audio_buffer.append',
-                    audio: b64,
-                }));
+
+                var raw    = e.inputBuffer.getChannelData(0);
+                var float32 = resampleTo24k(raw, nativeRate);
+                var int16  = float32ToInt16(float32);
+                var b64    = arrayBufferToBase64(int16.buffer);
+
+                // Compute RMS energy of the raw block.
+                var sum = 0;
+                for (var i = 0; i < raw.length; i++) { sum += raw[i] * raw[i]; }
+                var rms = Math.sqrt(sum / raw.length);
+
+                if (rms >= SPEECH_THRESHOLD) {
+                    if (!speechActive) {
+                        // Flush pre-speech buffer first to avoid clipping utterance start.
+                        for (var pi = 0; pi < prefillBuffer.length; pi++) {
+                            ws.send(JSON.stringify({type: 'input_audio_buffer.append', audio: prefillBuffer[pi]}));
+                        }
+                        prefillBuffer = [];
+                        speechActive = true;
+                        // Barge-in: if SOLA is currently speaking, silence her immediately.
+                        if (currentState === 'speaking') {
+                            if (masterGain && audioCtx) {
+                                masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                            }
+                            if (currentSource) {
+                                try { currentSource.stop(); } catch (ex) { /**/ }
+                                currentSource = null;
+                            }
+                            audioChunks = [];
+                            if (ws && ws.readyState === WebSocket.OPEN) {
+                                ws.send(JSON.stringify({type: 'response.cancel'}));
+                            }
+                        }
+                        setState('listening');
+                    }
+                    silenceCount = 0;
+                    ws.send(JSON.stringify({type: 'input_audio_buffer.append', audio: b64}));
+                } else {
+                    // Keep a rolling pre-speech buffer (capped at PREFILL_FRAMES).
+                    prefillBuffer.push(b64);
+                    if (prefillBuffer.length > PREFILL_FRAMES) { prefillBuffer.shift(); }
+
+                    if (speechActive) {
+                        silenceCount++;
+                        // Send silence frames during the tail of the utterance.
+                        ws.send(JSON.stringify({type: 'input_audio_buffer.append', audio: b64}));
+                        if (silenceCount >= SILENCE_FRAMES) {
+                            speechActive = false;
+                            silenceCount = 0;
+                            // Commit the buffered audio and ask the model to respond.
+                            ws.send(JSON.stringify({type: 'input_audio_buffer.commit'}));
+                            ws.send(JSON.stringify({type: 'response.create'}));
+                        }
+                    }
+                }
             };
-            // Route scriptProcessor through a muted gain node — prevents mic echo through speakers.
-            // ScriptProcessor must be connected in the audio graph for onaudioprocess to fire,
-            // but connecting directly to destination causes feedback on Mac/Chrome without headphones.
-            const dummyGain = audioCtx.createGain();
+
+            // Muted gain node — keeps script processor in audio graph without echo.
+            var dummyGain = audioCtx.createGain();
             dummyGain.gain.value = 0;
             dummyGain.connect(audioCtx.destination);
             source.connect(scriptProcessor);
@@ -293,30 +363,6 @@ define([], function() {
             case 'session.created':
             case 'session.updated':
                 setState('idle');
-                break;
-
-            case 'input_audio_buffer.speech_started':
-                // User started speaking — silence master gain immediately (most robust).
-                if (masterGain && audioCtx) {
-                    masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                }
-                if (currentSource) {
-                    try { currentSource.stop(); } catch (e) { /**/ }
-                    currentSource = null;
-                }
-                audioChunks = [];
-                if (rafId) {
-                    cancelAnimationFrame(rafId);
-                    rafId = null;
-                }
-                if (overlayRoot) {
-                    overlayRoot.style.removeProperty('--aica-voice-level');
-                }
-                // Tell server to cancel current response generation.
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({type: 'response.cancel'}));
-                }
-                setState('listening');
                 break;
 
             case 'response.audio.delta':
@@ -378,7 +424,7 @@ define([], function() {
         // GA Realtime API: omit the 'openai-beta.realtime-v1' subprotocol —
         // it is only valid for the beta API and causes a version mismatch with GA client secrets.
         ws = new WebSocket(
-            'wss://api.openai.com/v1/realtime?model=gpt-realtime',
+            'wss://api.openai.com/v1/realtime?model=gpt-4o-mini-realtime',
             ['realtime', 'openai-insecure-api-key.' + token]
         );
 
@@ -407,12 +453,29 @@ define([], function() {
                     input_audio_format: 'pcm16',
                     output_audio_format: 'pcm16',
                     input_audio_transcription: {model: 'whisper-1'},
-                    turn_detection: {type: 'server_vad'},
+                    turn_detection: null,  // client-side VAD — only transmit when speaking
                     temperature: 0.8,
                 },
             }));
 
             startMicCapture();
+
+            // ── 15-minute session cap ──
+            // Warn at 14 min, auto-disconnect at 15 min to control API costs.
+            sessionWarnTimer = setTimeout(function() {
+                if (onTranscriptCb) {
+                    onTranscriptCb('assistant',
+                        '⏱ One minute remaining in this Practice Speaking session.');
+                }
+            }, SESSION_WARN_MS);
+            sessionCapTimer = setTimeout(function() {
+                if (onTranscriptCb) {
+                    onTranscriptCb('assistant',
+                        'This Practice Speaking session has reached the 15-minute limit. ' +
+                        'Click Practice Speaking again to start a new session!');
+                }
+                disconnect();
+            }, SESSION_CAP_MS);
         });
 
         ws.addEventListener('message', handleMessage);
@@ -460,6 +523,10 @@ define([], function() {
             audioCtx.close().catch(function() {/**/ });
             audioCtx = null;
         }
+
+        // Clear session cap timers.
+        if (sessionWarnTimer) { clearTimeout(sessionWarnTimer); sessionWarnTimer = null; }
+        if (sessionCapTimer)  { clearTimeout(sessionCapTimer);  sessionCapTimer  = null; }
 
         // Close WebSocket.
         if (ws) {

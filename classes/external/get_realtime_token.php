@@ -75,7 +75,7 @@ class get_realtime_token extends external_api {
         $body = json_encode([
             'session' => [
                 'type'  => 'realtime',
-                'model' => 'gpt-realtime',
+                'model' => 'gpt-4o-mini-realtime',
                 'audio' => [
                     'output' => ['voice' => $voice],
                 ],
