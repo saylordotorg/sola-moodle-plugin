@@ -53,9 +53,12 @@ abstract class base_provider implements provider_interface {
         $parts = preg_split('/\s+/', $rawkey);
         $this->apikey = count($parts) > 1 ? trim(end($parts)) : $rawkey;
 
+        $adminmodel = get_config('local_ai_course_assistant', 'model');
         $this->model = !empty($overrides['model'])
             ? $overrides['model']
-            : (get_config('local_ai_course_assistant', 'model') ?: $this->get_default_model());
+            : (!empty($adminmodel)
+                ? $adminmodel
+                : (\local_ai_course_assistant\remote_config_manager::get_value('model_default') ?: $this->get_default_model()));
 
         $this->temperature = isset($overrides['temperature']) && $overrides['temperature'] !== ''
             ? (float) $overrides['temperature']

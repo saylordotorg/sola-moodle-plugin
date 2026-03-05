@@ -42,4 +42,10 @@ $definitions = [
             'changesincourse',
         ],
     ],
+    // Remote config cache (fetched from GitHub-hosted JSON, 1 hour TTL).
+    'remoteconfig' => [
+        'mode'       => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'ttl'        => 3600, // 1 hour.
+    ],
 ];

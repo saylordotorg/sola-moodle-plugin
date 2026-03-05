@@ -84,6 +84,15 @@ if ($hassiteconfig) {
         get_string('settings:systemprompt_default', 'local_ai_course_assistant')
     ));
 
+    // Remote config URL.
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/remoteconfigurl',
+        get_string('remoteconfigurl', 'local_ai_course_assistant'),
+        get_string('remoteconfigurl_desc', 'local_ai_course_assistant'),
+        \local_ai_course_assistant\remote_config_manager::DEFAULT_URL,
+        PARAM_URL
+    ));
+
     // Temperature.
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/temperature',

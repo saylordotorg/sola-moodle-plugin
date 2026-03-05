@@ -96,10 +96,13 @@ class context_builder {
             $coursecontent = self::build_course_content($courseid);
         }
 
-        // Get template.
+        // Get template: local admin setting → remote config → lang string default.
         $template = get_config('local_ai_course_assistant', 'systemprompt');
         if (empty($template)) {
-            $template = get_string('settings:systemprompt_default', 'local_ai_course_assistant');
+            $template = remote_config_manager::get_value(
+                'system_prompt',
+                get_string('settings:systemprompt_default', 'local_ai_course_assistant')
+            );
         }
 
         // Replace placeholders.
@@ -155,9 +158,14 @@ class context_builder {
         $prompt .= self::get_multilingual_instructions($lang);
 
         // Brevity instruction — keep responses scannable in the small widget.
-        $prompt .= "\n\nKEEP RESPONSES BRIEF: Use 2-4 short sentences or bullet points unless the student "
-            . "explicitly asks for more detail. After answering, you may add a short follow-up offer like "
-            . "\"Want me to go deeper on any part?\" — but only occasionally, not every time.";
+        $remote_blocks = remote_config_manager::get_value('instruction_blocks', []);
+        if (!empty($remote_blocks['brevity'])) {
+            $prompt .= "\n\n" . $remote_blocks['brevity'];
+        } else {
+            $prompt .= "\n\nKEEP RESPONSES BRIEF: Use 2-4 short sentences or bullet points unless the student "
+                . "explicitly asks for more detail. After answering, you may add a short follow-up offer like "
+                . "\"Want me to go deeper on any part?\" — but only occasionally, not every time.";
+        }
 
         // Truncate if needed.
         $prompt = self::truncate_prompt($prompt, $courseid);
@@ -459,9 +467,15 @@ class context_builder {
     /**
      * Get AI literacy instructions to weave into tutoring.
      *
+     * Remote config key: instruction_blocks.ai_literacy
+     *
      * @return string
      */
     private static function get_ai_literacy_instructions(): string {
+        $blocks = remote_config_manager::get_value('instruction_blocks', []);
+        if (!empty($blocks['ai_literacy'])) {
+            return "\n\n## AI Literacy\n" . $blocks['ai_literacy'];
+        }
         return "\n\n## AI Literacy\n"
             . "As part of your tutoring, naturally weave in AI literacy education. Help students understand:\n"
             . "- What AI can and cannot do well (good at pattern recognition, summarization, brainstorming; "
@@ -479,9 +493,15 @@ class context_builder {
     /**
      * Get instructions for appending SOLA_NEXT suggestion markers.
      *
+     * Remote config key: instruction_blocks.next_steps
+     *
      * @return string
      */
     private static function get_next_steps_instructions(): string {
+        $blocks = remote_config_manager::get_value('instruction_blocks', []);
+        if (!empty($blocks['next_steps'])) {
+            return "\n\n## Suggested Follow-up Actions\n" . $blocks['next_steps'];
+        }
         return "\n\n## Suggested Follow-up Actions\n"
             . "After EVERY response, append exactly this marker on its own line at the very end:\n"
             . "[SOLA_NEXT]suggestion 1||suggestion 2||suggestion 3||suggestion 4[/SOLA_NEXT]\n\n"

@@ -1,0 +1,6 @@
+{
+  "_comment": "SOLA remote config — edit this file to push config updates without a plugin release. Deploy changes by committing to main branch.",
+  "model_default": "gpt-4o-mini",
+  "system_prompt": "",
+  "instruction_blocks": {}
+}

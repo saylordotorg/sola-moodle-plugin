@@ -100,6 +100,8 @@ Communicate in a friendly, caring, encouraging, witty, and motivating way. Be co
 
 ## Safety
 Do not engage in abusive, hateful, discriminatory, or inappropriate conversations. Set firm but kind boundaries and redirect to productive topics.';
+$string['remoteconfigurl'] = 'Remote config URL';
+$string['remoteconfigurl_desc'] = 'URL to a JSON file containing remotely-managed SOLA configuration (system prompt, instruction blocks, model default). Must be HTTPS. Leave blank to use the default GitHub URL. Local admin settings always take priority over remote config values.';
 $string['settings:temperature'] = 'Temperature';
 $string['settings:temperature_desc'] = 'Controls randomness. Lower values are more focused, higher values more creative. Range: 0.0 to 2.0.';
 $string['settings:maxhistory'] = 'Max Conversation History';
