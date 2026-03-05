@@ -567,7 +567,7 @@ define([
                     Voice.disconnect();
                     UI.setVoiceState('disconnected');
                     UI.hideVoiceOverlay();
-                    UI.addMessage('assistant', msg || 'Voice mode failed.');
+                    addAssistantMsg(msg || 'Voice mode failed.');
                 },
             },
             {
@@ -634,7 +634,7 @@ define([
                     onError: function(msg) {
                         UI.setVoiceState('disconnected');
                         UI.hideVoiceOverlay();
-                        UI.addMessage('assistant', msg || 'Voice connection failed.');
+                        addAssistantMsg(msg || 'Voice connection failed.');
                     },
                 },
                 overlay,
@@ -646,10 +646,10 @@ define([
             UI.hideVoiceOverlay();
             const errMsg = (err && err.message) ? err.message : 'Could not get voice token.';
             Str.get_string('chat:voice_error', 'local_ai_course_assistant').then(function(s) {
-                UI.addMessage('assistant', (s || 'Voice connection failed') + ': ' + errMsg);
+                addAssistantMsg((s || 'Voice connection failed') + ': ' + errMsg);
                 return;
             }).catch(function() {
-                UI.addMessage('assistant', errMsg);
+                addAssistantMsg(errMsg);
             });
         });
     };
@@ -902,6 +902,20 @@ define([
     };
 
     /**
+     * Add an assistant message with the speak button always present (when TTS is available).
+     * Use this instead of UI.addMessage('assistant', ...) everywhere so every
+     * assistant bubble consistently has the speaker icon.
+     *
+     * @param {string}      text  Message text
+     * @param {number|null} ts    Optional Unix timestamp (ms)
+     * @returns {HTMLElement}
+     */
+    const addAssistantMsg = function(text, ts) {
+        const fn = (getTtsUrl() || Speech.isTTSSupported()) ? handleSpeak : null;
+        return UI.addMessage('assistant', text, fn, ts || null);
+    };
+
+    /**
      * Handle expand/collapse button click.
      * On mobile (≤600px): toggles half-screen minimized state.
      * On desktop: toggles the wider expanded state.
@@ -994,10 +1008,10 @@ define([
                         quizModeActive = false;
                         setQuizBtnActive(quizBtn, false);
                         Str.get_string('chat:quiz_error', 'local_ai_course_assistant').then(function(msg) {
-                            UI.addMessage('assistant', msg);
+                            addAssistantMsg(msg);
                             return;
                         }).catch(function() {
-                            UI.addMessage('assistant', 'Could not generate a quiz. Please try again.');
+                            addAssistantMsg('Could not generate a quiz. Please try again.');
                         });
                         return;
                     }
@@ -1037,10 +1051,10 @@ define([
                     quizModeActive = false;
                     setQuizBtnActive(quizBtn, false);
                     Str.get_string('chat:quiz_error', 'local_ai_course_assistant').then(function(msg) {
-                        UI.addMessage('assistant', msg);
+                        addAssistantMsg(msg);
                         return;
                     }).catch(function() {
-                        UI.addMessage('assistant', 'Could not generate a quiz. Please try again.');
+                        addAssistantMsg('Could not generate a quiz. Please try again.');
                     });
                 });
             },
@@ -1068,11 +1082,10 @@ define([
             historyLoaded = true;
             UI.clearMessages();
             Str.get_string('chat:quiz_locked', 'local_ai_course_assistant').then(function(msg) {
-                UI.addMessage('assistant', msg, null);
+                addAssistantMsg(msg);
                 return;
             }).catch(function() {
-                UI.addMessage('assistant',
-                    'SOLA is paused during quizzes to support academic integrity. Good luck!', null);
+                addAssistantMsg('SOLA is paused during quizzes to support academic integrity. Good luck!');
             });
             UI.setInputEnabled(false);
             return;
@@ -1205,7 +1218,11 @@ define([
                             lastSuggestions = [];
                         }
                     }
-                    UI.addMessage(msg.role, text, null, msg.timecreated ? msg.timecreated * 1000 : null);
+                    if (msg.role === 'assistant') {
+                        addAssistantMsg(text, msg.timecreated ? msg.timecreated * 1000 : null);
+                    } else {
+                        UI.addMessage('user', text, null, msg.timecreated ? msg.timecreated * 1000 : null);
+                    }
                 });
                 UI.scrollToBottom(true);
 
@@ -1225,18 +1242,18 @@ define([
             } else {
                 // Show greeting.
                 Str.get_string('chat:greeting', 'local_ai_course_assistant').then(function(greeting) {
-                    UI.addMessage('assistant', greeting.replace('{$a}', firstName || 'there'));
+                    addAssistantMsg(greeting.replace('{$a}', firstName || 'there'));
                     return;
                 }).catch(function() {
-                    UI.addMessage('assistant', 'Hi, ' + (firstName || 'there') + '! I\'m SOLA, your Saylor Online Learning Assistant.');
+                    addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m SOLA, your Saylor Online Learning Assistant.');
                 });
             }
         }).catch(function() {
             Str.get_string('chat:greeting', 'local_ai_course_assistant').then(function(greeting) {
-                UI.addMessage('assistant', greeting.replace('{$a}', firstName || 'there'));
+                addAssistantMsg(greeting.replace('{$a}', firstName || 'there'));
                 return;
             }).catch(function() {
-                UI.addMessage('assistant', 'Hi, ' + (firstName || 'there') + '! I\'m SOLA, your Saylor Online Learning Assistant.');
+                addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m SOLA, your Saylor Online Learning Assistant.');
             });
         });
     };
@@ -1352,24 +1369,24 @@ define([
                 // Detect specific HTTP error patterns for categorised responses.
                 if (errorMsg.includes('401') || errorMsg.includes('auth')) {
                     Str.get_string('chat:error_auth', 'local_ai_course_assistant').then(function(msg) {
-                        UI.addMessage('assistant', msg);
+                        addAssistantMsg(msg);
                         return;
                     }).catch(function() {
-                        UI.addMessage('assistant', 'Authentication error. Please contact your administrator.');
+                        addAssistantMsg('Authentication error. Please contact your administrator.');
                     });
                 } else if (errorMsg.includes('429') || errorMsg.includes('rate')) {
                     Str.get_string('chat:error_ratelimit', 'local_ai_course_assistant').then(function(msg) {
-                        UI.addMessage('assistant', msg);
+                        addAssistantMsg(msg);
                         return;
                     }).catch(function() {
-                        UI.addMessage('assistant', 'Too many requests. Please wait a moment.');
+                        addAssistantMsg('Too many requests. Please wait a moment.');
                     });
                 } else if (errorMsg.includes('503') || errorMsg.includes('502') || errorMsg.includes('500')) {
                     Str.get_string('chat:error_unavailable', 'local_ai_course_assistant').then(function(msg) {
-                        UI.addMessage('assistant', msg);
+                        addAssistantMsg(msg);
                         return;
                     }).catch(function() {
-                        UI.addMessage('assistant', 'Service temporarily unavailable.');
+                        addAssistantMsg('Service temporarily unavailable.');
                     });
                 } else {
                     // If the server sent a plain user-friendly message, show it directly.
@@ -1378,13 +1395,13 @@ define([
                         && !errorMsg.trim().startsWith('<')
                         && errorMsg.length < 400;
                     if (isPlain) {
-                        UI.addMessage('assistant', errorMsg);
+                        addAssistantMsg(errorMsg);
                     } else {
                         Str.get_string('chat:error', 'local_ai_course_assistant').then(function(msg) {
-                            UI.addMessage('assistant', msg);
+                            addAssistantMsg(msg);
                             return;
                         }).catch(function() {
-                            UI.addMessage('assistant', 'Sorry, something went wrong. Please try again.');
+                            addAssistantMsg('Sorry, something went wrong. Please try again.');
                         });
                     }
                 }
@@ -1408,7 +1425,7 @@ define([
                 UI.clearMessages();
                 return Str.get_string('chat:greeting', 'local_ai_course_assistant');
             }).then(function(greeting) {
-                UI.addMessage('assistant', greeting.replace('{$a}', firstName || 'there'));
+                addAssistantMsg(greeting.replace('{$a}', firstName || 'there'));
             }).catch(function() {
                 // Silently fail.
             });
