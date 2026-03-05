@@ -152,8 +152,12 @@ define([
                 Speech.setLang(detected);
                 UI.setLangLabel(info.name);
                 updateStarterTexts(detected);
+                return;
             }
         }
+
+        // No language set — show English label so chip is always meaningful.
+        UI.setLangLabel('English');
     };
 
     /**
@@ -232,6 +236,25 @@ define([
         // Mic button (STT).
         if (els.micBtn) {
             els.micBtn.addEventListener('click', handleMic);
+        }
+
+        // Language chip — opens compact language picker.
+        if (els.langBtn) {
+            els.langBtn.addEventListener('click', function() {
+                UI.showLangPicker(
+                    Speech.SUPPORTED_LANGS,
+                    Speech.getLang(),
+                    function(code, name) {
+                        if (code) {
+                            Speech.setLang(code);
+                        } else {
+                            Speech.clearLang();
+                        }
+                        UI.setLangLabel(name);
+                        updateStarterTexts(code);
+                    }
+                );
+            });
         }
 
         // Voice starter button (mic button inside the starters overlay).

@@ -1010,9 +1010,8 @@ define([
         }
         const span = langBtn.querySelector('.aica-lang-label');
         if (span) {
-            span.textContent = label;
+            span.textContent = label || 'English';
         }
-        langBtn.style.display = '';
     };
 
     /**
@@ -2271,6 +2270,103 @@ define([
     };
 
     /**
+     * Show a compact language picker popover above the hint bar.
+     * Toggle behaviour: calling while open closes it.
+     *
+     * @param {Object}      langs        SUPPORTED_LANGS map { code: {name, locale} }
+     * @param {string|null} currentLang  Active ISO 639-1 code, or null for English
+     * @param {Function}    onSelect     Called with (code|null, name) on selection
+     */
+    const showLangPicker = function(langs, currentLang, onSelect) {
+        if (!drawer) {
+            return;
+        }
+
+        // Toggle: close if already open.
+        const existing = drawer.querySelector('.aica-lang-picker');
+        if (existing) {
+            existing.remove();
+            return;
+        }
+
+        const picker = document.createElement('div');
+        picker.className = 'aica-lang-picker';
+
+        // --- Search input ---
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'aica-lang-picker__search-wrap';
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'aica-lang-picker__search';
+        searchInput.placeholder = 'Search…';
+        searchInput.setAttribute('aria-label', 'Search languages');
+        searchWrap.appendChild(searchInput);
+        picker.appendChild(searchWrap);
+
+        // --- Language list ---
+        const list = document.createElement('div');
+        list.className = 'aica-lang-picker__list';
+
+        let outsideHandler = null;
+
+        const closePicker = function() {
+            picker.remove();
+            if (outsideHandler) {
+                document.removeEventListener('click', outsideHandler, true);
+                outsideHandler = null;
+            }
+        };
+
+        const makeOption = function(code, name) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            const isActive = (code === null && !currentLang) || (code === currentLang);
+            btn.className = 'aica-lang-picker__option' +
+                (isActive ? ' aica-lang-picker__option--active' : '');
+            btn.textContent = name;
+            btn.dataset.name = name.toLowerCase();
+            btn.addEventListener('click', function() {
+                onSelect(code, name);
+                closePicker();
+            });
+            return btn;
+        };
+
+        // English (default) always first.
+        list.appendChild(makeOption(null, 'English'));
+
+        // Remaining languages sorted alphabetically.
+        Object.keys(langs).sort(function(a, b) {
+            return langs[a].name.localeCompare(langs[b].name);
+        }).forEach(function(code) {
+            list.appendChild(makeOption(code, langs[code].name));
+        });
+
+        picker.appendChild(list);
+        drawer.appendChild(picker);
+        searchInput.focus();
+
+        // Filter list as user types.
+        searchInput.addEventListener('input', function() {
+            const q = searchInput.value.toLowerCase();
+            list.querySelectorAll('.aica-lang-picker__option').forEach(function(btn) {
+                btn.style.display = (btn.dataset.name.indexOf(q) !== -1) ? '' : 'none';
+            });
+        });
+
+        // Close on outside click (deferred so current click doesn't close immediately).
+        outsideHandler = function(e) {
+            const path = e.composedPath ? e.composedPath() : [e.target];
+            if (!path.some(function(el) { return el === picker || el === langBtn; })) {
+                closePicker();
+            }
+        };
+        setTimeout(function() {
+            document.addEventListener('click', outsideHandler, true);
+        }, 0);
+    };
+
+    /**
      * Remove any existing suggestion chips from the messages area.
      */
     const clearSuggestions = function() {
@@ -2552,6 +2648,7 @@ define([
         hideVoiceOverlay: hideVoiceOverlay,
         setVoiceState: setVoiceState,
         appendVoiceTranscript: appendVoiceTranscript,
+        showLangPicker: showLangPicker,
         showSettingsPanel: showSettingsPanel,
         startWordHighlight: startWordHighlight,
         highlightWordAt: highlightWordAt,

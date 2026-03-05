@@ -68,6 +68,8 @@ define([], function() {
     var sessionWarnTimer = null;
     /** @type {number|null} Session cap disconnect timer */
     var sessionCapTimer = null;
+    /** @type {number|null} Connection timeout — fires if session.created not received in 10s */
+    var connectionTimeout = null;
     /** @type {MediaStream|null} Pre-acquired mic stream passed in from connect() (iOS user-gesture) */
     var micStreamIn = null;
     /** Session length cap in ms (15 minutes) */
@@ -383,19 +385,17 @@ define([], function() {
 
         switch (msg.type) {
             case 'session.created':
-                // Session is live — start capturing mic audio.
+                // Session is live — clear connection timeout and start mic.
+                if (connectionTimeout) { clearTimeout(connectionTimeout); connectionTimeout = null; }
                 setState('idle');
                 startMicCapture();
                 break;
 
             case 'session.updated':
+                // Session config confirmed. response.create was already queued in the open
+                // handler (immediately after session.update), so no action needed here —
+                // sending it again would trigger a second greeting.
                 setState('idle');
-                // Trigger an initial spoken greeting — SOLA will use the instruction
-                // "Begin the session by saying: ..." to generate the first audio response.
-                // This fires once on session.updated (after session.create).
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({type: 'response.create'}));
-                }
                 break;
 
             case 'response.output_audio.delta':
@@ -507,6 +507,25 @@ define([], function() {
                 },
             }));
 
+            // Queue response.create immediately after session.update — the server
+            // processes messages in order, so by the time it handles response.create
+            // the session config is already applied. This saves one roundtrip (~300ms)
+            // compared to waiting for session.updated before sending response.create.
+            ws.send(JSON.stringify({type: 'response.create'}));
+
+            // Connection timeout — if session.created isn't received within 10 seconds,
+            // surface a clear error instead of leaving the user in a 'connecting' state.
+            connectionTimeout = setTimeout(function() {
+                connectionTimeout = null;
+                if (currentState === 'connecting') {
+                    if (onErrorCb) {
+                        onErrorCb('Connection timed out. Please check your internet connection and try again.');
+                        onErrorCb = null;
+                    }
+                    disconnect();
+                }
+            }, 10000);
+
             // ── 15-minute session cap ──
             // Warn at 14 min, auto-disconnect at 15 min to control API costs.
             sessionWarnTimer = setTimeout(function() {
@@ -527,15 +546,32 @@ define([], function() {
 
         ws.addEventListener('message', handleMessage);
 
-        ws.addEventListener('error', function(e) {
-            if (onErrorCb) { onErrorCb('WebSocket error: ' + (e.message || 'connection failed')); }
+        ws.addEventListener('error', function() {
+            // WebSocket error events carry no useful detail in browsers (spec limitation).
+            // Null onErrorCb after firing so the close event that immediately follows
+            // does not trigger a second redundant error message.
+            if (onErrorCb) {
+                onErrorCb('Connection failed. Please check your internet connection and try again.');
+                onErrorCb = null;
+            }
             setState('disconnected');
         });
 
         ws.addEventListener('close', function(e) {
             // Surface non-normal close codes so the user sees why the connection failed.
             if (e.code !== 1000 && e.code !== 1001 && onErrorCb) {
-                var reason = e.reason || ('WebSocket closed: code ' + e.code);
+                var reason;
+                if (e.reason) {
+                    reason = e.reason;
+                } else if (e.code === 4000) {
+                    reason = 'Session token invalid or expired. Please try again.';
+                } else if (e.code === 4001) {
+                    reason = 'Authentication failed. Please reload and try again.';
+                } else if (e.code === 1006) {
+                    reason = 'Connection dropped unexpectedly. Please check your internet connection.';
+                } else {
+                    reason = 'Connection closed unexpectedly (code ' + e.code + '). Please try again.';
+                }
                 onErrorCb(reason);
             }
             setState('disconnected');
@@ -587,9 +623,10 @@ define([], function() {
             audioCtx = null;
         }
 
-        // Clear session cap timers.
-        if (sessionWarnTimer) { clearTimeout(sessionWarnTimer); sessionWarnTimer = null; }
-        if (sessionCapTimer)  { clearTimeout(sessionCapTimer);  sessionCapTimer  = null; }
+        // Clear all timers.
+        if (connectionTimeout) { clearTimeout(connectionTimeout); connectionTimeout = null; }
+        if (sessionWarnTimer)  { clearTimeout(sessionWarnTimer); sessionWarnTimer  = null; }
+        if (sessionCapTimer)   { clearTimeout(sessionCapTimer);  sessionCapTimer   = null; }
 
         // Close WebSocket with normal closure code so the close handler
         // does not treat it as an error (1005 = no status, triggers false error message).
