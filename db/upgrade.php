@@ -231,5 +231,12 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026030804, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026030805) {
+        // v1.0.21: Fix Practice Speaking transcript showing raw [SOLA_NEXT]...[/SOLA_NEXT]
+        // tags. Use display accumulator in voice.js so tag is detected across token boundaries.
+        // No schema changes needed.
+        upgrade_plugin_savepoint(true, 2026030805, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

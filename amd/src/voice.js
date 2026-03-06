@@ -74,6 +74,10 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
     var sseController = null;
     /** @type {string} SSE token accumulation buffer for sentence extraction */
     var sentenceBuffer = '';
+    /** @type {string} Accumulates tokens to find and hide the SOLA_NEXT block from transcript */
+    var displayBuffer = '';
+    /** @type {number} How many chars of displayBuffer have already been emitted to transcript */
+    var displayEmitted = 0;
     /** @type {number|null} Timer to restart recognition after TTS ends */
     var restartTimer = null;
     /** @type {string} Derived TTS proxy URL */
@@ -380,6 +384,8 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
             onTranscriptCb('user', text);
         }
         sentenceBuffer = '';
+        displayBuffer = '';
+        displayEmitted = 0;
 
         var postBody = {
             sesskey:  cfg.sessKey  || '',
@@ -399,11 +405,15 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
                 if (!connected) {
                     return;
                 }
-                // Show streaming text in voice transcript area (strips SOLA_NEXT inline).
-                var cleanToken = stripSolaTags(token);
-                if (cleanToken && onTranscriptCb) {
-                    onTranscriptCb('assistant', cleanToken);
+                // Accumulate for display. Only emit text that precedes [SOLA_NEXT] —
+                // the tag spans many tokens so single-token regex never matches.
+                displayBuffer += token;
+                var solaStart = displayBuffer.indexOf('[SOLA_NEXT]');
+                var visible = solaStart === -1 ? displayBuffer : displayBuffer.slice(0, solaStart);
+                if (visible.length > displayEmitted && onTranscriptCb) {
+                    onTranscriptCb('assistant', visible.slice(displayEmitted));
                 }
+                displayEmitted = visible.length;
                 sentenceBuffer += token;
                 maybeSendSentence();
             },
