@@ -259,3 +259,88 @@ $string['usersettings:delete_all_button'] = 'Hichapụ Data M Niile';
 $string['usersettings:confirm_delete_course'] = 'Ị na-agwa m na ị chefuo data AI nkuzi gị niile maka kọọsị "{$a}" n\'oge niile? Enwere ike ighọghachi omume a.';
 $string['usersettings:confirm_delete_all'] = 'Ị na-agwa m na ị chefuo data AI nkuzi gị niile n\'kọọsị niile n\'oge niile? Enwere ike ighọghachi omume a.';
 $string['usersettings:data_deleted'] = 'Ehichapụrụ data gị.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+// Updated strings (override earlier values):
+$string['chat:greeting'] = 'Nnọọ, {$a}! Abụ m SOLA, onye enyemaka mụta n\'ịntanetị Saylor gị.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Meghee SOLA';
+$string['chat:change_avatar'] = 'Gbanwee avatar';
+
+// Quiz UI.
+$string['chat:quiz'] = 'Nwaa ule mmụta';
+$string['chat:quiz_setup_title'] = 'Ule Mmụta';
+$string['chat:quiz_questions'] = 'Ọnụọgụ ajụjụ';
+$string['chat:quiz_topic'] = 'Isiokwu';
+$string['chat:quiz_topic_guided'] = 'AI na-eduzi (dabere na ọganihu gị)';
+$string['chat:quiz_topic_default'] = 'Ọdịnaya kọọsị ugbu a';
+$string['chat:quiz_topic_custom'] = 'Isiokwu nke onwe onye…';
+$string['chat:quiz_custom_placeholder'] = 'Tinye isiokwu ma ọ bụ ajụjụ...';
+$string['chat:quiz_start'] = 'Malite Ule';
+$string['chat:quiz_cancel'] = 'Kagbuo';
+$string['chat:quiz_loading'] = 'Na-emepụta ule…';
+$string['chat:quiz_error'] = 'Enweghị ike imepụta ule. Biko nwaa ọzọ.';
+$string['chat:quiz_correct'] = 'Ọ dị mma!';
+$string['chat:quiz_wrong'] = 'Ọ dịghị mma.';
+$string['chat:quiz_next'] = 'Ajụjụ ọzọ';
+$string['chat:quiz_finish'] = 'Hụ nsonaazụ';
+$string['chat:quiz_score'] = 'Ule agwụla! Ị nwetara {$a->score} n\'ime {$a->total}.';
+$string['chat:quiz_summary'] = 'Agwụsiara m ule mmụta nwere ajụjụ {$a->total} n\'isiokwu "{$a->topic}" ma nweta {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Ebumnuche Mmụta';
+$string['chat:quiz_topic_modules'] = 'Isiokwu Kọọsị';
+$string['chat:quiz_subtopic_select'] = 'Họrọ ihe a kapịrị ọnụ…';
+$string['chat:quiz_topic_sections'] = 'Ngalaba Kọọsị';
+$string['chat:quiz_score_great'] = 'Ọrụ dị mma! Ị maara ihe a nke ọma.';
+$string['chat:quiz_score_good'] = 'Ọrụ dị mma! Nọgide na-ato ya ụtọ iji kwado nghọta gị.';
+$string['chat:quiz_score_practice'] = 'Nọgide na-amụ — nwaa lelee ihe kọọsị metụtara ya, wee laghachi nwaa ule ọzọ.';
+$string['chat:quiz_review_heading'] = 'Nlele Ọzọ';
+$string['chat:quiz_retake'] = 'Laghachi Nwaa Ule';
+$string['chat:quiz_exit'] = 'Pụọ n\'Ule';
+$string['chat:quiz_your_answer'] = 'Azịza gị';
+$string['chat:quiz_correct_answer'] = 'Azịza ziri ezi';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'Ndị na-amalite mkparịta ụka';
+$string['chat:starter_quiz'] = 'Nwaa M Ule';
+$string['chat:starter_explain'] = 'Kọwa Nke a';
+$string['chat:starter_key_concepts'] = 'Echiche Isi';
+$string['chat:starter_study_plan'] = 'Atụmatụ Mmụta';
+$string['chat:starter_help_me'] = 'Enyemaka AI';
+$string['chat:starter_ell_practice'] = 'Mụọ Ịkwu Okwu';
+$string['chat:starter_ell_pronunciation'] = 'Mkpọ Okwu ELL';
+$string['chat:starter_ai_coach'] = 'Onye Nkuzi AI';
+$string['chat:starter_speak'] = 'Kwuo ihe mmụ ọrụ';
+
+// Reset / home.
+$string['chat:reset'] = 'Malite ọzọ';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'Kedu ihe ị chọrọ ileba anya na ya?';
+$string['chat:topic_picker_title_help'] = 'Kedu ihe ịchọrọ enyemaka na ya?';
+$string['chat:topic_picker_title_explain'] = 'Kedu ihe ịchọrọ ka m kọwa?';
+$string['chat:topic_picker_title_study'] = 'Kedu mpaghara ịchọrọ ileba anya na ya?';
+$string['chat:topic_start'] = 'Gaa n\'ihu';
+
+// Expand states.
+$string['chat:fullscreen'] = 'Ọnọdụ ihuenyo zuru ezu';
+$string['chat:exitfullscreen'] = 'Pụọ n\'ọnọdụ ihuenyo zuru ezu';
+
+// Settings panel.
+$string['chat:language'] = 'Gbanwee asụsụ';
+$string['chat:settings_panel'] = 'Ntọala';
+$string['chat:settings_language'] = 'Asụsụ';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Olu';
+$string['chat:settings_voice_admin'] = 'A na-achịkwa ntọala olu na paneli onye njikwa saịtị.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'Ọnọdụ olu';
+$string['chat:voice_end'] = 'Kwụsị oge mkparịta ụka olu';
+$string['chat:voice_connecting'] = 'Na-ejikọ...';
+$string['chat:voice_listening'] = 'Na-ege ntị...';
+$string['chat:voice_speaking'] = 'SOLA na-ekwu okwu...';
+$string['chat:voice_idle'] = 'Dị njikere';
+$string['chat:voice_error'] = 'Njikọ olu dara ada. Biko lelee ntọala gị.';
+$string['chat:quiz_locked'] = 'A kwụsịtara SOLA n\'oge ule iji kwado ịdị ziri ezi n\'ọmụmụ ihe. Ọ ga-adị mma!';

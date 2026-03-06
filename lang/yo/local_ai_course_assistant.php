@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Parẹ́ Gbogbo Data Mi';
 $string['usersettings:confirm_delete_course'] = 'Ṣé o dájú pé o fẹ́ parẹ́ pátápátá gbogbo data olùkọ́ AI rẹ fún ẹkọ "{$a}"? A kò lè yípadà ìgbésẹ̀ yìí.';
 $string['usersettings:confirm_delete_all'] = 'Ṣé o dájú pé o fẹ́ parẹ́ pátápátá GBOGBO data olùkọ́ AI rẹ kọjá gbogbo àwọn ẹkọ? A kò lè yípadà ìgbésẹ̀ yìí.';
 $string['usersettings:data_deleted'] = 'A ti parẹ́ data rẹ.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Ẹ káàbọ̀, {$a}! Mo jẹ SOLA, olùrànlọ́wọ́ ẹ̀kọ́ orí ẹ̀rọ Saylor rẹ.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Ṣí SOLA';
+$string['chat:change_avatar'] = 'Yí avatar padà';
+
+$string['chat:quiz'] = 'Ṣe ìdánwò ìdárayá';
+$string['chat:quiz_setup_title'] = 'Ìdánwò Ìdárayá';
+$string['chat:quiz_questions'] = 'Iye àwọn ìbéèrè';
+$string['chat:quiz_topic'] = 'Kókó';
+$string['chat:quiz_topic_guided'] = 'AI ń darí (da lórí ìlọsíwájú rẹ)';
+$string['chat:quiz_topic_default'] = 'Àkóónú ẹkọ lọwọlọwọ';
+$string['chat:quiz_topic_custom'] = 'Kókó tí o yan…';
+$string['chat:quiz_custom_placeholder'] = 'Tẹ kókó tàbí ìbéèrè kan...';
+$string['chat:quiz_start'] = 'Bẹ̀rẹ̀ Ìdánwò';
+$string['chat:quiz_cancel'] = 'Fagilé';
+$string['chat:quiz_loading'] = 'Ń ṣẹ̀dá ìdánwò…';
+$string['chat:quiz_error'] = 'Kò ṣéṣe láti ṣẹ̀dá ìdánwò. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí.';
+$string['chat:quiz_correct'] = 'Ó tọ̀!';
+$string['chat:quiz_wrong'] = 'Aṣìṣe.';
+$string['chat:quiz_next'] = 'Ìbéèrè tókàn';
+$string['chat:quiz_finish'] = 'Wo àwọn ìyọrísí';
+$string['chat:quiz_score'] = 'Ìdánwò parí! O gba {$a->score} lára {$a->total}.';
+$string['chat:quiz_summary'] = 'Mo ṣẹ̀ṣẹ̀ parí ìdánwò ìdárayá ìbéèrè {$a->total} lórí "{$a->topic}" mo sì gba {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Àwọn Àfojúsùn Ẹ̀kọ́';
+$string['chat:quiz_topic_modules'] = 'Kókó Ẹkọ';
+$string['chat:quiz_subtopic_select'] = 'Yan ohun kan tó jọmọ…';
+$string['chat:quiz_topic_sections'] = 'Àwọn Abala Ẹkọ';
+$string['chat:quiz_score_great'] = 'Iṣẹ́ tó dára jù! O mọ ohun tí a ń kọ́ yìí gangan.';
+$string['chat:quiz_score_good'] = 'Gbìyànjú tó dára! Tẹ̀síwájú àtúnyẹ̀wò láti mú òye rẹ pọ̀ sí i.';
+$string['chat:quiz_score_practice'] = 'Tẹ̀síwájú ìdárayá — gbìyànjú àtúnyẹ̀wò ohun tí a kọ́ tó níí ṣe, lẹ́yìn náà tún ìdánwò náà ṣe.';
+$string['chat:quiz_review_heading'] = 'Àtúnyẹ̀wò';
+$string['chat:quiz_retake'] = 'Tún Ìdánwò Ṣe';
+$string['chat:quiz_exit'] = 'Jáde Ìdánwò';
+$string['chat:quiz_your_answer'] = 'Ìdáhùn rẹ';
+$string['chat:quiz_correct_answer'] = 'Ìdáhùn tó tọ̀';
+
+$string['chat:starters_label'] = 'Àwọn ìpilẹ̀ṣẹ̀ ìjíròrò';
+$string['chat:starter_quiz'] = 'Dánwò Mi';
+$string['chat:starter_explain'] = 'Ṣàlàyé Èyí';
+$string['chat:starter_key_concepts'] = 'Àwọn Èrò Pàtàkì';
+$string['chat:starter_study_plan'] = 'Ètò Ìkẹ́kọ̀ọ́';
+$string['chat:starter_help_me'] = 'Àrànmọ́ AI';
+$string['chat:starter_ell_practice'] = 'Ìdárayá Ìsọ̀rọ̀';
+$string['chat:starter_ell_pronunciation'] = 'Ìdárayá Pípè ELL';
+$string['chat:starter_ai_coach'] = 'Olùkọ́ AI';
+$string['chat:starter_speak'] = 'Sọ ìpilẹ̀ṣẹ̀ kan';
+
+$string['chat:reset'] = 'Bẹ̀rẹ̀ lẹ́ẹ̀kansí';
+
+$string['chat:topic_picker_title'] = 'Kókó wo ni o fẹ́ tẹ̀ síwájú?';
+$string['chat:topic_picker_title_help'] = 'Ohun wo ni o fẹ́ ìrànlọ́wọ́ pẹ̀lú?';
+$string['chat:topic_picker_title_explain'] = 'Ohun wo ni o fẹ́ kí n ṣàlàyé?';
+$string['chat:topic_picker_title_study'] = 'Abala wo ni o fẹ́ tẹ̀ síwájú?';
+$string['chat:topic_start'] = 'Tẹ̀síwájú';
+
+$string['chat:fullscreen'] = 'Ojú-àwòrán gbogbo';
+$string['chat:exitfullscreen'] = 'Jáde ojú-àwòrán gbogbo';
+
+$string['chat:language'] = 'Yí èdè padà';
+$string['chat:settings_panel'] = 'Àwọn Ètò';
+$string['chat:settings_language'] = 'Èdè';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Ohùn';
+$string['chat:settings_voice_admin'] = 'Àwọn ètò ohùn ni a ṣàkóso nínú pánẹ́ẹ̀lì alàṣẹ ààyè.';
+
+$string['chat:voice_mode'] = 'Ìpínlẹ̀ ohùn';
+$string['chat:voice_end'] = 'Parí àpéjọ ohùn';
+$string['chat:voice_connecting'] = 'Ń so pọ̀...';
+$string['chat:voice_listening'] = 'Ń gbọ́...';
+$string['chat:voice_speaking'] = 'SOLA ń sọ̀rọ̀...';
+$string['chat:voice_idle'] = 'Ó ti ṣetán';
+$string['chat:voice_error'] = 'Ìsopọ̀ ohùn kùnà. Jọ̀wọ́ ṣàyẹ̀wò àwọn ètò rẹ.';
+$string['chat:quiz_locked'] = 'SOLA dáwọ́ dúró nígbà ìdánwò láti ṣe àtìlẹyìn ìmọ̀ ẹ̀kọ́ tó tọ̀. Ire o!';

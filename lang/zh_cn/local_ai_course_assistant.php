@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = '删除我的所有数据';
 $string['usersettings:confirm_delete_course'] = '您确定要永久删除课程"{$a}"中的所有 AI 辅导数据吗？此操作无法撤销。';
 $string['usersettings:confirm_delete_all'] = '您确定要永久删除您在所有课程中的所有 AI 辅导数据吗？此操作无法撤销。';
 $string['usersettings:data_deleted'] = '您的数据已被删除。';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = '你好，{$a}！我是SOLA，你的Saylor在线学习助手。';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = '打开 SOLA';
+$string['chat:change_avatar'] = '更换头像';
+
+$string['chat:quiz'] = '参加练习测验';
+$string['chat:quiz_setup_title'] = '练习测验';
+$string['chat:quiz_questions'] = '题目数量';
+$string['chat:quiz_topic'] = '主题';
+$string['chat:quiz_topic_guided'] = 'AI 引导（基于你的学习进度）';
+$string['chat:quiz_topic_default'] = '当前课程内容';
+$string['chat:quiz_topic_custom'] = '自定义主题…';
+$string['chat:quiz_custom_placeholder'] = '输入一个主题或问题...';
+$string['chat:quiz_start'] = '开始测验';
+$string['chat:quiz_cancel'] = '取消';
+$string['chat:quiz_loading'] = '正在生成测验…';
+$string['chat:quiz_error'] = '无法生成测验，请重试。';
+$string['chat:quiz_correct'] = '正确！';
+$string['chat:quiz_wrong'] = '错误。';
+$string['chat:quiz_next'] = '下一题';
+$string['chat:quiz_finish'] = '查看结果';
+$string['chat:quiz_score'] = '测验完成！你答对了 {$a->score} / {$a->total} 题。';
+$string['chat:quiz_summary'] = '我刚完成了关于"{$a->topic}"的 {$a->total} 题练习测验，得分 {$a->score}/{$a->total}。';
+$string['chat:quiz_topic_objectives'] = '学习目标';
+$string['chat:quiz_topic_modules'] = '课程主题';
+$string['chat:quiz_subtopic_select'] = '选择具体项目…';
+$string['chat:quiz_topic_sections'] = '课程章节';
+$string['chat:quiz_score_great'] = '出色！你真的掌握了这些内容。';
+$string['chat:quiz_score_good'] = '不错！继续复习以加深理解。';
+$string['chat:quiz_score_practice'] = '继续练习——先复习相关课程材料，然后重新参加测验。';
+$string['chat:quiz_review_heading'] = '复习';
+$string['chat:quiz_retake'] = '重新测验';
+$string['chat:quiz_exit'] = '退出测验';
+$string['chat:quiz_your_answer'] = '你的答案';
+$string['chat:quiz_correct_answer'] = '正确答案';
+
+$string['chat:starters_label'] = '对话开始建议';
+$string['chat:starter_quiz'] = '测验我';
+$string['chat:starter_explain'] = '解释这个';
+$string['chat:starter_key_concepts'] = '关键概念';
+$string['chat:starter_study_plan'] = '学习计划';
+$string['chat:starter_help_me'] = 'AI 帮助';
+$string['chat:starter_ell_practice'] = '口语练习';
+$string['chat:starter_ell_pronunciation'] = 'ELL 发音练习';
+$string['chat:starter_ai_coach'] = 'AI 辅导';
+$string['chat:starter_speak'] = '朗读开始语';
+
+$string['chat:reset'] = '重新开始';
+
+$string['chat:topic_picker_title'] = '你想专注于什么？';
+$string['chat:topic_picker_title_help'] = '你需要哪方面的帮助？';
+$string['chat:topic_picker_title_explain'] = '你想让我解释什么？';
+$string['chat:topic_picker_title_study'] = '你想专注于哪个领域？';
+$string['chat:topic_start'] = '继续';
+
+$string['chat:fullscreen'] = '全屏';
+$string['chat:exitfullscreen'] = '退出全屏';
+
+$string['chat:language'] = '更改语言';
+$string['chat:settings_panel'] = '设置';
+$string['chat:settings_language'] = '语言';
+$string['chat:settings_avatar'] = '头像';
+$string['chat:settings_voice'] = '语音';
+$string['chat:settings_voice_admin'] = '语音设置在网站管理面板中管理。';
+
+$string['chat:voice_mode'] = '语音模式';
+$string['chat:voice_end'] = '结束语音会话';
+$string['chat:voice_connecting'] = '正在连接...';
+$string['chat:voice_listening'] = '正在聆听...';
+$string['chat:voice_speaking'] = 'SOLA 正在说话...';
+$string['chat:voice_idle'] = '就绪';
+$string['chat:voice_error'] = '语音连接失败，请检查您的设置。';
+$string['chat:quiz_locked'] = '测验期间 SOLA 已暂停，以维护学术诚信。祝你好运！';

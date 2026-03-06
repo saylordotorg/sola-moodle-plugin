@@ -244,3 +244,86 @@ $string['usersettings:delete_all_button'] = 'حذف جميع بياناتي';
 $string['usersettings:confirm_delete_course'] = 'هل أنت متأكد من رغبتك في الحذف الدائم لجميع بيانات المدرّس الافتراضي بالذكاء الاصطناعي الخاصة بك لمقرر "{$a}"؟ لا يمكن التراجع عن هذا الإجراء.';
 $string['usersettings:confirm_delete_all'] = 'هل أنت متأكد من رغبتك في الحذف الدائم لجميع بيانات المدرّس الافتراضي بالذكاء الاصطناعي الخاصة بك عبر جميع المقررات؟ لا يمكن التراجع عن هذا الإجراء.';
 $string['usersettings:data_deleted'] = 'تم حذف بياناتك.';
+
+// === SOLA v1.0.12 — new features translation ===
+$string['chat:greeting'] = 'مرحباً، {$a}! أنا SOLA، مساعدك في التعلم الإلكتروني من سايلور.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'فتح SOLA';
+$string['chat:change_avatar'] = 'تغيير الصورة الرمزية';
+
+// Quiz UI.
+$string['chat:quiz'] = 'أجرِ اختبارًا تدريبيًا';
+$string['chat:quiz_setup_title'] = 'الاختبار التدريبي';
+$string['chat:quiz_questions'] = 'عدد الأسئلة';
+$string['chat:quiz_topic'] = 'الموضوع';
+$string['chat:quiz_topic_guided'] = 'بتوجيه الذكاء الاصطناعي (بناءً على تقدمك)';
+$string['chat:quiz_topic_default'] = 'محتوى المقرر الحالي';
+$string['chat:quiz_topic_custom'] = 'موضوع مخصص…';
+$string['chat:quiz_custom_placeholder'] = 'أدخل موضوعًا أو سؤالًا...';
+$string['chat:quiz_start'] = 'ابدأ الاختبار';
+$string['chat:quiz_cancel'] = 'إلغاء';
+$string['chat:quiz_loading'] = 'جارٍ إنشاء الاختبار…';
+$string['chat:quiz_error'] = 'تعذّر إنشاء الاختبار. يرجى المحاولة مجددًا.';
+$string['chat:quiz_correct'] = 'صحيح!';
+$string['chat:quiz_wrong'] = 'خطأ.';
+$string['chat:quiz_next'] = 'السؤال التالي';
+$string['chat:quiz_finish'] = 'عرض النتائج';
+$string['chat:quiz_score'] = 'اكتمل الاختبار! حصلت على {$a->score} من {$a->total}.';
+$string['chat:quiz_summary'] = 'أتممت للتو اختبارًا تدريبيًا مكوّنًا من {$a->total} سؤال حول "{$a->topic}" وحصلت على {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'الأهداف التعليمية';
+$string['chat:quiz_topic_modules'] = 'موضوع المقرر';
+$string['chat:quiz_subtopic_select'] = 'اختر عنصرًا محددًا…';
+$string['chat:quiz_topic_sections'] = 'أقسام المقرر';
+$string['chat:quiz_score_great'] = 'عمل ممتاز! أنت تتقن هذه المادة حقًا.';
+$string['chat:quiz_score_good'] = 'جهد جيد! تابع المراجعة لتعزيز فهمك.';
+$string['chat:quiz_score_practice'] = 'واصل التدريب — حاول مراجعة مواد المقرر ذات الصلة ثم أعد الاختبار.';
+$string['chat:quiz_review_heading'] = 'مراجعة';
+$string['chat:quiz_retake'] = 'إعادة الاختبار';
+$string['chat:quiz_exit'] = 'الخروج من الاختبار';
+$string['chat:quiz_your_answer'] = 'إجابتك';
+$string['chat:quiz_correct_answer'] = 'الإجابة الصحيحة';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'محادثات مقترحة';
+$string['chat:starter_quiz'] = 'اختبرني';
+$string['chat:starter_explain'] = 'اشرح هذا';
+$string['chat:starter_key_concepts'] = 'المفاهيم الأساسية';
+$string['chat:starter_study_plan'] = 'خطة الدراسة';
+$string['chat:starter_help_me'] = 'مساعدة الذكاء الاصطناعي';
+$string['chat:starter_ell_practice'] = 'تمرين المحادثة';
+$string['chat:starter_ell_pronunciation'] = 'نطق ELL';
+$string['chat:starter_ai_coach'] = 'مدرّب الذكاء الاصطناعي';
+$string['chat:starter_speak'] = 'تحدث ببادئ محادثة';
+
+// Reset / home.
+$string['chat:reset'] = 'ابدأ من جديد';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'على ماذا تريد التركيز؟';
+$string['chat:topic_picker_title_help'] = 'بماذا تريد المساعدة؟';
+$string['chat:topic_picker_title_explain'] = 'ماذا تريد مني أن أشرح؟';
+$string['chat:topic_picker_title_study'] = 'ما المجال الذي تريد التركيز عليه؟';
+$string['chat:topic_start'] = 'متابعة';
+
+// Expand states.
+$string['chat:fullscreen'] = 'ملء الشاشة';
+$string['chat:exitfullscreen'] = 'الخروج من ملء الشاشة';
+
+// Settings panel.
+$string['chat:language'] = 'تغيير اللغة';
+$string['chat:settings_panel'] = 'الإعدادات';
+$string['chat:settings_language'] = 'اللغة';
+$string['chat:settings_avatar'] = 'الصورة الرمزية';
+$string['chat:settings_voice'] = 'الصوت';
+$string['chat:settings_voice_admin'] = 'تُدار إعدادات الصوت من لوحة إدارة الموقع.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'وضع الصوت';
+$string['chat:voice_end'] = 'إنهاء جلسة الصوت';
+$string['chat:voice_connecting'] = 'جارٍ الاتصال...';
+$string['chat:voice_listening'] = 'يستمع...';
+$string['chat:voice_speaking'] = 'SOLA يتحدث...';
+$string['chat:voice_idle'] = 'جاهز';
+$string['chat:voice_error'] = 'فشل الاتصال الصوتي. يرجى التحقق من إعداداتك.';
+$string['chat:quiz_locked'] = 'تم إيقاف SOLA مؤقتًا أثناء الاختبارات دعمًا للنزاهة الأكاديمية. حظًا موفقًا!';

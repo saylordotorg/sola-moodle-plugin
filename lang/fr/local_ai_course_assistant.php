@@ -244,3 +244,88 @@ $string['usersettings:delete_all_button'] = 'Supprimer toutes mes données';
 $string['usersettings:confirm_delete_course'] = 'Êtes-vous sûr de vouloir supprimer définitivement toutes vos données de tuteur IA pour le cours "{$a}" ? Cette action est irréversible.';
 $string['usersettings:confirm_delete_all'] = 'Êtes-vous sûr de vouloir supprimer définitivement TOUTES vos données de tuteur IA dans tous les cours ? Cette action est irréversible.';
 $string['usersettings:data_deleted'] = 'Vos données ont été supprimées.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+// Updated strings (override earlier values):
+$string['chat:greeting'] = 'Bonjour, {$a} ! Je suis SOLA, votre assistant d\'apprentissage en ligne Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Ouvrir SOLA';
+$string['chat:change_avatar'] = 'Changer d\'avatar';
+
+// Quiz UI.
+$string['chat:quiz'] = 'Faire un quiz d\'entraînement';
+$string['chat:quiz_setup_title'] = 'Quiz d\'entraînement';
+$string['chat:quiz_questions'] = 'Nombre de questions';
+$string['chat:quiz_topic'] = 'Sujet';
+$string['chat:quiz_topic_guided'] = 'Guidé par l\'IA (selon votre progression)';
+$string['chat:quiz_topic_default'] = 'Contenu actuel du cours';
+$string['chat:quiz_topic_custom'] = 'Sujet personnalisé…';
+$string['chat:quiz_custom_placeholder'] = 'Entrez un sujet ou une question...';
+$string['chat:quiz_start'] = 'Commencer le quiz';
+$string['chat:quiz_cancel'] = 'Annuler';
+$string['chat:quiz_loading'] = 'Génération du quiz…';
+$string['chat:quiz_error'] = 'Impossible de générer un quiz. Veuillez réessayer.';
+$string['chat:quiz_correct'] = 'Correct !';
+$string['chat:quiz_wrong'] = 'Incorrect.';
+$string['chat:quiz_next'] = 'Question suivante';
+$string['chat:quiz_finish'] = 'Voir les résultats';
+$string['chat:quiz_score'] = 'Quiz terminé ! Vous avez obtenu {$a->score} sur {$a->total}.';
+$string['chat:quiz_summary'] = 'Je viens de terminer un quiz d\'entraînement de {$a->total} questions sur « {$a->topic} » et j\'ai obtenu {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Objectifs d\'apprentissage';
+$string['chat:quiz_topic_modules'] = 'Sujet du cours';
+$string['chat:quiz_subtopic_select'] = 'Sélectionner un élément spécifique…';
+$string['chat:quiz_topic_sections'] = 'Sections du cours';
+$string['chat:quiz_score_great'] = 'Excellent travail ! Vous maîtrisez vraiment cette matière.';
+$string['chat:quiz_score_good'] = 'Bon effort ! Continuez à réviser pour renforcer votre compréhension.';
+$string['chat:quiz_score_practice'] = 'Continuez à vous entraîner — essayez de revoir le contenu du cours correspondant, puis refaites le quiz.';
+$string['chat:quiz_review_heading'] = 'Révision';
+$string['chat:quiz_retake'] = 'Refaire le quiz';
+$string['chat:quiz_exit'] = 'Quitter le quiz';
+$string['chat:quiz_your_answer'] = 'Votre réponse';
+$string['chat:quiz_correct_answer'] = 'Bonne réponse';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'Amorces de conversation';
+$string['chat:starter_quiz'] = 'Me faire tester';
+$string['chat:starter_explain'] = 'Expliquer ceci';
+$string['chat:starter_key_concepts'] = 'Concepts clés';
+$string['chat:starter_study_plan'] = 'Plan d\'étude';
+$string['chat:starter_help_me'] = 'Aide IA';
+$string['chat:starter_ell_practice'] = 'Pratiquer l\'oral';
+$string['chat:starter_ell_pronunciation'] = 'Prononciation ELL';
+$string['chat:starter_ai_coach'] = 'Coach IA';
+$string['chat:starter_speak'] = 'Parler une amorce';
+
+// Reset / home.
+$string['chat:reset'] = 'Recommencer';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'Sur quoi souhaitez-vous vous concentrer ?';
+$string['chat:topic_picker_title_help'] = 'Avec quoi avez-vous besoin d\'aide ?';
+$string['chat:topic_picker_title_explain'] = 'Que souhaitez-vous que j\'explique ?';
+$string['chat:topic_picker_title_study'] = 'Sur quel domaine souhaitez-vous vous concentrer ?';
+$string['chat:topic_start'] = 'Continuer';
+
+// Expand states.
+$string['chat:fullscreen'] = 'Plein écran';
+$string['chat:exitfullscreen'] = 'Quitter le plein écran';
+
+// Settings panel.
+$string['chat:language'] = 'Changer de langue';
+$string['chat:settings_panel'] = 'Paramètres';
+$string['chat:settings_language'] = 'Langue';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Voix';
+$string['chat:settings_voice_admin'] = 'Les paramètres de voix sont gérés dans le panneau d\'administration du site.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'Mode vocal';
+$string['chat:voice_end'] = 'Terminer la session vocale';
+$string['chat:voice_connecting'] = 'Connexion en cours...';
+$string['chat:voice_listening'] = 'Écoute en cours...';
+$string['chat:voice_speaking'] = 'SOLA parle...';
+$string['chat:voice_idle'] = 'Prêt';
+$string['chat:voice_error'] = 'La connexion vocale a échoué. Veuillez vérifier vos paramètres.';
+$string['chat:quiz_locked'] = 'SOLA est en pause pendant les quiz pour préserver l\'intégrité académique. Bonne chance !';

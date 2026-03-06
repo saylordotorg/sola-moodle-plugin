@@ -274,3 +274,86 @@ $string['usersettings:delete_all_button'] = 'N Ka Kunnafoni Bɛɛ Bɔ';
 $string['usersettings:confirm_delete_course'] = 'I b\'a fɛ ka i ka AI karamɔgɔ kunnafoni bɛɛ bɔ kalanso "{$a}" la dɔrɔn? Ko in tɛ se ka segin.';
 $string['usersettings:confirm_delete_all'] = 'I b\'a fɛ ka i ka AI karamɔgɔ kunnafoni bɛɛ bɔ kalanso bɛɛ la? Ko in tɛ se ka segin.';
 $string['usersettings:data_deleted'] = 'I ka kunnafoniw bɔra.';
+
+// === SOLA v1.0.12 — new features translation ===
+$string['chat:greeting'] = 'I ni ce, {$a}! Ne ye SOLA ye, i ka kalanko dɛmɛbaga Saylor fɛ.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'SOLA dayɛlɛ';
+$string['chat:change_avatar'] = 'Avatar yɛlɛma';
+
+// Quiz UI.
+$string['chat:quiz'] = 'Kalansen ɲɛtaa dɔ ta';
+$string['chat:quiz_setup_title'] = 'Kalansen Ɲɛtaa';
+$string['chat:quiz_questions'] = 'Ɲininkali caman';
+$string['chat:quiz_topic'] = 'Kuma kun';
+$string['chat:quiz_topic_guided'] = 'AI bɛ lasigi (i ka tɛmɛnni kan)';
+$string['chat:quiz_topic_default'] = 'Kalanso kɔnɔkow sisan';
+$string['chat:quiz_topic_custom'] = 'Kuma kun wɛrɛ…';
+$string['chat:quiz_custom_placeholder'] = 'Kuma kun wala ɲininkali sɛbɛn...';
+$string['chat:quiz_start'] = 'Ɲɛtaa daminɛ';
+$string['chat:quiz_cancel'] = 'Dabila';
+$string['chat:quiz_loading'] = 'Kalansen ɲɛtaa dadon bɛ kɛra…';
+$string['chat:quiz_error'] = 'Kalansen ɲɛtaa ma se ka kɛ. I ka a laban kɔsɔbɛ.';
+$string['chat:quiz_correct'] = 'Tiɲɛ!';
+$string['chat:quiz_wrong'] = 'Ntiɲɛ.';
+$string['chat:quiz_next'] = 'Ɲininkali fitinin';
+$string['chat:quiz_finish'] = 'Jaabi lajɛ';
+$string['chat:quiz_score'] = 'Ɲɛtaa ban! I sɔrɔra {$a->score} {$a->total} kɔnɔ.';
+$string['chat:quiz_summary'] = 'Ne ye kalansen ɲɛtaa dɔ ban "{$a->topic}" kan ɲininkali {$a->total} ni ani ne sɔrɔra {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Kalan Baarakɛ';
+$string['chat:quiz_topic_modules'] = 'Kalanso Kuma Kun';
+$string['chat:quiz_subtopic_select'] = 'Kunnafoni dɔ sugandi…';
+$string['chat:quiz_topic_sections'] = 'Kalanso Yɔrɔw';
+$string['chat:quiz_score_great'] = 'Baara ɲuman! I b\'a dɔn kosɔbɛ.';
+$string['chat:quiz_score_good'] = 'Jɛkuluyali ɲuman! Kɔlɔsili ɲɛ k\'a fɔ i ka faamu ɲɛ.';
+$string['chat:quiz_score_practice'] = 'Jɛkuluyali ɲɛ — kalanso kow lajɛ ka segin a la, o kɔ i ka ɲɛtaa laban kɔsɔbɛ.';
+$string['chat:quiz_review_heading'] = 'Lajɛli';
+$string['chat:quiz_retake'] = 'Ɲɛtaa laban';
+$string['chat:quiz_exit'] = 'Ɲɛtaa bɔ';
+$string['chat:quiz_your_answer'] = 'I ka jaabi';
+$string['chat:quiz_correct_answer'] = 'Jaabi tiɲɛ';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'Kumakan daminɛ';
+$string['chat:starter_quiz'] = 'N Ɲɛti';
+$string['chat:starter_explain'] = 'Nin Yɛlɛn';
+$string['chat:starter_key_concepts'] = 'Kunnafoni Gɛlɛnw';
+$string['chat:starter_study_plan'] = 'Kalan Jɛkulu';
+$string['chat:starter_help_me'] = 'AI Dɛmɛ';
+$string['chat:starter_ell_practice'] = 'Kuma Jɛkuluya';
+$string['chat:starter_ell_pronunciation'] = 'ELL Lafɔli';
+$string['chat:starter_ai_coach'] = 'AI Karamɔgɔ';
+$string['chat:starter_speak'] = 'Daminɛ fɔ';
+
+// Reset / home.
+$string['chat:reset'] = 'Kɔ daminɛ';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'Mun kan i b\'a fɛ ka jɛku?';
+$string['chat:topic_picker_title_help'] = 'Mun la i b\'a fɛ dɛmɛ?';
+$string['chat:topic_picker_title_explain'] = 'Mun i b\'a fɛ ne ka yɛlɛn?';
+$string['chat:topic_picker_title_study'] = 'Yɔrɔ juman i b\'a fɛ ka jɛku?';
+$string['chat:topic_start'] = 'Ɲɛ';
+
+// Expand states.
+$string['chat:fullscreen'] = 'Fɛɛrɛ bɛɛ';
+$string['chat:exitfullscreen'] = 'Fɛɛrɛ bɛɛ bɔ';
+
+// Settings panel.
+$string['chat:language'] = 'Kan yɛlɛma';
+$string['chat:settings_panel'] = 'Laadili';
+$string['chat:settings_language'] = 'Kan';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Kuma';
+$string['chat:settings_voice_admin'] = 'Kuma laadiliw bɛ laadi site administrateur paneli la.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'Kuma cogoya';
+$string['chat:voice_end'] = 'Kuma waati laban';
+$string['chat:voice_connecting'] = 'Jɔyɔrɔ bɛ minɛ...';
+$string['chat:voice_listening'] = 'Mɛn bɛ kɛ...';
+$string['chat:voice_speaking'] = 'SOLA bɛ kuma...';
+$string['chat:voice_idle'] = 'Lakɛlɛn';
+$string['chat:voice_error'] = 'Kuma jɔyɔrɔ ma se. I ka laadiliw lajɛ.';
+$string['chat:quiz_locked'] = 'SOLA datugun kɛra ɲɛtaa waati la kalansen tiɲɛya kɔlɔsili kama. I ni baara ɲuman!';

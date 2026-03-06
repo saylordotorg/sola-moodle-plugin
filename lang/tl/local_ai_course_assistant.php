@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Tanggalin ang Lahat ng Aking Data';
 $string['usersettings:confirm_delete_course'] = 'Sigurado ka bang nais mong permanenteng tanggalin ang lahat ng iyong AI tutor data para sa kurso na "{$a}"? Hindi ito maaaring ibalik.';
 $string['usersettings:confirm_delete_all'] = 'Sigurado ka bang nais mong permanenteng tanggalin ang LAHAT ng iyong AI tutor data sa lahat ng kurso? Hindi ito maaaring ibalik.';
 $string['usersettings:data_deleted'] = 'Natanggal na ang iyong data.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Kumusta, {$a}! Ako si SOLA, ang iyong Saylor Online Learning Assistant.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Buksan ang SOLA';
+$string['chat:change_avatar'] = 'Baguhin ang avatar';
+
+$string['chat:quiz'] = 'Kumuha ng practice quiz';
+$string['chat:quiz_setup_title'] = 'Practice Quiz';
+$string['chat:quiz_questions'] = 'Bilang ng mga tanong';
+$string['chat:quiz_topic'] = 'Paksa';
+$string['chat:quiz_topic_guided'] = 'Pinatnubayan ng AI (batay sa iyong progreso)';
+$string['chat:quiz_topic_default'] = 'Kasalukuyang nilalaman ng kurso';
+$string['chat:quiz_topic_custom'] = 'Custom na paksa…';
+$string['chat:quiz_custom_placeholder'] = 'Magpasok ng paksa o tanong...';
+$string['chat:quiz_start'] = 'Simulan ang Quiz';
+$string['chat:quiz_cancel'] = 'Kanselahin';
+$string['chat:quiz_loading'] = 'Nagge-generate ng quiz…';
+$string['chat:quiz_error'] = 'Hindi makabuo ng quiz. Pakisubukan muli.';
+$string['chat:quiz_correct'] = 'Tama!';
+$string['chat:quiz_wrong'] = 'Mali.';
+$string['chat:quiz_next'] = 'Susunod na tanong';
+$string['chat:quiz_finish'] = 'Tingnan ang mga resulta';
+$string['chat:quiz_score'] = 'Tapos na ang quiz! Nakakuha ka ng {$a->score} mula sa {$a->total}.';
+$string['chat:quiz_summary'] = 'Nakatapos ako ng practice quiz na may {$a->total} tanong tungkol sa "{$a->topic}" at nakakuha ng {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Mga Layunin sa Pagkatuto';
+$string['chat:quiz_topic_modules'] = 'Paksa ng Kurso';
+$string['chat:quiz_subtopic_select'] = 'Pumili ng tiyak na aytem…';
+$string['chat:quiz_topic_sections'] = 'Mga Seksyon ng Kurso';
+$string['chat:quiz_score_great'] = 'Napakagaling! Talagang alam mo ang materyal na ito.';
+$string['chat:quiz_score_good'] = 'Magandang pagsisikap! Patuloy na mag-review para mapalakas ang iyong pag-unawa.';
+$string['chat:quiz_score_practice'] = 'Patuloy na mag-practice — subukang i-review ang kaugnay na materyal ng kurso, pagkatapos ay ulitin ang quiz.';
+$string['chat:quiz_review_heading'] = 'Pagsusuri';
+$string['chat:quiz_retake'] = 'Ulitin ang Quiz';
+$string['chat:quiz_exit'] = 'Lumabas sa Quiz';
+$string['chat:quiz_your_answer'] = 'Ang iyong sagot';
+$string['chat:quiz_correct_answer'] = 'Tamang sagot';
+
+$string['chat:starters_label'] = 'Mga panimula ng pakikipag-usap';
+$string['chat:starter_quiz'] = 'I-Quiz Ako';
+$string['chat:starter_explain'] = 'Ipaliwanag Ito';
+$string['chat:starter_key_concepts'] = 'Mga Pangunahing Konsepto';
+$string['chat:starter_study_plan'] = 'Plano sa Pag-aaral';
+$string['chat:starter_help_me'] = 'Tulong ng AI';
+$string['chat:starter_ell_practice'] = 'Magsanay ng Pagsasalita';
+$string['chat:starter_ell_pronunciation'] = 'Pagbigkas ng ELL';
+$string['chat:starter_ai_coach'] = 'AI Coach';
+$string['chat:starter_speak'] = 'Sabihin ang isang panimula';
+
+$string['chat:reset'] = 'Magsimulang muli';
+
+$string['chat:topic_picker_title'] = 'Ano ang nais mong pagtuunan?';
+$string['chat:topic_picker_title_help'] = 'Sa ano kita matutulungan?';
+$string['chat:topic_picker_title_explain'] = 'Ano ang nais mong ipaliwanag ko?';
+$string['chat:topic_picker_title_study'] = 'Anong lugar ang nais mong pagtuunan?';
+$string['chat:topic_start'] = 'Ituloy';
+
+$string['chat:fullscreen'] = 'Buong screen';
+$string['chat:exitfullscreen'] = 'Lumabas sa buong screen';
+
+$string['chat:language'] = 'Baguhin ang wika';
+$string['chat:settings_panel'] = 'Mga Setting';
+$string['chat:settings_language'] = 'Wika';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Boses';
+$string['chat:settings_voice_admin'] = 'Ang mga setting ng boses ay pinamamahalaan sa site admin panel.';
+
+$string['chat:voice_mode'] = 'Voice mode';
+$string['chat:voice_end'] = 'Tapusin ang voice session';
+$string['chat:voice_connecting'] = 'Kumukonekta...';
+$string['chat:voice_listening'] = 'Nakikinig...';
+$string['chat:voice_speaking'] = 'Nagsasalita ang SOLA...';
+$string['chat:voice_idle'] = 'Handa';
+$string['chat:voice_error'] = 'Nabigo ang koneksyon ng boses. Pakisuri ang iyong mga setting.';
+$string['chat:quiz_locked'] = 'Nakaka-pause ang SOLA sa panahon ng mga quiz para suportahan ang integridad ng akademiko. Good luck!';

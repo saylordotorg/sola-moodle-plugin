@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Tirtir Dhammaan Xogaygii';
 $string['usersettings:confirm_delete_course'] = 'Ma hubtaa inaad si joogto ah u tirtirinayso dhammaan xogta bare AI-gaaga ee koorsada "{$a}"? Ficilkan looma celin karo.';
 $string['usersettings:confirm_delete_all'] = 'Ma hubtaa inaad si joogto ah u tirtirinayso DHAMMAAN xogta bare AI-gaaga ee dhammaan koorsadaha? Ficilkan looma celin karo.';
 $string['usersettings:data_deleted'] = 'Xogahaaga waa la tirtiray.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Salaan, {$a}! Waxaan ahay SOLA, kaaliyahaaga barashada onlaynka ee Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Fur SOLA';
+$string['chat:change_avatar'] = 'Beddel avatar-ka';
+
+$string['chat:quiz'] = 'Qaado imtixaan tababar';
+$string['chat:quiz_setup_title'] = 'Imtixaanka Tababarka';
+$string['chat:quiz_questions'] = 'Tirada su\'aalaha';
+$string['chat:quiz_topic'] = 'Mawduuca';
+$string['chat:quiz_topic_guided'] = 'Hogaaminta AI (ku salaysan horumarkaaga)';
+$string['chat:quiz_topic_default'] = 'Nuxurka koorsada hadda';
+$string['chat:quiz_topic_custom'] = 'Mawduuc gaar ah…';
+$string['chat:quiz_custom_placeholder'] = 'Geli mawduuc ama su\'aal...';
+$string['chat:quiz_start'] = 'Bilow Imtixaanka';
+$string['chat:quiz_cancel'] = 'Ka noqo';
+$string['chat:quiz_loading'] = 'Abuurista imtixaanka…';
+$string['chat:quiz_error'] = 'Ma abuuri karin imtixaanka. Fadlan isku day mar kale.';
+$string['chat:quiz_correct'] = 'Sax!';
+$string['chat:quiz_wrong'] = 'Khalad.';
+$string['chat:quiz_next'] = 'Su\'aasha xigta';
+$string['chat:quiz_finish'] = 'Arag natiijooyinka';
+$string['chat:quiz_score'] = 'Imtixaanku waa dhamaaday! Waxaad heshay {$a->score} ka mid ah {$a->total}.';
+$string['chat:quiz_summary'] = 'Waxaan dhawaan dhamaystiray imtixaan tababar oo {$a->total} su\'aalood ah ku saabsan "{$a->topic}" waxaana heshay {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Yoolalka Barashada';
+$string['chat:quiz_topic_modules'] = 'Mawduuca Koorsada';
+$string['chat:quiz_subtopic_select'] = 'Dooro shay gaar ah…';
+$string['chat:quiz_topic_sections'] = 'Qaybaha Koorsada';
+$string['chat:quiz_score_great'] = 'Shaqo fiican! Aad ayaad u garanaysaa agabkan.';
+$string['chat:quiz_score_good'] = 'Dadaal wanaagsan! Sii wad dib u eegista si aad u xoojiso fahamkaaga.';
+$string['chat:quiz_score_practice'] = 'Sii wad tababarka — isku day dib u eegista agabka koorsada la xiriira, ka dib imtixaanka mar kale qaado.';
+$string['chat:quiz_review_heading'] = 'Dib u eegis';
+$string['chat:quiz_retake'] = 'Imtixaanka Mar Kale Qaado';
+$string['chat:quiz_exit'] = 'Ka bax Imtixaanka';
+$string['chat:quiz_your_answer'] = 'Jawaabkaaga';
+$string['chat:quiz_correct_answer'] = 'Jawaabta saxda ah';
+
+$string['chat:starters_label'] = 'Biloowga wada-hadalka';
+$string['chat:starter_quiz'] = 'I Imtixaami';
+$string['chat:starter_explain'] = 'Kaa Sharax';
+$string['chat:starter_key_concepts'] = 'Fikradaha Muhiimka ah';
+$string['chat:starter_study_plan'] = 'Qorshaha Barashada';
+$string['chat:starter_help_me'] = 'Caawinada AI';
+$string['chat:starter_ell_practice'] = 'Ku Tababar Hadlidda';
+$string['chat:starter_ell_pronunciation'] = 'Ku Dhawaaqa ELL';
+$string['chat:starter_ai_coach'] = 'Tababaraha AI';
+$string['chat:starter_speak'] = 'Hadal bilow wada-hadal';
+
+$string['chat:reset'] = 'Dib u bilow';
+
+$string['chat:topic_picker_title'] = 'Maxaad jeclaan lahayd inaad diiradda saarto?';
+$string['chat:topic_picker_title_help'] = 'Maxaad u baahan tahay caawin?';
+$string['chat:topic_picker_title_explain'] = 'Maxaad jeclaan lahayd inaan kuu sharaxo?';
+$string['chat:topic_picker_title_study'] = 'Goormee diiradda saari doontaa?';
+$string['chat:topic_start'] = 'Sii wad';
+
+$string['chat:fullscreen'] = 'Shaasha buuxda';
+$string['chat:exitfullscreen'] = 'Ka bax shaasha buuxda';
+
+$string['chat:language'] = 'Beddel luqadda';
+$string['chat:settings_panel'] = 'Dejimaha';
+$string['chat:settings_language'] = 'Luqadda';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Cod';
+$string['chat:settings_voice_admin'] = 'Dejimaha codka waxaa lagu maamulaa xarunta maamulaha goobta.';
+
+$string['chat:voice_mode'] = 'Habka codka';
+$string['chat:voice_end'] = 'Dhamee xaladda codka';
+$string['chat:voice_connecting'] = 'Xiriir la yeelasho...';
+$string['chat:voice_listening'] = 'Dhagaysanaya...';
+$string['chat:voice_speaking'] = 'SOLA ayaa hadlaysa...';
+$string['chat:voice_idle'] = 'Diyaar';
+$string['chat:voice_error'] = 'Xiriirka codka ayaa ku guuldareystay. Fadlan hubi dejimaha.';
+$string['chat:quiz_locked'] = 'SOLA waa la joojiyay inta lagu jiro imtixaanada si loo taageerayo daacadnimada akadeemiga. Nasiib wanaagsan!';

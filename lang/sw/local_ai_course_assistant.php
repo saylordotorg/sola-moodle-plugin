@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Futa Data Zangu Zote';
 $string['usersettings:confirm_delete_course'] = 'Je, una uhakika unataka kufuta kabisa data yako yote ya mshauri wa AI kwa kozi "{$a}"? Kitendo hiki hakiwezi kutenduliwa.';
 $string['usersettings:confirm_delete_all'] = 'Je, una uhakika unataka kufuta kabisa data YOTE ya mshauri wa AI katika kozi zote? Kitendo hiki hakiwezi kutenduliwa.';
 $string['usersettings:data_deleted'] = 'Data yako imefutwa.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Habari, {$a}! Mimi ni SOLA, msaidizi wako wa kujifunza mtandaoni wa Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Fungua SOLA';
+$string['chat:change_avatar'] = 'Badilisha picha';
+
+$string['chat:quiz'] = 'Fanya mazoezi ya mtihani';
+$string['chat:quiz_setup_title'] = 'Mazoezi ya Mtihani';
+$string['chat:quiz_questions'] = 'Idadi ya maswali';
+$string['chat:quiz_topic'] = 'Mada';
+$string['chat:quiz_topic_guided'] = 'Kuongozwa na AI (kulingana na maendeleo yako)';
+$string['chat:quiz_topic_default'] = 'Maudhui ya sasa ya kozi';
+$string['chat:quiz_topic_custom'] = 'Mada maalum…';
+$string['chat:quiz_custom_placeholder'] = 'Ingiza mada au swali...';
+$string['chat:quiz_start'] = 'Anza Mtihani';
+$string['chat:quiz_cancel'] = 'Ghairi';
+$string['chat:quiz_loading'] = 'Kuunda mtihani…';
+$string['chat:quiz_error'] = 'Haikuweza kuunda mtihani. Tafadhali jaribu tena.';
+$string['chat:quiz_correct'] = 'Sahihi!';
+$string['chat:quiz_wrong'] = 'Makosa.';
+$string['chat:quiz_next'] = 'Swali lijalo';
+$string['chat:quiz_finish'] = 'Angalia matokeo';
+$string['chat:quiz_score'] = 'Mtihani umekamilika! Ulipata {$a->score} kati ya {$a->total}.';
+$string['chat:quiz_summary'] = 'Nimekamilisha mtihani wa mazoezi wa maswali {$a->total} kuhusu "{$a->topic}" na kupata {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Malengo ya Kujifunza';
+$string['chat:quiz_topic_modules'] = 'Mada ya Kozi';
+$string['chat:quiz_subtopic_select'] = 'Chagua kipengele maalum…';
+$string['chat:quiz_topic_sections'] = 'Sehemu za Kozi';
+$string['chat:quiz_score_great'] = 'Kazi nzuri sana! Unajua vizuri sana maudhui haya.';
+$string['chat:quiz_score_good'] = 'Juhudi nzuri! Endelea kupitiapitia ili kuimarisha ufahamu wako.';
+$string['chat:quiz_score_practice'] = 'Endelea kufanya mazoezi — jaribu kupitia maudhui yanayohusiana ya kozi, kisha fanya mtihani tena.';
+$string['chat:quiz_review_heading'] = 'Mapitio';
+$string['chat:quiz_retake'] = 'Rudia Mtihani';
+$string['chat:quiz_exit'] = 'Toka kwenye Mtihani';
+$string['chat:quiz_your_answer'] = 'Jibu lako';
+$string['chat:quiz_correct_answer'] = 'Jibu sahihi';
+
+$string['chat:starters_label'] = 'Vianzio vya mazungumzo';
+$string['chat:starter_quiz'] = 'Nifanye Mtihani';
+$string['chat:starter_explain'] = 'Eleza Hili';
+$string['chat:starter_key_concepts'] = 'Dhana Muhimu';
+$string['chat:starter_study_plan'] = 'Mpango wa Masomo';
+$string['chat:starter_help_me'] = 'Msaada wa AI';
+$string['chat:starter_ell_practice'] = 'Fanya Mazoezi ya Kuzungumza';
+$string['chat:starter_ell_pronunciation'] = 'Matamshi ya ELL';
+$string['chat:starter_ai_coach'] = 'Kocha wa AI';
+$string['chat:starter_speak'] = 'Sema kianzio';
+
+$string['chat:reset'] = 'Anza upya';
+
+$string['chat:topic_picker_title'] = 'Ungependa kuzingatia nini?';
+$string['chat:topic_picker_title_help'] = 'Unahitaji msaada na nini?';
+$string['chat:topic_picker_title_explain'] = 'Ungependa nieleze nini?';
+$string['chat:topic_picker_title_study'] = 'Eneo gani ungependa kuzingatia?';
+$string['chat:topic_start'] = 'Endelea';
+
+$string['chat:fullscreen'] = 'Skrini nzima';
+$string['chat:exitfullscreen'] = 'Toka skrini nzima';
+
+$string['chat:language'] = 'Badilisha lugha';
+$string['chat:settings_panel'] = 'Mipangilio';
+$string['chat:settings_language'] = 'Lugha';
+$string['chat:settings_avatar'] = 'Picha';
+$string['chat:settings_voice'] = 'Sauti';
+$string['chat:settings_voice_admin'] = 'Mipangilio ya sauti inadhibitiwa kwenye paneli ya msimamizi wa tovuti.';
+
+$string['chat:voice_mode'] = 'Hali ya sauti';
+$string['chat:voice_end'] = 'Maliza kipindi cha sauti';
+$string['chat:voice_connecting'] = 'Inaunganisha...';
+$string['chat:voice_listening'] = 'Inasikia...';
+$string['chat:voice_speaking'] = 'SOLA anazungumza...';
+$string['chat:voice_idle'] = 'Tayari';
+$string['chat:voice_error'] = 'Muunganisho wa sauti umeshindwa. Tafadhali angalia mipangilio yako.';
+$string['chat:quiz_locked'] = 'SOLA imesimamishwa wakati wa mitihani ili kusaidia uaminifu wa kitaaluma. Bahati njema!';

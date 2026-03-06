@@ -273,3 +273,88 @@ $string['usersettings:delete_all_button'] = 'Share Duk Bayanan Na';
 $string['usersettings:confirm_delete_course'] = 'Shin ka tabbata kana son share duk bayanan malamin AI naka don kozi "{$a}" har abada? Ba za a iya mayar da wannan aikin ba.';
 $string['usersettings:confirm_delete_all'] = 'Shin ka tabbata kana son share duk bayanan malamin AI naka a duk kozi har abada? Ba za a iya mayar da wannan aikin ba.';
 $string['usersettings:data_deleted'] = 'An share bayananku.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+// Updated strings (override earlier values):
+$string['chat:greeting'] = 'Sannu, {$a}! Ni ne SOLA, mataimakin koyon kan layi na Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Bude SOLA';
+$string['chat:change_avatar'] = 'Canza hoton';
+
+// Quiz UI.
+$string['chat:quiz'] = 'Yi gwajin tunawa';
+$string['chat:quiz_setup_title'] = 'Gwajin Tunawa';
+$string['chat:quiz_questions'] = 'Yawan tambayoyi';
+$string['chat:quiz_topic'] = 'Batu';
+$string['chat:quiz_topic_guided'] = 'AI ta jagoranta (bisa ci gaban ka)';
+$string['chat:quiz_topic_default'] = 'Kayan koziyan yanzu';
+$string['chat:quiz_topic_custom'] = 'Batu na musamman…';
+$string['chat:quiz_custom_placeholder'] = 'Shigar da batu ko tambaya...';
+$string['chat:quiz_start'] = 'Fara Gwajin';
+$string['chat:quiz_cancel'] = 'Soke';
+$string['chat:quiz_loading'] = 'Ana ƙirƙirar gwajin…';
+$string['chat:quiz_error'] = 'Ba a iya ƙirƙirar gwajin. Da fatan za a sake gwadawa.';
+$string['chat:quiz_correct'] = 'Daidai!';
+$string['chat:quiz_wrong'] = 'Ba daidai ba.';
+$string['chat:quiz_next'] = 'Tambaya ta gaba';
+$string['chat:quiz_finish'] = 'Duba sakamako';
+$string['chat:quiz_score'] = 'An kammala gwajin! Ka samu {$a->score} daga {$a->total}.';
+$string['chat:quiz_summary'] = 'Na ƙare gwajin tunawa na tambayoyi {$a->total} kan "{$a->topic}" kuma na samu {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Manufofin Koyo';
+$string['chat:quiz_topic_modules'] = 'Batun Kozi';
+$string['chat:quiz_subtopic_select'] = 'Zaɓi abu na musamman…';
+$string['chat:quiz_topic_sections'] = 'Sassan Kozi';
+$string['chat:quiz_score_great'] = 'Aiki mai kyau! Ka san wannan abu sosai.';
+$string['chat:quiz_score_good'] = 'Ƙoƙari mai kyau! Ci gaba da sake duba don ƙarfafa fahimtarka.';
+$string['chat:quiz_score_practice'] = 'Ci gaba da yin aiki — gwada sake duba kayan kozi masu alaƙa, sannan sake yin gwajin.';
+$string['chat:quiz_review_heading'] = 'Bitar Aiki';
+$string['chat:quiz_retake'] = 'Sake Gwajin';
+$string['chat:quiz_exit'] = 'Fita Daga Gwajin';
+$string['chat:quiz_your_answer'] = 'Amsar ka';
+$string['chat:quiz_correct_answer'] = 'Amsar daidai';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'Fara tattaunawa';
+$string['chat:starter_quiz'] = 'Yi Mini Gwaji';
+$string['chat:starter_explain'] = 'Bayyana Wannan';
+$string['chat:starter_key_concepts'] = 'Manyan Ra\'ayoyi';
+$string['chat:starter_study_plan'] = 'Shirin Karatu';
+$string['chat:starter_help_me'] = 'Taimakon AI';
+$string['chat:starter_ell_practice'] = 'Yi Magana';
+$string['chat:starter_ell_pronunciation'] = 'Furta ELL';
+$string['chat:starter_ai_coach'] = 'Kocin AI';
+$string['chat:starter_speak'] = 'Faɗi farawa';
+
+// Reset / home.
+$string['chat:reset'] = 'Fara daga farko';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'Me kake so ka mai da hankali a kai?';
+$string['chat:topic_picker_title_help'] = 'Me kake buƙatar taimako a kai?';
+$string['chat:topic_picker_title_explain'] = 'Me kake son in bayyana?';
+$string['chat:topic_picker_title_study'] = 'Wane fage kake so ka mai da hankali a kai?';
+$string['chat:topic_start'] = 'Ci gaba';
+
+// Expand states.
+$string['chat:fullscreen'] = 'Cikakken allo';
+$string['chat:exitfullscreen'] = 'Fita daga cikakken allo';
+
+// Settings panel.
+$string['chat:language'] = 'Canza yare';
+$string['chat:settings_panel'] = 'Saitunan';
+$string['chat:settings_language'] = 'Yare';
+$string['chat:settings_avatar'] = 'Hoto';
+$string['chat:settings_voice'] = 'Murya';
+$string['chat:settings_voice_admin'] = 'Ana sarrafa saitunan murya a cikin kwamitin gudanarwa na shafin.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'Yanayin murya';
+$string['chat:voice_end'] = 'Ƙare zaman murya';
+$string['chat:voice_connecting'] = 'Ana haɗawa...';
+$string['chat:voice_listening'] = 'Ana saurare...';
+$string['chat:voice_speaking'] = 'SOLA na magana...';
+$string['chat:voice_idle'] = 'Shirye';
+$string['chat:voice_error'] = 'Haɗin murya ya kasa. Da fatan za a duba saitunanku.';
+$string['chat:quiz_locked'] = 'SOLA ta tsaya a lokacin gwaji don tallafawa amincin ilimi. Yin sa-an-nan!';

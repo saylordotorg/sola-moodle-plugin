@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Xóa tất cả dữ liệu của t
 $string['usersettings:confirm_delete_course'] = 'Bạn có chắc muốn xóa vĩnh viễn tất cả dữ liệu gia sư AI cho khóa học "{$a}"? Không thể hoàn tác.';
 $string['usersettings:confirm_delete_all'] = 'Bạn có chắc muốn xóa vĩnh viễn TẤT CẢ dữ liệu gia sư AI trên tất cả khóa học? Không thể hoàn tác.';
 $string['usersettings:data_deleted'] = 'Dữ liệu của bạn đã được xóa.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Xin chào, {$a}! Tôi là SOLA, trợ lý học tập trực tuyến Saylor của bạn.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Mở SOLA';
+$string['chat:change_avatar'] = 'Thay đổi hình đại diện';
+
+$string['chat:quiz'] = 'Làm bài kiểm tra thực hành';
+$string['chat:quiz_setup_title'] = 'Bài Kiểm Tra Thực Hành';
+$string['chat:quiz_questions'] = 'Số câu hỏi';
+$string['chat:quiz_topic'] = 'Chủ đề';
+$string['chat:quiz_topic_guided'] = 'AI hướng dẫn (dựa theo tiến độ của bạn)';
+$string['chat:quiz_topic_default'] = 'Nội dung khóa học hiện tại';
+$string['chat:quiz_topic_custom'] = 'Chủ đề tùy chỉnh…';
+$string['chat:quiz_custom_placeholder'] = 'Nhập một chủ đề hoặc câu hỏi...';
+$string['chat:quiz_start'] = 'Bắt Đầu Kiểm Tra';
+$string['chat:quiz_cancel'] = 'Hủy';
+$string['chat:quiz_loading'] = 'Đang tạo bài kiểm tra…';
+$string['chat:quiz_error'] = 'Không thể tạo bài kiểm tra. Vui lòng thử lại.';
+$string['chat:quiz_correct'] = 'Đúng rồi!';
+$string['chat:quiz_wrong'] = 'Sai.';
+$string['chat:quiz_next'] = 'Câu tiếp theo';
+$string['chat:quiz_finish'] = 'Xem kết quả';
+$string['chat:quiz_score'] = 'Hoàn thành bài kiểm tra! Bạn đạt {$a->score} trên {$a->total} câu.';
+$string['chat:quiz_summary'] = 'Tôi vừa hoàn thành bài kiểm tra thực hành {$a->total} câu về "{$a->topic}" và đạt {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Mục Tiêu Học Tập';
+$string['chat:quiz_topic_modules'] = 'Chủ Đề Khóa Học';
+$string['chat:quiz_subtopic_select'] = 'Chọn một mục cụ thể…';
+$string['chat:quiz_topic_sections'] = 'Các Phần Khóa Học';
+$string['chat:quiz_score_great'] = 'Xuất sắc! Bạn thực sự nắm vững tài liệu này.';
+$string['chat:quiz_score_good'] = 'Cố gắng tốt! Tiếp tục ôn tập để củng cố hiểu biết của bạn.';
+$string['chat:quiz_score_practice'] = 'Tiếp tục luyện tập — hãy xem lại tài liệu khóa học liên quan, rồi làm lại bài kiểm tra.';
+$string['chat:quiz_review_heading'] = 'Ôn Tập';
+$string['chat:quiz_retake'] = 'Làm Lại Bài Kiểm Tra';
+$string['chat:quiz_exit'] = 'Thoát Bài Kiểm Tra';
+$string['chat:quiz_your_answer'] = 'Câu trả lời của bạn';
+$string['chat:quiz_correct_answer'] = 'Câu trả lời đúng';
+
+$string['chat:starters_label'] = 'Gợi ý bắt đầu cuộc trò chuyện';
+$string['chat:starter_quiz'] = 'Kiểm Tra Tôi';
+$string['chat:starter_explain'] = 'Giải Thích Điều Này';
+$string['chat:starter_key_concepts'] = 'Khái Niệm Chính';
+$string['chat:starter_study_plan'] = 'Kế Hoạch Học Tập';
+$string['chat:starter_help_me'] = 'Trợ Lý AI';
+$string['chat:starter_ell_practice'] = 'Luyện Nói';
+$string['chat:starter_ell_pronunciation'] = 'Luyện Phát Âm ELL';
+$string['chat:starter_ai_coach'] = 'Huấn Luyện AI';
+$string['chat:starter_speak'] = 'Nói một gợi ý';
+
+$string['chat:reset'] = 'Bắt đầu lại';
+
+$string['chat:topic_picker_title'] = 'Bạn muốn tập trung vào điều gì?';
+$string['chat:topic_picker_title_help'] = 'Bạn cần giúp đỡ về điều gì?';
+$string['chat:topic_picker_title_explain'] = 'Bạn muốn tôi giải thích điều gì?';
+$string['chat:topic_picker_title_study'] = 'Bạn muốn tập trung vào lĩnh vực nào?';
+$string['chat:topic_start'] = 'Tiếp tục';
+
+$string['chat:fullscreen'] = 'Toàn màn hình';
+$string['chat:exitfullscreen'] = 'Thoát toàn màn hình';
+
+$string['chat:language'] = 'Đổi ngôn ngữ';
+$string['chat:settings_panel'] = 'Cài đặt';
+$string['chat:settings_language'] = 'Ngôn ngữ';
+$string['chat:settings_avatar'] = 'Hình đại diện';
+$string['chat:settings_voice'] = 'Giọng nói';
+$string['chat:settings_voice_admin'] = 'Cài đặt giọng nói được quản lý trong bảng quản trị trang web.';
+
+$string['chat:voice_mode'] = 'Chế độ giọng nói';
+$string['chat:voice_end'] = 'Kết thúc phiên giọng nói';
+$string['chat:voice_connecting'] = 'Đang kết nối...';
+$string['chat:voice_listening'] = 'Đang lắng nghe...';
+$string['chat:voice_speaking'] = 'SOLA đang nói...';
+$string['chat:voice_idle'] = 'Sẵn sàng';
+$string['chat:voice_error'] = 'Kết nối giọng nói thất bại. Vui lòng kiểm tra cài đặt của bạn.';
+$string['chat:quiz_locked'] = 'SOLA tạm dừng trong khi làm bài kiểm tra để hỗ trợ tính trung thực học thuật. Chúc may mắn!';

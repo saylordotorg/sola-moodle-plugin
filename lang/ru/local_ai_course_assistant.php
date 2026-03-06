@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Удалить все мои дан
 $string['usersettings:confirm_delete_course'] = 'Вы уверены, что хотите навсегда удалить все данные ИИ-репетитора для курса «{$a}»? Это действие нельзя отменить.';
 $string['usersettings:confirm_delete_all'] = 'Вы уверены, что хотите навсегда удалить ВСЕ данные ИИ-репетитора по всем курсам? Это действие нельзя отменить.';
 $string['usersettings:data_deleted'] = 'Ваши данные удалены.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Привет, {$a}! Я SOLA, твой онлайн-помощник Saylor по обучению.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Открыть SOLA';
+$string['chat:change_avatar'] = 'Изменить аватар';
+
+$string['chat:quiz'] = 'Пройти практический тест';
+$string['chat:quiz_setup_title'] = 'Практический тест';
+$string['chat:quiz_questions'] = 'Количество вопросов';
+$string['chat:quiz_topic'] = 'Тема';
+$string['chat:quiz_topic_guided'] = 'Под руководством ИИ (на основе вашего прогресса)';
+$string['chat:quiz_topic_default'] = 'Текущее содержание курса';
+$string['chat:quiz_topic_custom'] = 'Произвольная тема…';
+$string['chat:quiz_custom_placeholder'] = 'Введите тему или вопрос...';
+$string['chat:quiz_start'] = 'Начать тест';
+$string['chat:quiz_cancel'] = 'Отмена';
+$string['chat:quiz_loading'] = 'Создание теста…';
+$string['chat:quiz_error'] = 'Не удалось создать тест. Пожалуйста, попробуйте снова.';
+$string['chat:quiz_correct'] = 'Верно!';
+$string['chat:quiz_wrong'] = 'Неверно.';
+$string['chat:quiz_next'] = 'Следующий вопрос';
+$string['chat:quiz_finish'] = 'Посмотреть результаты';
+$string['chat:quiz_score'] = 'Тест завершён! Вы набрали {$a->score} из {$a->total}.';
+$string['chat:quiz_summary'] = 'Я только что завершил практический тест из {$a->total} вопросов по теме «{$a->topic}» и набрал {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Цели обучения';
+$string['chat:quiz_topic_modules'] = 'Тема курса';
+$string['chat:quiz_subtopic_select'] = 'Выберите конкретный пункт…';
+$string['chat:quiz_topic_sections'] = 'Разделы курса';
+$string['chat:quiz_score_great'] = 'Отличная работа! Вы действительно хорошо знаете этот материал.';
+$string['chat:quiz_score_good'] = 'Хорошая попытка! Продолжайте повторять, чтобы укрепить понимание.';
+$string['chat:quiz_score_practice'] = 'Продолжайте практиковаться — попробуйте повторить соответствующий материал курса, затем пройдите тест снова.';
+$string['chat:quiz_review_heading'] = 'Обзор';
+$string['chat:quiz_retake'] = 'Пройти тест снова';
+$string['chat:quiz_exit'] = 'Выйти из теста';
+$string['chat:quiz_your_answer'] = 'Ваш ответ';
+$string['chat:quiz_correct_answer'] = 'Правильный ответ';
+
+$string['chat:starters_label'] = 'Начало разговора';
+$string['chat:starter_quiz'] = 'Проверь меня';
+$string['chat:starter_explain'] = 'Объясни это';
+$string['chat:starter_key_concepts'] = 'Ключевые понятия';
+$string['chat:starter_study_plan'] = 'План обучения';
+$string['chat:starter_help_me'] = 'Помощь ИИ';
+$string['chat:starter_ell_practice'] = 'Практика речи';
+$string['chat:starter_ell_pronunciation'] = 'Произношение ELL';
+$string['chat:starter_ai_coach'] = 'ИИ-тренер';
+$string['chat:starter_speak'] = 'Произнесите начало разговора';
+
+$string['chat:reset'] = 'Начать заново';
+
+$string['chat:topic_picker_title'] = 'На чём вы хотите сосредоточиться?';
+$string['chat:topic_picker_title_help'] = 'С чем вам нужна помощь?';
+$string['chat:topic_picker_title_explain'] = 'Что вы хотите, чтобы я объяснил?';
+$string['chat:topic_picker_title_study'] = 'На какую область вы хотите сосредоточиться?';
+$string['chat:topic_start'] = 'Продолжить';
+
+$string['chat:fullscreen'] = 'Полный экран';
+$string['chat:exitfullscreen'] = 'Выйти из полного экрана';
+
+$string['chat:language'] = 'Изменить язык';
+$string['chat:settings_panel'] = 'Настройки';
+$string['chat:settings_language'] = 'Язык';
+$string['chat:settings_avatar'] = 'Аватар';
+$string['chat:settings_voice'] = 'Голос';
+$string['chat:settings_voice_admin'] = 'Настройки голоса управляются в панели администратора сайта.';
+
+$string['chat:voice_mode'] = 'Голосовой режим';
+$string['chat:voice_end'] = 'Завершить голосовой сеанс';
+$string['chat:voice_connecting'] = 'Подключение...';
+$string['chat:voice_listening'] = 'Слушаю...';
+$string['chat:voice_speaking'] = 'SOLA говорит...';
+$string['chat:voice_idle'] = 'Готово';
+$string['chat:voice_error'] = 'Не удалось подключиться к голосовому режиму. Проверьте настройки.';
+$string['chat:quiz_locked'] = 'SOLA приостановлена во время тестов для поддержания академической честности. Удачи!';

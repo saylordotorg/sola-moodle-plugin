@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Effacer Dëgg Say Données';
 $string['usersettings:confirm_delete_course'] = 'Mbaa dëgg nga bëgg a effacer définitivement dëgg say données professeur AI ci cours "{$a}"? Action yooy dëgëer dina mën a yegeel.';
 $string['usersettings:confirm_delete_all'] = 'Mbaa dëgg nga bëgg a effacer définitivement DËGG say données professeur AI ci cours yépp? Action yooy dëgëer dina mën a yegeel.';
 $string['usersettings:data_deleted'] = 'Say données dañ ko effacer.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Mangi fi, {$a}! Maa ngi di SOLA, wërsëg-jàng ji ci biir internet bi Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Ubbi SOLA';
+$string['chat:change_avatar'] = 'Soppal avatar bi';
+
+$string['chat:quiz'] = 'Jëf ëntërviu jàng';
+$string['chat:quiz_setup_title'] = 'Ëntërviu Jàng';
+$string['chat:quiz_questions'] = 'Njomu laaj yi';
+$string['chat:quiz_topic'] = 'Sujet bi';
+$string['chat:quiz_topic_guided'] = 'AI dëkk (ci kanam sa yeg-yeg bi)';
+$string['chat:quiz_topic_default'] = 'Ndigël cours bi ci waxtu bi';
+$string['chat:quiz_topic_custom'] = 'Sujet bu la neexee…';
+$string['chat:quiz_custom_placeholder'] = 'Bind sujet walla laaj...';
+$string['chat:quiz_start'] = 'Jëf Ëntërviu Bi';
+$string['chat:quiz_cancel'] = 'Annuler';
+$string['chat:quiz_loading'] = 'Dañuy génère ëntërviu bi…';
+$string['chat:quiz_error'] = 'Mënuñu génère ëntërviu bi. Jëf alal ci kanam.';
+$string['chat:quiz_correct'] = 'Dëgëer!';
+$string['chat:quiz_wrong'] = 'Dafa faw.';
+$string['chat:quiz_next'] = 'Laaj bi ci kanam';
+$string['chat:quiz_finish'] = 'Xool résultats yi';
+$string['chat:quiz_score'] = 'Ëntërviu bi jeex! Dañ la jàpp {$a->score} ci {$a->total}.';
+$string['chat:quiz_summary'] = 'Mu ngi jëf ëntërviu jàng bu am {$a->total} laaj ci "{$a->topic}" te am {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Xelam Jàng Yi';
+$string['chat:quiz_topic_modules'] = 'Sujet Cours Bi';
+$string['chat:quiz_subtopic_select'] = 'Tann benn élément bu dëgëer…';
+$string['chat:quiz_topic_sections'] = 'Sections Cours Bi';
+$string['chat:quiz_score_great'] = 'Baax na lool! Dëgëer nga xam matière bi.';
+$string['chat:quiz_score_good'] = 'Jéf baax! Continues a reviser ngir dëgal sa xam-xam bi.';
+$string['chat:quiz_score_practice'] = 'Continues a jéf — seeti matériels cours bi yu rapport, ba ci kanam jëf ëntërviu bi.';
+$string['chat:quiz_review_heading'] = 'Révision';
+$string['chat:quiz_retake'] = 'Jëf Ëntërviu Bi Ci Kanam';
+$string['chat:quiz_exit'] = 'Dem Ëntërviu Bi';
+$string['chat:quiz_your_answer'] = 'Sa réponse';
+$string['chat:quiz_correct_answer'] = 'Réponse bu dëgëer bi';
+
+$string['chat:starters_label'] = 'Jëge wax-ak-wax';
+$string['chat:starter_quiz'] = 'Ëntërviy Ma';
+$string['chat:starter_explain'] = 'Fëkk Li';
+$string['chat:starter_key_concepts'] = 'Xelam Yu Xorom';
+$string['chat:starter_study_plan'] = 'Plan Jàng';
+$string['chat:starter_help_me'] = 'Ndimmal AI';
+$string['chat:starter_ell_practice'] = 'Jéef Wax';
+$string['chat:starter_ell_pronunciation'] = 'Liggéey Yégël ELL';
+$string['chat:starter_ai_coach'] = 'Coach AI';
+$string['chat:starter_speak'] = 'Wax jëge bi';
+
+$string['chat:reset'] = 'Jëge ci kanam';
+
+$string['chat:topic_picker_title'] = 'Lan la neexee a tëgël ci?';
+$string['chat:topic_picker_title_help'] = 'Ci lan la neexee ndimmal?';
+$string['chat:topic_picker_title_explain'] = 'Lan la neexee ma fëkk?';
+$string['chat:topic_picker_title_study'] = 'Ci domaine bu lan la neexee a tëgël?';
+$string['chat:topic_start'] = 'Dem ci kanam';
+
+$string['chat:fullscreen'] = 'Xët bu sell';
+$string['chat:exitfullscreen'] = 'Dem ci xët bu sell';
+
+$string['chat:language'] = 'Soppal làkk bi';
+$string['chat:settings_panel'] = 'Réglages';
+$string['chat:settings_language'] = 'Làkk';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Jàng';
+$string['chat:settings_voice_admin'] = 'Réglages jàng yi dañ ko gérer ci panneau administration site bi.';
+
+$string['chat:voice_mode'] = 'Mode jàng';
+$string['chat:voice_end'] = 'Jeex séance jàng bi';
+$string['chat:voice_connecting'] = 'Dañuy connecter...';
+$string['chat:voice_listening'] = 'Dañuy dégg...';
+$string['chat:voice_speaking'] = 'SOLA dañuy wax...';
+$string['chat:voice_idle'] = 'Jëm';
+$string['chat:voice_error'] = 'Connexion jàng bi defoo kaay. Seeti sa réglages yi.';
+$string['chat:quiz_locked'] = 'SOLA dafa suspendu ci kanam ëntërviu yi ngir soxor intégrité académique bi. Yëgël sa jàng!';

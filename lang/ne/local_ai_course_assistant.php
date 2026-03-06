@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'मेरो सबै डेटा
 $string['usersettings:confirm_delete_course'] = 'के तपाईं "{$a}" पाठ्यक्रमका लागि आफ्नो सबै AI ट्युटर डेटा स्थायी रूपमा मेटाउन निश्चित हुनुहुन्छ? यो कारबाही पूर्ववत गर्न सकिँदैन।';
 $string['usersettings:confirm_delete_all'] = 'के तपाईं सबै पाठ्यक्रमहरूमा आफ्नो सबै AI ट्युटर डेटा स्थायी रूपमा मेटाउन निश्चित हुनुहुन्छ? यो कारबाही पूर्ववत गर्न सकिँदैन।';
 $string['usersettings:data_deleted'] = 'तपाईंको डेटा मेटाइयो।';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'नमस्कार, {$a}! म SOLA हुँ, तपाईंको Saylor अनलाइन लर्निङ असिस्ट्यान्ट।';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'SOLA खोल्नुहोस्';
+$string['chat:change_avatar'] = 'अवतार परिवर्तन गर्नुहोस्';
+
+$string['chat:quiz'] = 'अभ्यास प्रश्नोत्तरी लिनुहोस्';
+$string['chat:quiz_setup_title'] = 'अभ्यास प्रश्नोत्तरी';
+$string['chat:quiz_questions'] = 'प्रश्नहरूको सङ्ख्या';
+$string['chat:quiz_topic'] = 'विषय';
+$string['chat:quiz_topic_guided'] = 'AI-निर्देशित (तपाईंको प्रगतिमा आधारित)';
+$string['chat:quiz_topic_default'] = 'हालको पाठ्यक्रम सामग्री';
+$string['chat:quiz_topic_custom'] = 'कस्टम विषय…';
+$string['chat:quiz_custom_placeholder'] = 'विषय वा प्रश्न प्रविष्ट गर्नुहोस्...';
+$string['chat:quiz_start'] = 'प्रश्नोत्तरी सुरु गर्नुहोस्';
+$string['chat:quiz_cancel'] = 'रद्द गर्नुहोस्';
+$string['chat:quiz_loading'] = 'प्रश्नोत्तरी सिर्जना गर्दैछ…';
+$string['chat:quiz_error'] = 'प्रश्नोत्तरी सिर्जना गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।';
+$string['chat:quiz_correct'] = 'सही!';
+$string['chat:quiz_wrong'] = 'गलत।';
+$string['chat:quiz_next'] = 'अर्को प्रश्न';
+$string['chat:quiz_finish'] = 'नतिजा हेर्नुहोस्';
+$string['chat:quiz_score'] = 'प्रश्नोत्तरी सम्पन्न! तपाईंले {$a->total} मध्ये {$a->score} पाउनुभयो।';
+$string['chat:quiz_summary'] = 'मैले भर्खरै "{$a->topic}" मा {$a->total} प्रश्नको अभ्यास प्रश्नोत्तरी सम्पन्न गरेँ र {$a->score}/{$a->total} पाएँ।';
+$string['chat:quiz_topic_objectives'] = 'सिकाइ उद्देश्यहरू';
+$string['chat:quiz_topic_modules'] = 'पाठ्यक्रम विषय';
+$string['chat:quiz_subtopic_select'] = 'विशेष वस्तु छनोट गर्नुहोस्…';
+$string['chat:quiz_topic_sections'] = 'पाठ्यक्रम खण्डहरू';
+$string['chat:quiz_score_great'] = 'उत्कृष्ट काम! तपाईंलाई यो विषय साँच्चै राम्रोसँग थाहा छ।';
+$string['chat:quiz_score_good'] = 'राम्रो प्रयास! आफ्नो बुझाइ सुदृढ पार्न समीक्षा जारी राख्नुहोस्।';
+$string['chat:quiz_score_practice'] = 'अभ्यास जारी राख्नुहोस् — सम्बन्धित पाठ्यक्रम सामग्री समीक्षा गर्नुहोस् र फेरि प्रश्नोत्तरी लिनुहोस्।';
+$string['chat:quiz_review_heading'] = 'समीक्षा';
+$string['chat:quiz_retake'] = 'प्रश्नोत्तरी फेरि लिनुहोस्';
+$string['chat:quiz_exit'] = 'प्रश्नोत्तरीबाट बाहिरिनुहोस्';
+$string['chat:quiz_your_answer'] = 'तपाईंको उत्तर';
+$string['chat:quiz_correct_answer'] = 'सही उत्तर';
+
+$string['chat:starters_label'] = 'वार्तालाप सुरुवात';
+$string['chat:starter_quiz'] = 'मलाई परीक्षण गर्नुहोस्';
+$string['chat:starter_explain'] = 'यो व्याख्या गर्नुहोस्';
+$string['chat:starter_key_concepts'] = 'मुख्य अवधारणाहरू';
+$string['chat:starter_study_plan'] = 'अध्ययन योजना';
+$string['chat:starter_help_me'] = 'AI सहायता';
+$string['chat:starter_ell_practice'] = 'बोल्ने अभ्यास';
+$string['chat:starter_ell_pronunciation'] = 'ELL उच्चारण';
+$string['chat:starter_ai_coach'] = 'AI कोच';
+$string['chat:starter_speak'] = 'सुरुवात बोल्नुहोस्';
+
+$string['chat:reset'] = 'फेरि सुरु गर्नुहोस्';
+
+$string['chat:topic_picker_title'] = 'तपाईं के मा ध्यान दिन चाहनुहुन्छ?';
+$string['chat:topic_picker_title_help'] = 'तपाईंलाई के मा मद्दत चाहिन्छ?';
+$string['chat:topic_picker_title_explain'] = 'तपाईं मलाई के व्याख्या गर्न चाहनुहुन्छ?';
+$string['chat:topic_picker_title_study'] = 'तपाईं कुन क्षेत्रमा ध्यान दिन चाहनुहुन्छ?';
+$string['chat:topic_start'] = 'जारी राख्नुहोस्';
+
+$string['chat:fullscreen'] = 'पूर्ण स्क्रिन';
+$string['chat:exitfullscreen'] = 'पूर्ण स्क्रिनबाट बाहिरिनुहोस्';
+
+$string['chat:language'] = 'भाषा परिवर्तन गर्नुहोस्';
+$string['chat:settings_panel'] = 'सेटिङहरू';
+$string['chat:settings_language'] = 'भाषा';
+$string['chat:settings_avatar'] = 'अवतार';
+$string['chat:settings_voice'] = 'आवाज';
+$string['chat:settings_voice_admin'] = 'आवाज सेटिङहरू साइट प्रशासन प्यानलमा व्यवस्थापन गरिन्छ।';
+
+$string['chat:voice_mode'] = 'आवाज मोड';
+$string['chat:voice_end'] = 'आवाज सत्र समाप्त गर्नुहोस्';
+$string['chat:voice_connecting'] = 'जोड्दैछ...';
+$string['chat:voice_listening'] = 'सुन्दैछ...';
+$string['chat:voice_speaking'] = 'SOLA बोल्दैछ...';
+$string['chat:voice_idle'] = 'तयार';
+$string['chat:voice_error'] = 'आवाज जडान असफल भयो। कृपया आफ्नो सेटिङहरू जाँच गर्नुहोस्।';
+$string['chat:quiz_locked'] = 'शैक्षिक सत्यनिष्ठा समर्थन गर्न प्रश्नोत्तरीको क्रममा SOLA रोकिएको छ। शुभकामना!';

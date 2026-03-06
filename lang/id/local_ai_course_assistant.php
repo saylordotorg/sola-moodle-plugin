@@ -273,3 +273,88 @@ $string['usersettings:delete_all_button'] = 'Hapus Semua Data Saya';
 $string['usersettings:confirm_delete_course'] = 'Apakah Anda yakin ingin menghapus secara permanen semua data tutor AI Anda untuk kursus "{$a}"? Tindakan ini tidak dapat dibatalkan.';
 $string['usersettings:confirm_delete_all'] = 'Apakah Anda yakin ingin menghapus secara permanen SEMUA data tutor AI Anda di semua kursus? Tindakan ini tidak dapat dibatalkan.';
 $string['usersettings:data_deleted'] = 'Data Anda telah dihapus.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+// Updated strings (override earlier values):
+$string['chat:greeting'] = 'Halo, {$a}! Saya SOLA, asisten belajar online Saylor Anda.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Buka SOLA';
+$string['chat:change_avatar'] = 'Ganti avatar';
+
+// Quiz UI.
+$string['chat:quiz'] = 'Ambil kuis latihan';
+$string['chat:quiz_setup_title'] = 'Kuis Latihan';
+$string['chat:quiz_questions'] = 'Jumlah pertanyaan';
+$string['chat:quiz_topic'] = 'Topik';
+$string['chat:quiz_topic_guided'] = 'Dipandu AI (berdasarkan kemajuan Anda)';
+$string['chat:quiz_topic_default'] = 'Materi kursus saat ini';
+$string['chat:quiz_topic_custom'] = 'Topik kustom…';
+$string['chat:quiz_custom_placeholder'] = 'Masukkan topik atau pertanyaan...';
+$string['chat:quiz_start'] = 'Mulai Kuis';
+$string['chat:quiz_cancel'] = 'Batal';
+$string['chat:quiz_loading'] = 'Membuat kuis…';
+$string['chat:quiz_error'] = 'Tidak dapat membuat kuis. Silakan coba lagi.';
+$string['chat:quiz_correct'] = 'Benar!';
+$string['chat:quiz_wrong'] = 'Salah.';
+$string['chat:quiz_next'] = 'Pertanyaan berikutnya';
+$string['chat:quiz_finish'] = 'Lihat hasil';
+$string['chat:quiz_score'] = 'Kuis selesai! Anda mendapat skor {$a->score} dari {$a->total}.';
+$string['chat:quiz_summary'] = 'Saya baru menyelesaikan kuis latihan {$a->total} pertanyaan tentang "{$a->topic}" dan mendapat skor {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Tujuan Pembelajaran';
+$string['chat:quiz_topic_modules'] = 'Topik Kursus';
+$string['chat:quiz_subtopic_select'] = 'Pilih item tertentu…';
+$string['chat:quiz_topic_sections'] = 'Bagian Kursus';
+$string['chat:quiz_score_great'] = 'Kerja bagus! Anda benar-benar menguasai materi ini.';
+$string['chat:quiz_score_good'] = 'Upaya yang baik! Terus pelajari untuk memperkuat pemahaman Anda.';
+$string['chat:quiz_score_practice'] = 'Terus berlatih — coba tinjau materi kursus terkait, lalu ulangi kuis.';
+$string['chat:quiz_review_heading'] = 'Tinjauan';
+$string['chat:quiz_retake'] = 'Ulangi Kuis';
+$string['chat:quiz_exit'] = 'Keluar dari Kuis';
+$string['chat:quiz_your_answer'] = 'Jawaban Anda';
+$string['chat:quiz_correct_answer'] = 'Jawaban yang benar';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'Pembuka percakapan';
+$string['chat:starter_quiz'] = 'Uji Saya';
+$string['chat:starter_explain'] = 'Jelaskan Ini';
+$string['chat:starter_key_concepts'] = 'Konsep Utama';
+$string['chat:starter_study_plan'] = 'Rencana Belajar';
+$string['chat:starter_help_me'] = 'Bantuan AI';
+$string['chat:starter_ell_practice'] = 'Latihan Berbicara';
+$string['chat:starter_ell_pronunciation'] = 'Pengucapan ELL';
+$string['chat:starter_ai_coach'] = 'Pelatih AI';
+$string['chat:starter_speak'] = 'Ucapkan pembuka';
+
+// Reset / home.
+$string['chat:reset'] = 'Mulai ulang';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'Apa yang ingin Anda fokuskan?';
+$string['chat:topic_picker_title_help'] = 'Dengan apa Anda ingin dibantu?';
+$string['chat:topic_picker_title_explain'] = 'Apa yang ingin saya jelaskan?';
+$string['chat:topic_picker_title_study'] = 'Area mana yang ingin Anda fokuskan?';
+$string['chat:topic_start'] = 'Lanjutkan';
+
+// Expand states.
+$string['chat:fullscreen'] = 'Layar penuh';
+$string['chat:exitfullscreen'] = 'Keluar dari layar penuh';
+
+// Settings panel.
+$string['chat:language'] = 'Ganti bahasa';
+$string['chat:settings_panel'] = 'Pengaturan';
+$string['chat:settings_language'] = 'Bahasa';
+$string['chat:settings_avatar'] = 'Avatar';
+$string['chat:settings_voice'] = 'Suara';
+$string['chat:settings_voice_admin'] = 'Pengaturan suara dikelola di panel admin situs.';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'Mode suara';
+$string['chat:voice_end'] = 'Akhiri sesi suara';
+$string['chat:voice_connecting'] = 'Menghubungkan...';
+$string['chat:voice_listening'] = 'Mendengarkan...';
+$string['chat:voice_speaking'] = 'SOLA sedang berbicara...';
+$string['chat:voice_idle'] = 'Siap';
+$string['chat:voice_error'] = 'Koneksi suara gagal. Periksa pengaturan Anda.';
+$string['chat:quiz_locked'] = 'SOLA dijeda selama kuis untuk mendukung integritas akademik. Semoga berhasil!';

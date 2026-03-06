@@ -259,3 +259,80 @@ $string['usersettings:delete_all_button'] = 'Ragaa Koo Hunda Haqii';
 $string['usersettings:confirm_delete_course'] = 'Ragaa barsiisaa AI kee koorsii "{$a}" keessaa dhumaan haquuf mirkaneessitaa? Tarkaanfiin kun deebi\'uu hin danda\'u.';
 $string['usersettings:confirm_delete_all'] = 'Ragaa barsiisaa AI kee koorsii HUNDA keessaa dhumaan haquuf mirkaneessitaa? Tarkaanfiin kun deebi\'uu hin danda\'u.';
 $string['usersettings:data_deleted'] = 'Ragaa kee haqqame.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Akkam, {$a}! Ani SOLA dha, gargaaraa barumsaa onlaayinii Saylor keessan.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'SOLA bani';
+$string['chat:change_avatar'] = 'Fakkii jijjiiri';
+
+$string['chat:quiz'] = 'Qormaata shaakala fudhachi';
+$string['chat:quiz_setup_title'] = 'Qormaata Shaakala';
+$string['chat:quiz_questions'] = 'Lakkoofsa gaaffiilee';
+$string['chat:quiz_topic'] = 'Mata-duree';
+$string['chat:quiz_topic_guided'] = 'AI-kan qajeelche (bu\'uura guddina keetiin)';
+$string['chat:quiz_topic_default'] = 'Qabiyyee koorsii ammaa';
+$string['chat:quiz_topic_custom'] = 'Mata-duree kan itti qindaa\'e…';
+$string['chat:quiz_custom_placeholder'] = 'Mata-duree ykn gaaffii galchi...';
+$string['chat:quiz_start'] = 'Qormaata Jalqabi';
+$string['chat:quiz_cancel'] = 'Haquu';
+$string['chat:quiz_loading'] = 'Qormaata uumaa jira…';
+$string['chat:quiz_error'] = 'Qormaata uumuu hin dandeenye. Maaloo irra deebi\'i yaalii.';
+$string['chat:quiz_correct'] = 'Sirrii!';
+$string['chat:quiz_wrong'] = 'Dogoggoraa.';
+$string['chat:quiz_next'] = 'Gaaffii itti aanu';
+$string['chat:quiz_finish'] = 'Bu\'aa ilaali';
+$string['chat:quiz_score'] = 'Qormaatni xumurame! {$a->total} irraa {$a->score} argatte.';
+$string['chat:quiz_summary'] = 'Qormaata shaakala gaaffii {$a->total} kan "{$a->topic}" irratti mara xumuree {$a->score}/{$a->total} argadhe.';
+$string['chat:quiz_topic_objectives'] = 'Kaayyoo Barumsaa';
+$string['chat:quiz_topic_modules'] = 'Mata-duree Koorsii';
+$string['chat:quiz_subtopic_select'] = 'Waan murtaa\'e filii…';
+$string['chat:quiz_topic_sections'] = 'Kutaalee Koorsii';
+$string['chat:quiz_score_great'] = 'Hojii gaarii! Dhugumaan waa\'ee kana beekta.';
+$string['chat:quiz_score_good'] = 'Carraaqii gaarii! Hubannoo kee cimsuuf irra deebi\'ii ilaaluu itti fufii.';
+$string['chat:quiz_score_practice'] = 'Itti fufii shaakalee — qabiyyee koorsii wal qabate ilaalii, booda qormaata irra deebi\'i.';
+$string['chat:quiz_review_heading'] = 'Irra deebi\'ii ilaaluu';
+$string['chat:quiz_retake'] = 'Qormaata Irra Deebi\'i Fudhachi';
+$string['chat:quiz_exit'] = 'Qormaata Irraa Ba\'i';
+$string['chat:quiz_your_answer'] = 'Deebii kee';
+$string['chat:quiz_correct_answer'] = 'Deebii sirrii';
+
+$string['chat:starters_label'] = 'Jalqaba haasawaa';
+$string['chat:starter_quiz'] = 'Na Qori';
+$string['chat:starter_explain'] = 'Kana Ibsi';
+$string['chat:starter_key_concepts'] = 'Yaadota Ijoo';
+$string['chat:starter_study_plan'] = 'Karoora Barumsa';
+$string['chat:starter_help_me'] = 'Gargaarsa AI';
+$string['chat:starter_ell_practice'] = 'Dubbachuu Shaakalee';
+$string['chat:starter_ell_pronunciation'] = 'Dubbifama ELL';
+$string['chat:starter_ai_coach'] = 'Leenjisaa AI';
+$string['chat:starter_speak'] = 'Jalqaba dubbadhu';
+
+$string['chat:reset'] = 'Irra deebi\'ii jalqabi';
+
+$string['chat:topic_picker_title'] = 'Maal irratti xiyyeeffachuu barbaadda?';
+$string['chat:topic_picker_title_help'] = 'Maal irratti gargaarsa barbaadda?';
+$string['chat:topic_picker_title_explain'] = 'Maal akkan siif ibsu barbaadda?';
+$string['chat:topic_picker_title_study'] = 'Kutaa maal irratti xiyyeeffachuu barbaadda?';
+$string['chat:topic_start'] = 'Itti fufii';
+
+$string['chat:fullscreen'] = 'Fuula guutuu';
+$string['chat:exitfullscreen'] = 'Fuula guutuu irraa ba\'i';
+
+$string['chat:language'] = 'Afaan jijjiiri';
+$string['chat:settings_panel'] = 'Qindaa\'ina';
+$string['chat:settings_language'] = 'Afaan';
+$string['chat:settings_avatar'] = 'Fakkii';
+$string['chat:settings_voice'] = 'Sagalee';
+$string['chat:settings_voice_admin'] = 'Qindaa\'ina sagalee paanaalii bulchaa saayitii keessatti bulchama.';
+
+$string['chat:voice_mode'] = 'Haala sagalee';
+$string['chat:voice_end'] = 'Yaa\'ii sagalee xuuri';
+$string['chat:voice_connecting'] = 'Walitti hidhamaa jira...';
+$string['chat:voice_listening'] = 'Dhagahaa jira...';
+$string['chat:voice_speaking'] = 'SOLA dubbataa jira...';
+$string['chat:voice_idle'] = 'Qophii dha';
+$string['chat:voice_error'] = 'Walitti hidhamuu sagalee kufee. Maaloo qindaa\'ina kee ilaalii.';
+$string['chat:quiz_locked'] = 'SOLA qormaata yeroo dhaabbatee jira akka haqiinsaa barnootaa deeggaruuf. Carraa gaarii!';

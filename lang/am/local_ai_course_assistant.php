@@ -273,3 +273,86 @@ $string['usersettings:delete_all_button'] = 'ሁሉንም ዳታዬን ሰርዝ
 $string['usersettings:confirm_delete_course'] = 'ለ"{$a}" ኮርስ ያሉ ሁሉንም AI አስተማሪ ዳታዎን ዘላቂ ሆኖ ለመሰረዝ እርግጠኛ ናቸው? ይህ እርምጃ ሊቀለበስ አይችልም።';
 $string['usersettings:confirm_delete_all'] = 'በሁሉም ኮርሶች ውስጥ ያሉ ሁሉንም AI አስተማሪ ዳታዎን ዘላቂ ሆኖ ለመሰረዝ እርግጠኛ ናቸው? ይህ እርምጃ ሊቀለበስ አይችልም።';
 $string['usersettings:data_deleted'] = 'ዳታዎ ተሰርዟል።';
+
+// === SOLA v1.0.12 — new features translation ===
+$string['chat:greeting'] = 'ሰላም፣ {$a}! እኔ SOLA ነኝ፣ የሳይለር ኦንላይን ትምህርት ረዳትዎ።';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'SOLA ክፈት';
+$string['chat:change_avatar'] = 'አቫታር ቀይር';
+
+// Quiz UI.
+$string['chat:quiz'] = 'የልምምድ ፈተና ውሰድ';
+$string['chat:quiz_setup_title'] = 'የልምምድ ፈተና';
+$string['chat:quiz_questions'] = 'የጥያቄዎች ቁጥር';
+$string['chat:quiz_topic'] = 'ርዕስ';
+$string['chat:quiz_topic_guided'] = 'AI-መሪ (በእድገትዎ ላይ ተመስርቶ)';
+$string['chat:quiz_topic_default'] = 'የአሁኑ ኮርስ ይዘት';
+$string['chat:quiz_topic_custom'] = 'ብጁ ርዕስ…';
+$string['chat:quiz_custom_placeholder'] = 'ርዕስ ወይም ጥያቄ ያስገቡ...';
+$string['chat:quiz_start'] = 'ፈተናውን ጀምር';
+$string['chat:quiz_cancel'] = 'ሰርዝ';
+$string['chat:quiz_loading'] = 'ፈተና እየተዘጋጀ ነው…';
+$string['chat:quiz_error'] = 'ፈተና ማዘጋጀት አልተሳካም። እባክዎ እንደገና ይሞክሩ።';
+$string['chat:quiz_correct'] = 'ትክክል!';
+$string['chat:quiz_wrong'] = 'ስህተት።';
+$string['chat:quiz_next'] = 'ቀጣይ ጥያቄ';
+$string['chat:quiz_finish'] = 'ውጤቶቹን ይመልከቱ';
+$string['chat:quiz_score'] = 'ፈተናው ተጠናቋል! ከ{$a->total} ውስጥ {$a->score} አስመዘገቡ።';
+$string['chat:quiz_summary'] = 'ለ"{$a->topic}" {$a->total} ጥያቄ ያለው የልምምድ ፈተና ወሰድኩ እና {$a->score}/{$a->total} አስመዘገብኩ።';
+$string['chat:quiz_topic_objectives'] = 'የትምህርት ዓላማዎች';
+$string['chat:quiz_topic_modules'] = 'የኮርስ ርዕስ';
+$string['chat:quiz_subtopic_select'] = 'ልዩ ንጥል ይምረጡ…';
+$string['chat:quiz_topic_sections'] = 'የኮርስ ክፍሎች';
+$string['chat:quiz_score_great'] = 'ሥራዎ ድንቅ ነው! ቁሳቁሱን ጠንቅቀው ያውቁታል።';
+$string['chat:quiz_score_good'] = 'ጥሩ ጥረት! ግንዛቤዎን ለማጠናከር መከለሱን ይቀጥሉ።';
+$string['chat:quiz_score_practice'] = 'መለማመዱን ይቀጥሉ — የሚመለከተውን ኮርስ ቁሳቁስ ይከልሱ ቆይተው ፈተናውን እንደገና ይሞክሩ።';
+$string['chat:quiz_review_heading'] = 'ክለሳ';
+$string['chat:quiz_retake'] = 'ፈተናውን ደግሞ ውሰድ';
+$string['chat:quiz_exit'] = 'ፈተናውን ውጣ';
+$string['chat:quiz_your_answer'] = 'የእርስዎ መልስ';
+$string['chat:quiz_correct_answer'] = 'ትክክለኛ መልስ';
+
+// Conversation starters.
+$string['chat:starters_label'] = 'ውይይት ጀማሪዎች';
+$string['chat:starter_quiz'] = 'ፈትናኝ';
+$string['chat:starter_explain'] = 'ይህን አብራሩ';
+$string['chat:starter_key_concepts'] = 'ቁልፍ ፅንሰ-ሐሳቦች';
+$string['chat:starter_study_plan'] = 'የጥናት እቅድ';
+$string['chat:starter_help_me'] = 'AI እርዳታ';
+$string['chat:starter_ell_practice'] = 'ተናገር ለማዘጋጀት';
+$string['chat:starter_ell_pronunciation'] = 'ELL አጠራር';
+$string['chat:starter_ai_coach'] = 'AI አሰልጣኝ';
+$string['chat:starter_speak'] = 'ጀማሪ ተናገር';
+
+// Reset / home.
+$string['chat:reset'] = 'ዳግም ጀምር';
+
+// Topic picker.
+$string['chat:topic_picker_title'] = 'ምን ላይ ማተኮር ይፈልጋሉ?';
+$string['chat:topic_picker_title_help'] = 'ምን ዓይነት እርዳታ ይፈልጋሉ?';
+$string['chat:topic_picker_title_explain'] = 'ምን ይብራራልዎ?';
+$string['chat:topic_picker_title_study'] = 'ምን ዓይነት ርዕስ ላይ ማተኮር ይፈልጋሉ?';
+$string['chat:topic_start'] = 'ቀጥል';
+
+// Expand states.
+$string['chat:fullscreen'] = 'ሙሉ ማያ';
+$string['chat:exitfullscreen'] = 'ሙሉ ማያ ውጣ';
+
+// Settings panel.
+$string['chat:language'] = 'ቋንቋ ቀይር';
+$string['chat:settings_panel'] = 'ቅንብሮች';
+$string['chat:settings_language'] = 'ቋንቋ';
+$string['chat:settings_avatar'] = 'አቫታር';
+$string['chat:settings_voice'] = 'ድምፅ';
+$string['chat:settings_voice_admin'] = 'የድምፅ ቅንብሮች በጣቢያ አስተዳዳሪ ፓነል ውስጥ ይተዳደራሉ።';
+
+// Voice mode.
+$string['chat:voice_mode'] = 'የድምፅ ሁናቴ';
+$string['chat:voice_end'] = 'የድምፅ ክፍለ ጊዜ ጨርስ';
+$string['chat:voice_connecting'] = 'እየተገናኘ ነው...';
+$string['chat:voice_listening'] = 'እያዳመጠ ነው...';
+$string['chat:voice_speaking'] = 'SOLA እየናገረ ነው...';
+$string['chat:voice_idle'] = 'ዝግጁ';
+$string['chat:voice_error'] = 'የድምፅ ግንኙነት አልተሳካም። ቅንብሮችዎን ይፈትሹ።';
+$string['chat:quiz_locked'] = 'ሳይለር SOLA ፈተና ወቅት ተቋርጧል። ጥሩ እድል!';

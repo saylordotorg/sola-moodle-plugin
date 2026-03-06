@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'Susa Yonke Idatha Yami';
 $string['usersettings:confirm_delete_course'] = 'Uqinisekile ukuthi ufuna ukususa ngokuphelele yonke idatha yakho yomfundisi we-AI yesifundo "{$a}"? Lesi sinyathelo asikhezulwa.';
 $string['usersettings:confirm_delete_all'] = 'Uqinisekile ukuthi ufuna ukususa ngokuphelele YONKE idatha yakho yomfundisi we-AI kuzo zonke izifundo? Lesi sinyathelo asikhezulwa.';
 $string['usersettings:data_deleted'] = 'Idatha yakho isuswe.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'Sawubona, {$a}! Ngingu-SOLA, umsizi wakho wokufunda online we-Saylor.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'Vula SOLA';
+$string['chat:change_avatar'] = 'Shintsha i-avatar';
+
+$string['chat:quiz'] = 'Thatha uhlelo lokuhlola lokuzilolonga';
+$string['chat:quiz_setup_title'] = 'Uhlelo Lokuhlola Lokuzilolonga';
+$string['chat:quiz_questions'] = 'Inani lemibuzo';
+$string['chat:quiz_topic'] = 'Isihloko';
+$string['chat:quiz_topic_guided'] = 'Iqondiswa yi-AI (kusekelwe ekuthuthukeni kwakho)';
+$string['chat:quiz_topic_default'] = 'Okuqukethwe kwesifundo samanje';
+$string['chat:quiz_topic_custom'] = 'Isihloko esikhethiwe…';
+$string['chat:quiz_custom_placeholder'] = 'Faka isihloko noma umbuzo...';
+$string['chat:quiz_start'] = 'Qala Uhlelo Lokuhlola';
+$string['chat:quiz_cancel'] = 'Khansela';
+$string['chat:quiz_loading'] = 'Ikhiqiza uhlelo lokuhlola…';
+$string['chat:quiz_error'] = 'Yehlulekile ukukhiqiza uhlelo lokuhlola. Sicela uzame futhi.';
+$string['chat:quiz_correct'] = 'Kulungile!';
+$string['chat:quiz_wrong'] = 'Akukho.';
+$string['chat:quiz_next'] = 'Umbuzo olandelayo';
+$string['chat:quiz_finish'] = 'Bona imiphumela';
+$string['chat:quiz_score'] = 'Uhlelo lokuhlola luqediwe! Uthole {$a->score} kwi-{$a->total}.';
+$string['chat:quiz_summary'] = 'Ngithe nqo ngaphothula uhlelo lokuhlola lokuzilolonga lemibuzo engu-{$a->total} ku-"{$a->topic}" futhi ngithole {$a->score}/{$a->total}.';
+$string['chat:quiz_topic_objectives'] = 'Izinhloso Zokufunda';
+$string['chat:quiz_topic_modules'] = 'Isihloko Sesifundo';
+$string['chat:quiz_subtopic_select'] = 'Khetha into ethile…';
+$string['chat:quiz_topic_sections'] = 'Izingxenye Zesifundo';
+$string['chat:quiz_score_great'] = 'Umsebenzi omuhle kakhulu! Uyazi kahle lo msebenzi.';
+$string['chat:quiz_score_good'] = 'Umzamo omuhle! Qhubeka ubuyekeza ukuze uqinise ukuqonda kwakho.';
+$string['chat:quiz_score_practice'] = 'Qhubeka uzilolonga — zama ukubuyekeza izinto ezihlobene zesifundo, bese uphinda uhlelo lokuhlola.';
+$string['chat:quiz_review_heading'] = 'Buyekeza';
+$string['chat:quiz_retake'] = 'Phinda Uhlelo Lokuhlola';
+$string['chat:quiz_exit'] = 'Phuma Ehlolweni';
+$string['chat:quiz_your_answer'] = 'Impendulo yakho';
+$string['chat:quiz_correct_answer'] = 'Impendulo efanele';
+
+$string['chat:starters_label'] = 'Iziqalo zengxoxo';
+$string['chat:starter_quiz'] = 'Ngihlole';
+$string['chat:starter_explain'] = 'Chaza Lokhu';
+$string['chat:starter_key_concepts'] = 'Imiqondo Ebalulekile';
+$string['chat:starter_study_plan'] = 'Uhlelo Lokufunda';
+$string['chat:starter_help_me'] = 'Usizo Lwe-AI';
+$string['chat:starter_ell_practice'] = 'Zilolonga Ukukhuluma';
+$string['chat:starter_ell_pronunciation'] = 'Ukuphimisa Kwe-ELL';
+$string['chat:starter_ai_coach'] = 'Uqeqeshi we-AI';
+$string['chat:starter_speak'] = 'Khuluma isiqalo';
+
+$string['chat:reset'] = 'Qala kabusha';
+
+$string['chat:topic_picker_title'] = 'Ufuna ukugxila kuwona?';
+$string['chat:topic_picker_title_help'] = 'Ufuna usizo ngani?';
+$string['chat:topic_picker_title_explain'] = 'Ufuna ngikuchazele ini?';
+$string['chat:topic_picker_title_study'] = 'Ufuna ukugxila esigabeni sini?';
+$string['chat:topic_start'] = 'Qhubeka';
+
+$string['chat:fullscreen'] = 'Isikrini esigcwele';
+$string['chat:exitfullscreen'] = 'Phuma kwisikrini esigcwele';
+
+$string['chat:language'] = 'Shintsha ulimi';
+$string['chat:settings_panel'] = 'Izilungiselelo';
+$string['chat:settings_language'] = 'Ulimi';
+$string['chat:settings_avatar'] = 'I-Avatar';
+$string['chat:settings_voice'] = 'Izwi';
+$string['chat:settings_voice_admin'] = 'Izilungiselelo zezwi zilalelwa ebhodini lomphathi wezizinda.';
+
+$string['chat:voice_mode'] = 'Imodi yezwi';
+$string['chat:voice_end'] = 'Qeda iseshini yezwi';
+$string['chat:voice_connecting'] = 'Iyaxhumana...';
+$string['chat:voice_listening'] = 'Ilalela...';
+$string['chat:voice_speaking'] = 'SOLA ikhuluma...';
+$string['chat:voice_idle'] = 'Ilungile';
+$string['chat:voice_error'] = 'Ukuxhumana kwezwi kuhlulekile. Sicela uhlole izilungiselelo zakho.';
+$string['chat:quiz_locked'] = 'SOLA imisiwe ngesikhathi sokuhlola ukuze isekele ubuqotho bezemfundo. Ngikufisela inhlanhla!';

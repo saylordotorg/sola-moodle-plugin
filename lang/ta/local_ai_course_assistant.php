@@ -273,3 +273,80 @@ $string['usersettings:delete_all_button'] = 'என் அனைத்து த
 $string['usersettings:confirm_delete_course'] = '"{$a}" பாடத்திற்கான உங்கள் அனைத்து AI ஆசிரியர் தரவையும் நிரந்தரமாக நீக்க விரும்புகிறீர்களா? இந்த செயலை செயல்தவிர்க்க முடியாது.';
 $string['usersettings:confirm_delete_all'] = 'அனைத்து பாடங்களிலும் உங்கள் அனைத்து AI ஆசிரியர் தரவையும் நிரந்தரமாக நீக்க விரும்புகிறீர்களா? இந்த செயலை செயல்தவிர்க்க முடியாது.';
 $string['usersettings:data_deleted'] = 'உங்கள் தரவு நீக்கப்பட்டது.';
+
+// === SOLA v1.0.12 — updated/new strings ===
+
+$string['chat:greeting'] = 'வணக்கம், {$a}! நான் SOLA, உங்கள் Saylor ஆன்லைன் கற்றல் உதவியாளர்.';
+$string['chat:title'] = 'SOLA';
+$string['chat:assistant'] = 'SOLA';
+$string['chat:open'] = 'SOLA-வை திற';
+$string['chat:change_avatar'] = 'அவதாரத்தை மாற்று';
+
+$string['chat:quiz'] = 'பயிற்சி வினாடி வினா எடு';
+$string['chat:quiz_setup_title'] = 'பயிற்சி வினாடி வினா';
+$string['chat:quiz_questions'] = 'கேள்விகளின் எண்ணிக்கை';
+$string['chat:quiz_topic'] = 'தலைப்பு';
+$string['chat:quiz_topic_guided'] = 'AI வழிகாட்டல் (உங்கள் முன்னேற்றத்தின் அடிப்படையில்)';
+$string['chat:quiz_topic_default'] = 'தற்போதைய பாட உள்ளடக்கம்';
+$string['chat:quiz_topic_custom'] = 'தனிப்பயன் தலைப்பு…';
+$string['chat:quiz_custom_placeholder'] = 'ஒரு தலைப்பு அல்லது கேள்வி உள்ளிடவும்...';
+$string['chat:quiz_start'] = 'வினாடி வினா தொடங்கு';
+$string['chat:quiz_cancel'] = 'ரத்து செய்';
+$string['chat:quiz_loading'] = 'வினாடி வினா உருவாக்குகிறது…';
+$string['chat:quiz_error'] = 'வினாடி வினா உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+$string['chat:quiz_correct'] = 'சரியானது!';
+$string['chat:quiz_wrong'] = 'தவறானது.';
+$string['chat:quiz_next'] = 'அடுத்த கேள்வி';
+$string['chat:quiz_finish'] = 'முடிவுகளைப் பார்';
+$string['chat:quiz_score'] = 'வினாடி வினா முடிந்தது! நீங்கள் {$a->total}-இல் {$a->score} மதிப்பெண் பெற்றீர்கள்.';
+$string['chat:quiz_summary'] = 'நான் இப்போது "{$a->topic}" தலைப்பில் {$a->total} கேள்விகள் கொண்ட பயிற்சி வினாடி வினா முடித்தேன், {$a->score}/{$a->total} மதிப்பெண் பெற்றேன்.';
+$string['chat:quiz_topic_objectives'] = 'கற்றல் நோக்கங்கள்';
+$string['chat:quiz_topic_modules'] = 'பாட தலைப்பு';
+$string['chat:quiz_subtopic_select'] = 'குறிப்பிட்ட பொருளை தேர்ந்தெடுக்கவும்…';
+$string['chat:quiz_topic_sections'] = 'பாட பிரிவுகள்';
+$string['chat:quiz_score_great'] = 'சிறந்த வேலை! இந்த தலைப்பை நீங்கள் நன்கு அறிவீர்கள்.';
+$string['chat:quiz_score_good'] = 'நல்ல முயற்சி! புரிதலை வலுப்படுத்த தொடர்ந்து படிக்கவும்.';
+$string['chat:quiz_score_practice'] = 'தொடர்ந்து பயிற்சி செய்யுங்கள் — தொடர்புடைய பாட உள்ளடக்கத்தை மதிப்பாய்வு செய்து, பின்னர் வினாடி வினா மீண்டும் எடுக்கவும்.';
+$string['chat:quiz_review_heading'] = 'மதிப்பாய்வு';
+$string['chat:quiz_retake'] = 'வினாடி வினா மீண்டும் எடு';
+$string['chat:quiz_exit'] = 'வினாடி வினாவிலிருந்து வெளியேறு';
+$string['chat:quiz_your_answer'] = 'உங்கள் பதில்';
+$string['chat:quiz_correct_answer'] = 'சரியான பதில்';
+
+$string['chat:starters_label'] = 'உரையாடல் தொடக்கங்கள்';
+$string['chat:starter_quiz'] = 'என்னை சோதி';
+$string['chat:starter_explain'] = 'இதை விளக்கு';
+$string['chat:starter_key_concepts'] = 'முக்கிய கருத்துகள்';
+$string['chat:starter_study_plan'] = 'படிப்பு திட்டம்';
+$string['chat:starter_help_me'] = 'AI உதவி';
+$string['chat:starter_ell_practice'] = 'பேசும் பயிற்சி';
+$string['chat:starter_ell_pronunciation'] = 'ELL உச்சரிப்பு';
+$string['chat:starter_ai_coach'] = 'AI பயிற்சியாளர்';
+$string['chat:starter_speak'] = 'தொடக்கத்தை பேசுங்கள்';
+
+$string['chat:reset'] = 'மீண்டும் தொடங்கு';
+
+$string['chat:topic_picker_title'] = 'நீங்கள் எதில் கவனம் செலுத்த விரும்புகிறீர்கள்?';
+$string['chat:topic_picker_title_help'] = 'நீங்கள் எதில் உதவி விரும்புகிறீர்கள்?';
+$string['chat:topic_picker_title_explain'] = 'நான் என்ன விளக்க வேண்டும் என்று விரும்புகிறீர்கள்?';
+$string['chat:topic_picker_title_study'] = 'எந்த பகுதியில் கவனம் செலுத்த விரும்புகிறீர்கள்?';
+$string['chat:topic_start'] = 'தொடர்';
+
+$string['chat:fullscreen'] = 'முழு திரை';
+$string['chat:exitfullscreen'] = 'முழு திரையிலிருந்து வெளியேறு';
+
+$string['chat:language'] = 'மொழியை மாற்று';
+$string['chat:settings_panel'] = 'அமைப்புகள்';
+$string['chat:settings_language'] = 'மொழி';
+$string['chat:settings_avatar'] = 'அவதாரம்';
+$string['chat:settings_voice'] = 'குரல்';
+$string['chat:settings_voice_admin'] = 'குரல் அமைப்புகள் தளத்தின் நிர்வாக பலகத்தில் நிர்வகிக்கப்படுகின்றன.';
+
+$string['chat:voice_mode'] = 'குரல் பயன்முறை';
+$string['chat:voice_end'] = 'குரல் அமர்வை முடி';
+$string['chat:voice_connecting'] = 'இணைக்கிறது...';
+$string['chat:voice_listening'] = 'கேட்கிறது...';
+$string['chat:voice_speaking'] = 'SOLA பேசுகிறது...';
+$string['chat:voice_idle'] = 'தயார்';
+$string['chat:voice_error'] = 'குரல் இணைப்பு தோல்வியுற்றது. அமைப்புகளை சரிபார்க்கவும்.';
+$string['chat:quiz_locked'] = 'கல்வி நேர்மையை ஆதரிக்க வினாடி வினாக்களின் போது SOLA இடைநிறுத்தப்பட்டுள்ளது. வாழ்த்துக்கள்!';
