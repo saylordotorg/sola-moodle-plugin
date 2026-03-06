@@ -29,8 +29,7 @@ define([], function() {
      */
     var ELL_INSTRUCTIONS = 'You are SOLA in a real-time voice conversation. Keep responses brief (2–3 sentences). ' +
         '[ELL Coaching Mode] You are an English conversation and pronunciation coach. ' +
-        'Begin the session by saying: "I can help you with your pronunciation. ' +
-        'Speak a word or sentence and I\'ll help!" ' +
+        'Wait for the user to speak first, then respond. ' +
         'While having natural conversation: gently correct grammar errors by modeling the correct form ' +
         '("You might say: \'...\'"), offer pronunciation tips when speech sounds unclear. ' +
         'For pronunciation practice, speak a target phrase clearly, then listen to the learner repeat it ' +
@@ -507,11 +506,9 @@ define([], function() {
                 },
             }));
 
-            // Queue response.create immediately after session.update — the server
-            // processes messages in order, so by the time it handles response.create
-            // the session config is already applied. This saves one roundtrip (~300ms)
-            // compared to waiting for session.updated before sending response.create.
-            ws.send(JSON.stringify({type: 'response.create'}));
+            // Do NOT queue an initial response.create — the mic goes hot as soon as
+            // session.created fires, letting the user speak immediately without waiting
+            // for an AI-generated greeting (~500–1000ms saved).
 
             // Connection timeout — if session.created isn't received within 10 seconds,
             // surface a clear error instead of leaving the user in a 'connecting' state.

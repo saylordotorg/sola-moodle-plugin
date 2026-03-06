@@ -651,7 +651,7 @@ define([
                 sessKey:  sessKey,
                 sseUrl:   sseUrl,
                 lang:     Speech.getLang(),
-                greeting: "What would you like to talk about today? You can begin speaking.",
+                // No greeting — mic starts immediately so the user can speak right away.
             }
         );
     };

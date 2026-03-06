@@ -82,7 +82,7 @@ class get_realtime_token extends external_api {
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($body),
             ],
-            CURLOPT_TIMEOUT        => 15,
+            CURLOPT_TIMEOUT        => 5,
         ]);
         $response = curl_exec($ch);
         $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);

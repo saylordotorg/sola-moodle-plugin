@@ -202,5 +202,12 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026030800, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026030801) {
+        // v1.0.18: Reduce ELL/Practice Speaking latency — remove upfront greeting delays,
+        // tighten VAD silence timer (1500ms→750ms) and restart gap (300ms→50ms).
+        // No schema changes needed.
+        upgrade_plugin_savepoint(true, 2026030801, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

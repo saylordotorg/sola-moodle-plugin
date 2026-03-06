@@ -239,7 +239,7 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
             } else if (recognition) {
                 try { recognition.start(); } catch (e) { /**/ }
             }
-        }, 300);
+        }, 50); // was 300ms — reduced for snappier turn-around
     };
 
     /**
@@ -506,7 +506,7 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
                     if (mediaRecorder && mediaRecorder.state === 'recording') {
                         mediaRecorder.stop();
                     }
-                }, 1500);
+                }, 750); // was 1500ms — halved for faster response
             }
             vadFrame = requestAnimationFrame(checkLevel);
         };
