@@ -1923,6 +1923,22 @@ define([
             return;
         }
 
+        // Route typed text through the active voice session (Practice Speaking or Pronunciation).
+        if (Realtime.isConnected()) {
+            UI.clearInput();
+            UI.autoResizeInput();
+            UI.updateSendButton();
+            Realtime.sendText(text);
+            return;
+        }
+        if (Voice.isConnected()) {
+            UI.clearInput();
+            UI.autoResizeInput();
+            UI.updateSendButton();
+            Voice.sendText(text);
+            return;
+        }
+
         // Intercept quiz intent (e.g. from STT: "quiz me on the introduction")
         // and route to the interactive quiz UI instead of plain chat.
         if (detectQuizIntent(text)) {

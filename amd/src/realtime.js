@@ -644,10 +644,50 @@ define([], function() {
         return ws !== null && ws.readyState === WebSocket.OPEN;
     };
 
+    /**
+     * Send a typed text message into the Realtime session.
+     * Creates a user conversation item with the text, then requests an audio response.
+     * @param {string} text
+     */
+    var sendText = function(text) {
+        if (!ws || ws.readyState !== WebSocket.OPEN || !text) {
+            return;
+        }
+        // Interrupt any current AI speech (barge-in).
+        if (currentState === 'speaking') {
+            if (masterGain && audioCtx) {
+                masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            }
+            if (currentSource) {
+                try { currentSource.stop(); } catch (e) { /**/ }
+                currentSource = null;
+            }
+            audioChunks = [];
+            ws.send(JSON.stringify({type: 'response.cancel'}));
+        }
+
+        // Show user text in the transcript.
+        if (onTranscriptCb) {
+            onTranscriptCb('user', text);
+        }
+
+        // Create a text conversation item and request a response.
+        ws.send(JSON.stringify({
+            type: 'conversation.item.create',
+            item: {
+                type: 'message',
+                role: 'user',
+                content: [{type: 'input_text', text: text}],
+            },
+        }));
+        ws.send(JSON.stringify({type: 'response.create'}));
+    };
+
     return {
         connect: connect,
         disconnect: disconnect,
         isConnected: isConnected,
+        sendText: sendText,
         ELL_INSTRUCTIONS: ELL_INSTRUCTIONS,
     };
 });

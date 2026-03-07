@@ -894,10 +894,20 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
         return connected;
     };
 
+    /**
+     * Send typed text into the active voice session (processed as if spoken).
+     * @param {string} text
+     */
+    var sendText = function(text) {
+        if (!connected || !text) { return; }
+        processUtterance(text);
+    };
+
     return {
         connect:          connect,
         disconnect:       disconnect,
         isConnected:      isConnected,
+        sendText:         sendText,
         ELL_INSTRUCTIONS: ELL_INSTRUCTIONS,
     };
 });
