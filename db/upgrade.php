@@ -189,54 +189,8 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025022600, 'local', 'ai_course_assistant');
     }
 
-    if ($oldversion < 2026030701) {
-        // v1.0.16: JS-only changes (typewriter animation, AudioContext TTS, Quick Study chip).
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030701, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030800) {
-        // v1.0.17: Enhanced Quick Study (objectives/modules sub-select, recent sessions),
-        // personalised welcome-back message, progress panel, Settings progress section.
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030800, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030801) {
-        // v1.0.18: Reduce ELL/Practice Speaking latency — remove upfront greeting delays,
-        // tighten VAD silence timer (1500ms→750ms) and restart gap (300ms→50ms).
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030801, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030802) {
-        // v1.0.19: Fix numbered list rendering (blank lines between items reset counter);
-        // add written instruction prompt to ELL/Practice Speaking voice overlay.
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030802, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030803) {
-        // v1.0.19 patch: rename "ELL Pronunciation" chip to "Pronunciation Practice";
-        // reorder voice chips (Practice Speaking → Pronunciation Practice → Study Plan).
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030803, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030804) {
-        // v1.0.20: Update welcome screen — personalised subtitle, new feature list
-        // including Practice Speaking and Pronunciation Practice (conditionally),
-        // adaptive quizzes, focused sessions; updated CTA text.
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030804, 'local', 'ai_course_assistant');
-    }
-
-    if ($oldversion < 2026030805) {
-        // v1.0.21: Fix Practice Speaking transcript showing raw [SOLA_NEXT]...[/SOLA_NEXT]
-        // tags. Use display accumulator in voice.js so tag is detected across token boundaries.
-        // No schema changes needed.
-        upgrade_plugin_savepoint(true, 2026030805, 'local', 'ai_course_assistant');
-    }
+    // Note: versions 2026030701 through 2026030805 had no schema changes
+    // and do not need savepoints. Moodle handles version bumps without them.
 
     if ($oldversion < 2026030900) {
         // v1.1.0: Token usage tracking and cost estimation.
