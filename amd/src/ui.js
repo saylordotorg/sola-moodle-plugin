@@ -1211,6 +1211,7 @@ define([
      */
     const startStreaming = function() {
         showTyping(false);
+        scrollFollowMode = false;
         streamingEl = addMessage('assistant', '');
         return streamingEl;
     };
@@ -1239,8 +1240,11 @@ define([
             } else if (messagesContainer && streamingEl) {
                 // Auto-scroll to reveal new text, but never scroll the message top
                 // above the top of the visible area.
-                var msgTop = streamingEl.offsetTop;
-                var maxScroll = msgTop - 4;
+                // Use getBoundingClientRect for accurate position regardless of offsetParent.
+                var containerTop = messagesContainer.getBoundingClientRect().top;
+                var msgTop = streamingEl.getBoundingClientRect().top;
+                var msgOffsetInScroll = msgTop - containerTop + messagesContainer.scrollTop;
+                var maxScroll = msgOffsetInScroll - 4;
                 var idealScroll = messagesContainer.scrollHeight - messagesContainer.clientHeight;
                 messagesContainer.scrollTop = Math.min(idealScroll, maxScroll);
             }
