@@ -114,12 +114,25 @@ define([
         });
         initLanguage();
 
-        // Auto-open on the user's first visit to this course.
+        // First-ever visit: pulse the toggle to attract attention (don't auto-open).
+        // Subsequent new-course visits: auto-open after 600ms on desktop only.
+        // Mobile (≤600px) never auto-opens — full-screen takeover is too aggressive.
         try {
+            const introDismissed = localStorage.getItem('ai_course_assistant_intro_dismissed');
             const visitedKey = 'ai_course_assistant_visited_' + courseId;
-            if (!localStorage.getItem(visitedKey)) {
+            const isMobile = window.innerWidth <= 600;
+            if (!introDismissed) {
+                // True first-timer — pulse the toggle until they click it.
+                var toggleEl = document.getElementById('local-ai-course-assistant-toggle');
+                if (toggleEl) {
+                    toggleEl.classList.add('aica-first-visit');
+                }
+            } else if (!localStorage.getItem(visitedKey)) {
                 localStorage.setItem(visitedKey, '1');
-                setTimeout(handleToggle, 600);
+                if (!isMobile) {
+                    // Returning user, new course, desktop — auto-open.
+                    setTimeout(handleToggle, 600);
+                }
             }
         } catch (e) {
             // localStorage may be unavailable.
@@ -1834,6 +1847,14 @@ define([
     const handleToggle = function() {
         if (UI.wasToggleDragged()) {
             return;
+        }
+        // Remove first-visit pulse on first click and mark course as visited.
+        var toggleEl = document.getElementById('local-ai-course-assistant-toggle');
+        if (toggleEl && toggleEl.classList.contains('aica-first-visit')) {
+            toggleEl.classList.remove('aica-first-visit');
+            try {
+                localStorage.setItem('ai_course_assistant_visited_' + courseId, '1');
+            } catch (e) { /**/ }
         }
         const opened = UI.toggleDrawer();
         if (opened && quizLocked && !historyLoaded) {
