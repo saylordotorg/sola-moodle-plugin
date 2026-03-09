@@ -897,6 +897,14 @@
     max-height: none;
 }
 
+/* Push Moodle page content aside when drawer is open (desktop only).
+   The margin is managed by JS; this adds a smooth transition. */
+@media (min-width: 601px) {
+    #page.aica-drawer-push {
+        transition: margin-right 0.3s ease;
+    }
+}
+
 /* Hide swipe handle in drawer mode (desktop sidebar, not mobile sheet) */
 .local-ai-course-assistant--drawer-mode .aica-swipe-handle {
     display: none;

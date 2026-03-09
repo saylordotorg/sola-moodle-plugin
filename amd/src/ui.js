@@ -513,6 +513,12 @@ define([
         if (root.dataset.displaymode === 'drawer') {
             root.classList.add('local-ai-course-assistant--drawer-mode');
             root.classList.add('local-ai-course-assistant--drawer-ready');
+            // Sync page push margin on viewport resize (remove on mobile, re-apply on desktop).
+            window.addEventListener('resize', function() {
+                if (isOpen()) {
+                    updatePagePush(window.innerWidth > 600);
+                }
+            });
         }
         restoreExpandState();
         applyPositionOffset();
@@ -789,6 +795,10 @@ define([
                     height: drawer.style.height,
                 }));
             } catch (e) { /**/ }
+            // Re-sync page push margin after resize.
+            if (isOpen()) {
+                updatePagePush(true);
+            }
         });
         document.addEventListener('pointercancel', function() {
             isResizing = false;
@@ -975,6 +985,10 @@ define([
         } catch (e) {
             // localStorage may be unavailable.
         }
+        // Re-sync page push margin since drawer width changed.
+        if (isOpen()) {
+            requestAnimationFrame(function() { updatePagePush(true); });
+        }
         return expanded;
     };
 
@@ -985,6 +999,36 @@ define([
      */
     const isOpen = function() {
         return drawer && drawer.getAttribute('aria-hidden') === 'false';
+    };
+
+    /**
+     * Push or release the Moodle #page content area so the drawer doesn't overlap it.
+     * Only applies in drawer mode on desktop (>600px). Sets margin-right on #page
+     * to match the drawer width.
+     *
+     * @param {boolean} push  True to push content aside, false to release
+     */
+    const updatePagePush = function(push) {
+        if (!root || !root.classList.contains('local-ai-course-assistant--drawer-mode')) {
+            return;
+        }
+        // Don't push on mobile — drawer overlays in mobile mode.
+        if (window.innerWidth <= 600) {
+            return;
+        }
+        const page = document.getElementById('page');
+        if (!page) {
+            return;
+        }
+        if (push) {
+            page.classList.add('aica-drawer-push');
+            // Read the actual drawer width (accounts for expanded state and custom resize).
+            const w = drawer ? drawer.offsetWidth : 400;
+            page.style.marginRight = w + 'px';
+        } else {
+            page.style.marginRight = '';
+            page.classList.remove('aica-drawer-push');
+        }
     };
 
     /**
@@ -1006,9 +1050,13 @@ define([
             if (root) { root.classList.add('local-ai-course-assistant--open'); }
             // Show conversation starters when reopening.
             showStarters();
+            // Push page content aside on desktop so drawer doesn't overlap.
+            // Use requestAnimationFrame so the drawer has its final width before we read it.
+            requestAnimationFrame(function() { updatePagePush(true); });
         } else {
             drawer.classList.remove('local-ai-course-assistant__drawer--open');
             if (root) { root.classList.remove('local-ai-course-assistant--open'); }
+            updatePagePush(false);
         }
 
         return opening;
@@ -1024,6 +1072,7 @@ define([
         drawer.classList.remove('local-ai-course-assistant__drawer--minimized');
         drawer.classList.remove('local-ai-course-assistant__drawer--welcome');
         if (root) { root.classList.remove('local-ai-course-assistant--open'); }
+        updatePagePush(false);
         toggle.focus();
     };
 
