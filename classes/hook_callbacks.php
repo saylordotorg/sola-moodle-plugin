@@ -234,6 +234,8 @@ class hook_callbacks {
             'avatarcolor'        => get_config('local_ai_course_assistant', 'avatar_color') ?: '#4a6cf7',
             'avatarfill'         => get_config('local_ai_course_assistant', 'avatar_fill') ?: '#ffffff',
             'displaymode'        => $displaymode,
+            'displayname'        => get_config('local_ai_course_assistant', 'display_name') ?: 'SOLA',
+            'shortname_label'    => get_config('local_ai_course_assistant', 'short_name') ?: 'SOLA',
             'emailreminders'     => (bool)get_config('local_ai_course_assistant', 'reminders_email_enabled'),
             'completionpct'      => $completionpct,
         ];

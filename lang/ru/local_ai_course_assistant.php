@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA говорит...';
 $string['chat:voice_idle'] = 'Готово';
 $string['chat:voice_error'] = 'Не удалось подключиться к голосовому режиму. Проверьте настройки.';
 $string['chat:quiz_locked'] = 'SOLA приостановлена во время тестов для поддержания академической честности. Удачи!';
+$string['task:send_inactivity_reminders'] = 'Отправлять еженедельные напоминания о неактивности';
+$string['messageprovider:study_notes'] = 'Заметки учебной сессии';

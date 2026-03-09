@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA ikhuluma...';
 $string['chat:voice_idle'] = 'Ilungile';
 $string['chat:voice_error'] = 'Ukuxhumana kwezwi kuhlulekile. Sicela uhlole izilungiselelo zakho.';
 $string['chat:quiz_locked'] = 'SOLA imisiwe ngesikhathi sokuhlola ukuze isekele ubuqotho bezemfundo. Ngikufisela inhlanhla!';
+$string['task:send_inactivity_reminders'] = 'Thumela ama-imeyili esikhumbuzo sokungasebenzi njalo ngesonto';
+$string['messageprovider:study_notes'] = 'Amanothi eseshini yokufunda';

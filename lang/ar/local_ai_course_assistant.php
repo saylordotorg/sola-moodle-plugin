@@ -327,3 +327,5 @@ $string['chat:voice_speaking'] = 'SOLA يتحدث...';
 $string['chat:voice_idle'] = 'جاهز';
 $string['chat:voice_error'] = 'فشل الاتصال الصوتي. يرجى التحقق من إعداداتك.';
 $string['chat:quiz_locked'] = 'تم إيقاف SOLA مؤقتًا أثناء الاختبارات دعمًا للنزاهة الأكاديمية. حظًا موفقًا!';
+$string['task:send_inactivity_reminders'] = 'إرسال رسائل تذكير أسبوعية بعدم النشاط';
+$string['messageprovider:study_notes'] = 'ملاحظات جلسة الدراسة';

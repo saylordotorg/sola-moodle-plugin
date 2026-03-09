@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA está falando...';
 $string['chat:voice_idle'] = 'Pronto';
 $string['chat:voice_error'] = 'Falha na conexão de voz. Verifique suas configurações.';
 $string['chat:quiz_locked'] = 'SOLA está pausado durante os quizzes para apoiar a integridade acadêmica. Boa sorte!';
+$string['task:send_inactivity_reminders'] = 'Enviar e-mails de lembrete semanal de inatividade';
+$string['messageprovider:study_notes'] = 'Notas da sessão de estudo';

@@ -116,4 +116,11 @@ $functions = [
         'ajax'         => true,
         'capabilities' => 'local/ai_course_assistant:use',
     ],
+    'local_ai_course_assistant_email_study_notes' => [
+        'classname'    => \local_ai_course_assistant\external\email_study_notes::class,
+        'description'  => 'Email study session notes to the current user.',
+        'type'         => 'write',
+        'ajax'         => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+    ],
 ];

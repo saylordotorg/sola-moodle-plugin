@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'Nagsasalita ang SOLA...';
 $string['chat:voice_idle'] = 'Handa';
 $string['chat:voice_error'] = 'Nabigo ang koneksyon ng boses. Pakisuri ang iyong mga setting.';
 $string['chat:quiz_locked'] = 'Nakaka-pause ang SOLA sa panahon ng mga quiz para suportahan ang integridad ng akademiko. Good luck!';
+$string['task:send_inactivity_reminders'] = 'Magpadala ng lingguhang paalala sa kawalan ng aktibidad';
+$string['messageprovider:study_notes'] = 'Mga tala ng sesyon ng pag-aaral';

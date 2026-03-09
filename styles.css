@@ -129,7 +129,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 9px 12px;
-    background: #4a6cf7;
+    background: var(--aica-avatar-color, #4a6cf7);
     color: #fff;
     flex-shrink: 0;
     cursor: grab;
@@ -908,11 +908,16 @@
     display: none;
 }
 
-/* On mobile, drawer mode falls back to the standard mobile full-screen behavior */
+/* On mobile, drawer mode slides from right instead of bottom */
 @media (max-width: 600px) {
     .local-ai-course-assistant--drawer-mode .local-ai-course-assistant__drawer {
-        width: 100% !important;
+        width: 85% !important;
+        max-width: 360px !important;
         border-radius: 0 !important;
+        transform: translateX(100%) !important;
+    }
+    .local-ai-course-assistant--drawer-mode .local-ai-course-assistant__drawer--open {
+        transform: translateX(0) !important;
     }
 }
 

@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA ń sọ̀rọ̀...';
 $string['chat:voice_idle'] = 'Ó ti ṣetán';
 $string['chat:voice_error'] = 'Ìsopọ̀ ohùn kùnà. Jọ̀wọ́ ṣàyẹ̀wò àwọn ètò rẹ.';
 $string['chat:quiz_locked'] = 'SOLA dáwọ́ dúró nígbà ìdánwò láti ṣe àtìlẹyìn ìmọ̀ ẹ̀kọ́ tó tọ̀. Ire o!';
+$string['task:send_inactivity_reminders'] = 'Fi imeeli iranti aiṣiṣẹ ni ọsẹ-ọsẹ ranṣẹ';
+$string['messageprovider:study_notes'] = 'Awọn akọsilẹ akoko ikẹkọ';

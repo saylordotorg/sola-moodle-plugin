@@ -358,3 +358,5 @@ $string['chat:voice_speaking'] = 'SOLA sedang berbicara...';
 $string['chat:voice_idle'] = 'Siap';
 $string['chat:voice_error'] = 'Koneksi suara gagal. Periksa pengaturan Anda.';
 $string['chat:quiz_locked'] = 'SOLA dijeda selama kuis untuk mendukung integritas akademik. Semoga berhasil!';
+$string['task:send_inactivity_reminders'] = 'Kirim email pengingat ketidakaktifan mingguan';
+$string['messageprovider:study_notes'] = 'Catatan sesi belajar';

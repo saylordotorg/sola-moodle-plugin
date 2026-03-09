@@ -35,6 +35,29 @@ if ($hassiteconfig) {
         0
     ));
 
+    // Branding.
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/branding_heading',
+        'Branding',
+        'Customize the assistant name and appearance.'
+    ));
+
+    // Display name.
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/display_name',
+        'Display Name',
+        'The full name shown in greetings and the welcome screen (e.g. "SOLA").',
+        'SOLA'
+    ));
+
+    // Short name.
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/short_name',
+        'Short Name',
+        'Short name shown in the header bar and compact UI elements.',
+        'SOLA'
+    ));
+
     // AI Provider.
     $providers = [
         'claude' => get_string('settings:provider_claude', 'local_ai_course_assistant'),
@@ -120,7 +143,7 @@ if ($hassiteconfig) {
         'local_ai_course_assistant/display_mode',
         get_string('settings:display_mode', 'local_ai_course_assistant'),
         get_string('settings:display_mode_desc', 'local_ai_course_assistant'),
-        'widget',
+        'drawer',
         $displaymodes
     ));
 
@@ -414,6 +437,22 @@ if ($hassiteconfig) {
         get_string('settings:whatsapp_blocked_countries', 'local_ai_course_assistant'),
         get_string('settings:whatsapp_blocked_countries_desc', 'local_ai_course_assistant'),
         ''
+    ));
+
+    // Inactivity reminders.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/inactivity_reminder_enabled',
+        'Inactivity Reminders',
+        'Send a weekly email to students who have not accessed their course in the configured number of days.',
+        1
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/inactivity_threshold_days',
+        'Inactivity Threshold (days)',
+        'Number of days of inactivity before sending a reminder email.',
+        '7',
+        PARAM_INT
     ));
 
     // --- Wellbeing & Safety Settings ---

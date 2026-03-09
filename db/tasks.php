@@ -43,4 +43,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        'classname' => \local_ai_course_assistant\task\send_inactivity_reminders::class,
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '9',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '1',
+    ],
 ];

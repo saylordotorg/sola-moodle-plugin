@@ -336,3 +336,5 @@ $string['chat:voice_speaking'] = 'SOLA dubbataa jira...';
 $string['chat:voice_idle'] = 'Qophii dha';
 $string['chat:voice_error'] = 'Walitti hidhamuu sagalee kufee. Maaloo qindaa\'ina kee ilaalii.';
 $string['chat:quiz_locked'] = 'SOLA qormaata yeroo dhaabbatee jira akka haqiinsaa barnootaa deeggaruuf. Carraa gaarii!';
+$string['task:send_inactivity_reminders'] = 'Ergaa yaadannoo torban torbaniin erguu';
+$string['messageprovider:study_notes'] = 'Yaadannoo yeroo qo'annoo';

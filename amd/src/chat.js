@@ -695,50 +695,78 @@ define([
         const root = document.getElementById('local-ai-course-assistant');
         const avatarUrl = root ? root.dataset.avatarurl : '';
         const voice = localStorage.getItem('aica_tts_voice') || 'shimmer';
+        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
 
         const endSession = function() {
             Voice.disconnect();
             UI.hideVoiceOverlay();
+            UI.showStarters();
         };
 
         UI.showVoiceOverlay(avatarUrl, endSession,
-            'Start speaking \u2014 SOLA will listen and respond.');
-        UI.setVoiceState('connecting');
+            'Choose a topic or start speaking \u2014 ' + assistantName + ' will listen and respond.');
+        UI.setVoiceState('idle');
 
-        Voice.connect(
-            '',
-            voice,
-            {
-                onTranscript: function(role, text) {
-                    UI.appendVoiceTranscript(role, text);
-                },
-                onStateChange: function(state) {
-                    UI.setVoiceState(state);
-                    if (state === 'disconnected') {
-                        UI.hideVoiceOverlay();
-                    }
-                },
-                onError: function(msg) {
-                    Voice.disconnect();
-                    UI.setVoiceState('disconnected');
-                    UI.hideVoiceOverlay();
-                    addAssistantMsg(msg || 'Voice mode failed.');
-                },
-                onSuggestions: function(chips) {
-                    UI.showSuggestions(chips, function(text) {
-                        UI.clearSuggestions();
-                        Voice.sendText(text);
-                    });
-                },
-            },
-            {
-                courseId: courseId,
-                sessKey:  sessKey,
-                sseUrl:   sseUrl,
-                lang:     Speech.getLang(),
-                // No greeting — mic starts immediately so the user can speak right away.
+        // Build context-aware conversation starters for speaking practice.
+        var speakChips = [];
+        if (currentPageTitle) {
+            speakChips.push('Discuss ' + currentPageTitle);
+        }
+        for (var i = 0; i < moduleTitles.length && speakChips.length < 4; i++) {
+            if (moduleTitles[i] && moduleTitles[i] !== currentPageTitle) {
+                speakChips.push('Talk about ' + moduleTitles[i]);
             }
-        );
+        }
+        speakChips.push('Free conversation');
+
+        var sessionStarted = false;
+        var startSession = function(greeting) {
+            if (sessionStarted) { return; }
+            sessionStarted = true;
+            UI.clearSuggestions();
+            UI.setVoiceState('connecting');
+            Voice.connect(
+                '',
+                voice,
+                {
+                    onTranscript: function(role, text) {
+                        UI.appendVoiceTranscript(role, text);
+                    },
+                    onStateChange: function(state) {
+                        UI.setVoiceState(state);
+                        if (state === 'disconnected') {
+                            UI.hideVoiceOverlay();
+                            UI.showStarters();
+                        }
+                    },
+                    onError: function(msg) {
+                        Voice.disconnect();
+                        UI.setVoiceState('disconnected');
+                        UI.hideVoiceOverlay();
+                        UI.showStarters();
+                        addAssistantMsg(msg || 'Voice mode failed.');
+                    },
+                    onSuggestions: function(chips) {
+                        UI.showSuggestions(chips, function(text) {
+                            UI.clearSuggestions();
+                            Voice.sendText(text);
+                        });
+                    },
+                },
+                {
+                    courseId: courseId,
+                    sessKey:  sessKey,
+                    sseUrl:   sseUrl,
+                    lang:     Speech.getLang(),
+                    greeting: greeting || '',
+                }
+            );
+        };
+
+        // Show speaking topic chips; clicking a chip starts the session with that topic.
+        UI.showSuggestions(speakChips, function(text) {
+            startSession(text === 'Free conversation' ? '' : text);
+        });
     };
 
     /**
@@ -764,6 +792,7 @@ define([
 
         const root = document.getElementById('local-ai-course-assistant');
         const avatarUrl = root ? root.dataset.avatarurl : '';
+        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
 
         // Create AudioContext synchronously — iOS/WKWebView require it inside the user gesture.
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -789,71 +818,109 @@ define([
         const endSession = function() {
             Realtime.disconnect();
             UI.hideVoiceOverlay();
+            UI.showStarters();
         };
 
         const overlay = UI.showVoiceOverlay(avatarUrl, endSession,
-            'Speak a word or sentence to practice your pronunciation. SOLA will give you feedback.');
-        UI.setVoiceState('connecting');
+            'Choose a phrase to practice or start speaking \u2014 ' + assistantName + ' will give you feedback.');
+        UI.setVoiceState('idle');
 
-        // Fetch token and mic stream in parallel — both initiated within the user gesture.
-        Promise.all([Repo.getRealtimeToken(courseId), micPromise]).then(function(results) {
-            const result    = results[0];
-            const micStream = results[1]; // null if getUserMedia failed or unsupported
-
-            const token = result.token;
-            const voice = localStorage.getItem('aica_tts_voice') || result.voice;
-
-            // Enrich ELL instructions with course page context for relevant suggestions.
-            let ellInstructions = Realtime.ELL_INSTRUCTIONS;
-            if (currentPageTitle) {
-                ellInstructions += ' The learner is currently studying: "' + currentPageTitle + '".';
+        // Build vocabulary chips from course context.
+        var vocabChips = [];
+        if (currentPageTitle) {
+            vocabChips.push('Practice saying: ' + currentPageTitle);
+        }
+        for (var i = 0; i < moduleTitles.length && vocabChips.length < 4; i++) {
+            if (moduleTitles[i] && moduleTitles[i] !== currentPageTitle) {
+                vocabChips.push('Pronounce: ' + moduleTitles[i]);
             }
-            if (moduleTitles.length) {
-                ellInstructions += ' Course topics include: ' + moduleTitles.slice(0, 8).join(', ') + '.';
-            }
-            ellInstructions += ' Base your SOLA_NEXT suggestions on the course content when possible.';
+        }
+        vocabChips.push('Free practice');
 
-            Realtime.connect(
-                token,
-                ellInstructions,
-                voice,
-                {
-                    onTranscript: function(role, text) {
-                        UI.appendVoiceTranscript(role, text);
-                    },
-                    onStateChange: function(state) {
-                        UI.setVoiceState(state);
-                        if (state === 'disconnected') {
+        var sessionStarted = false;
+        var startPronunciation = function(phrase) {
+            if (sessionStarted) { return; }
+            sessionStarted = true;
+            UI.clearSuggestions();
+            UI.setVoiceState('connecting');
+
+            // Fetch token and mic stream in parallel — both initiated within the user gesture.
+            Promise.all([Repo.getRealtimeToken(courseId), micPromise]).then(function(results) {
+                const result    = results[0];
+                const micStream = results[1]; // null if getUserMedia failed or unsupported
+
+                const token = result.token;
+                const voice = localStorage.getItem('aica_tts_voice') || result.voice;
+
+                // Enrich ELL instructions with course page context for relevant suggestions.
+                let ellInstructions = Realtime.ELL_INSTRUCTIONS;
+                if (phrase) {
+                    ellInstructions += '\n\nThe student wants to practice pronouncing: "' + phrase +
+                        '". Start by saying this phrase clearly, then ask them to repeat it.';
+                }
+                if (currentPageTitle) {
+                    ellInstructions += ' The learner is currently studying: "' + currentPageTitle + '".';
+                }
+                if (moduleTitles.length) {
+                    ellInstructions += ' Course topics include: ' + moduleTitles.slice(0, 8).join(', ') + '.';
+                }
+                ellInstructions += ' Base your SOLA_NEXT suggestions on the course content when possible.';
+
+                Realtime.connect(
+                    token,
+                    ellInstructions,
+                    voice,
+                    {
+                        onTranscript: function(role, text) {
+                            UI.appendVoiceTranscript(role, text);
+                        },
+                        onStateChange: function(state) {
+                            UI.setVoiceState(state);
+                            if (state === 'disconnected') {
+                                UI.hideVoiceOverlay();
+                                UI.showStarters();
+                            }
+                        },
+                        onError: function(msg) {
+                            UI.setVoiceState('disconnected');
                             UI.hideVoiceOverlay();
-                        }
+                            UI.showStarters();
+                            addAssistantMsg(msg || 'Voice connection failed.');
+                        },
+                        onSuggestions: function(chips) {
+                            UI.showSuggestions(chips, function(text) {
+                                UI.clearSuggestions();
+                                Realtime.sendText(text);
+                            });
+                        },
                     },
-                    onError: function(msg) {
-                        UI.setVoiceState('disconnected');
-                        UI.hideVoiceOverlay();
-                        addAssistantMsg(msg || 'Voice connection failed.');
-                    },
-                    onSuggestions: function(chips) {
-                        UI.showSuggestions(chips, function(text) {
-                            UI.clearSuggestions();
-                            Realtime.sendText(text);
-                        });
-                    },
-                },
-                overlay,
-                audioCtx,
-                micStream
-            );
-            return;
-        }).catch(function(err) {
-            UI.setVoiceState('disconnected');
-            UI.hideVoiceOverlay();
-            const errMsg = (err && err.message) ? err.message : 'Could not get voice token.';
-            Str.get_string('chat:voice_error', 'local_ai_course_assistant').then(function(s) {
-                addAssistantMsg((s || 'Voice connection failed') + ': ' + errMsg);
+                    overlay,
+                    audioCtx,
+                    micStream
+                );
                 return;
-            }).catch(function() {
-                addAssistantMsg(errMsg);
+            }).catch(function(err) {
+                UI.setVoiceState('disconnected');
+                UI.hideVoiceOverlay();
+                UI.showStarters();
+                const errMsg = (err && err.message) ? err.message : 'Could not get voice token.';
+                Str.get_string('chat:voice_error', 'local_ai_course_assistant').then(function(s) {
+                    addAssistantMsg((s || 'Voice connection failed') + ': ' + errMsg);
+                    return;
+                }).catch(function() {
+                    addAssistantMsg(errMsg);
+                });
             });
+        };
+
+        // Show vocabulary chips; clicking a chip starts the pronunciation session.
+        UI.showSuggestions(vocabChips, function(text) {
+            var phrase = '';
+            if (text !== 'Free practice') {
+                // Strip "Practice saying: " or "Pronounce: " prefix to get the raw phrase.
+                phrase = text.replace(/^(Practice saying|Pronounce): /, '');
+            }
+            startPronunciation(phrase);
         });
     };
 

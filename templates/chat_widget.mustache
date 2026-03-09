@@ -55,6 +55,7 @@
      data-cansiteconfig="{{#cansiteconfig}}1{{/cansiteconfig}}"
      data-canviewanalytics="{{#canviewanalytics}}1{{/canviewanalytics}}"
      data-displaymode="{{displaymode}}"
+     data-displayname="{{displayname}}"
      data-emailreminders="{{#emailreminders}}1{{/emailreminders}}"
      data-completionpct="{{completionpct}}">
 
@@ -92,7 +93,7 @@
                         <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__header-avatar" aria-hidden="true" />
                     </div>
                 </button>
-                <span>{{#str}}chat:title, local_ai_course_assistant{{/str}}</span>
+                <span>{{shortname_label}}</span>
             </div>
             <div class="local-ai-course-assistant__header-actions">
                 {{#canviewanalytics}}

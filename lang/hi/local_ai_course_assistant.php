@@ -358,3 +358,5 @@ $string['chat:voice_speaking'] = 'SOLA बोल रही है...';
 $string['chat:voice_idle'] = 'तैयार';
 $string['chat:voice_error'] = 'वॉइस कनेक्शन विफल हुआ। कृपया अपनी सेटिंग जाँचें।';
 $string['chat:quiz_locked'] = 'शैक्षणिक ईमानदारी बनाए रखने के लिए प्रश्नोत्तरी के दौरान SOLA रुकी हुई है। शुभकामनाएँ!';
+$string['task:send_inactivity_reminders'] = 'साप्ताहिक निष्क्रियता अनुस्मारक ईमेल भेजें';
+$string['messageprovider:study_notes'] = 'अध्ययन सत्र नोट्स';

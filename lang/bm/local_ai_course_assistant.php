@@ -357,3 +357,5 @@ $string['chat:voice_speaking'] = 'SOLA bɛ kuma...';
 $string['chat:voice_idle'] = 'Lakɛlɛn';
 $string['chat:voice_error'] = 'Kuma jɔyɔrɔ ma se. I ka laadiliw lajɛ.';
 $string['chat:quiz_locked'] = 'SOLA datugun kɛra ɲɛtaa waati la kalansen tiɲɛya kɔlɔsili kama. I ni baara ɲuman!';
+$string['task:send_inactivity_reminders'] = 'Ci dɔgɔkun dɔgɔkun ladilikan bataki walasa ka baarakɛbaliya kɔfɔ';
+$string['messageprovider:study_notes'] = 'Kalanko waati kunnafoni sɛbɛnw';

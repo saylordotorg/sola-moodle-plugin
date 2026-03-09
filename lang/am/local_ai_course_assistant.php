@@ -356,3 +356,5 @@ $string['chat:voice_speaking'] = 'SOLA እየናገረ ነው...';
 $string['chat:voice_idle'] = 'ዝግጁ';
 $string['chat:voice_error'] = 'የድምፅ ግንኙነት አልተሳካም። ቅንብሮችዎን ይፈትሹ።';
 $string['chat:quiz_locked'] = 'ሳይለር SOLA ፈተና ወቅት ተቋርጧል። ጥሩ እድል!';
+$string['task:send_inactivity_reminders'] = 'ሳምንታዊ የእንቅስቃሴ ማስታወሻ ኢሜይሎችን ላክ';
+$string['messageprovider:study_notes'] = 'የጥናት ክፍለ ጊዜ ማስታወሻዎች';

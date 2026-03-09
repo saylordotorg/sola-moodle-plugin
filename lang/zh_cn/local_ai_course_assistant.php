@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA 正在说话...';
 $string['chat:voice_idle'] = '就绪';
 $string['chat:voice_error'] = '语音连接失败，请检查您的设置。';
 $string['chat:quiz_locked'] = '测验期间 SOLA 已暂停，以维护学术诚信。祝你好运！';
+$string['task:send_inactivity_reminders'] = '发送每周不活跃提醒邮件';
+$string['messageprovider:study_notes'] = '学习课程笔记';

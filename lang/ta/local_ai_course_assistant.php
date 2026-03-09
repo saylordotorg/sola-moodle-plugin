@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA பேசுகிறது...';
 $string['chat:voice_idle'] = 'தயார்';
 $string['chat:voice_error'] = 'குரல் இணைப்பு தோல்வியுற்றது. அமைப்புகளை சரிபார்க்கவும்.';
 $string['chat:quiz_locked'] = 'கல்வி நேர்மையை ஆதரிக்க வினாடி வினாக்களின் போது SOLA இடைநிறுத்தப்பட்டுள்ளது. வாழ்த்துக்கள்!';
+$string['task:send_inactivity_reminders'] = 'வாராந்திர செயலற்ற நினைவூட்டல் மின்னஞ்சல்களை அனுப்பவும்';
+$string['messageprovider:study_notes'] = 'படிப்பு அமர்வு குறிப்புகள்';

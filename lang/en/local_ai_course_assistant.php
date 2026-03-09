@@ -281,6 +281,8 @@ $string['unsubscribe:resubscribe'] = 'Changed your mind? You can re-enable remin
 // Scheduled tasks.
 $string['task:send_reminders'] = 'Send AI tutor study reminders';
 $string['task:index_course_content'] = 'Index course content for RAG semantic search';
+$string['task:send_inactivity_reminders'] = 'Send weekly inactivity reminder emails';
+$string['messageprovider:study_notes'] = 'Study session notes';
 
 // RAG admin page.
 $string['ragadmin:title'] = 'RAG Index Status & Reindex';

@@ -358,3 +358,5 @@ $string['chat:voice_speaking'] = 'SOLA na magana...';
 $string['chat:voice_idle'] = 'Shirye';
 $string['chat:voice_error'] = 'Haɗin murya ya kasa. Da fatan za a duba saitunanku.';
 $string['chat:quiz_locked'] = 'SOLA ta tsaya a lokacin gwaji don tallafawa amincin ilimi. Yin sa-an-nan!';
+$string['task:send_inactivity_reminders'] = 'Aika saƙonnin tunatarwa na mako-mako saboda rashin aiki';
+$string['messageprovider:study_notes'] = 'Bayanan zaman karatu';

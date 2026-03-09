@@ -327,3 +327,5 @@ $string['chat:voice_speaking'] = 'SOLA কথা বলছে...';
 $string['chat:voice_idle'] = 'প্রস্তুত';
 $string['chat:voice_error'] = 'ভয়েস সংযোগ ব্যর্থ হয়েছে। আপনার সেটিংস পরীক্ষা করুন।';
 $string['chat:quiz_locked'] = 'একাডেমিক সততা সমর্থনের জন্য কুইজ চলাকালীন SOLA বিরতিতে রয়েছে। শুভকামনা!';
+$string['task:send_inactivity_reminders'] = 'সাপ্তাহিক নিষ্ক্রিয়তা অনুস্মারক ইমেল পাঠান';
+$string['messageprovider:study_notes'] = 'অধ্যয়ন সেশন নোট';

@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA dañuy wax...';
 $string['chat:voice_idle'] = 'Jëm';
 $string['chat:voice_error'] = 'Connexion jàng bi defoo kaay. Seeti sa réglages yi.';
 $string['chat:quiz_locked'] = 'SOLA dafa suspendu ci kanam ëntërviu yi ngir soxor intégrité académique bi. Yëgël sa jàng!';
+$string['task:send_inactivity_reminders'] = 'Yónnal bataaxal xalaat ci at ci biir ayu-bés';
+$string['messageprovider:study_notes'] = 'Bindu ci jàng yi';

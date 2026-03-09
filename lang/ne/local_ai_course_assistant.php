@@ -350,3 +350,5 @@ $string['chat:voice_speaking'] = 'SOLA बोल्दैछ...';
 $string['chat:voice_idle'] = 'तयार';
 $string['chat:voice_error'] = 'आवाज जडान असफल भयो। कृपया आफ्नो सेटिङहरू जाँच गर्नुहोस्।';
 $string['chat:quiz_locked'] = 'शैक्षिक सत्यनिष्ठा समर्थन गर्न प्रश्नोत्तरीको क्रममा SOLA रोकिएको छ। शुभकामना!';
+$string['task:send_inactivity_reminders'] = 'साप्ताहिक निष्क्रियता सम्झाउने इमेलहरू पठाउनुहोस्';
+$string['messageprovider:study_notes'] = 'अध्ययन सत्र टिप्पणीहरू';

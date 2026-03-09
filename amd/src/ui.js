@@ -2225,6 +2225,37 @@ define([
         const content = document.createElement('div');
         content.className = 'aica-settings-panel__content';
 
+        // ── Language (top of settings) ──
+        const langSection = document.createElement('div');
+        langSection.className = 'aica-settings-panel__section';
+        const langHead = document.createElement('h3');
+        langHead.className = 'aica-settings-panel__section-title';
+        langHead.textContent = 'Language';
+        langSection.appendChild(langHead);
+
+        const langSelect = document.createElement('select');
+        langSelect.className = 'aica-settings-panel__select';
+        const enOption = document.createElement('option');
+        enOption.value = '';
+        enOption.textContent = 'English (default)';
+        if (!config.currentLang) { enOption.selected = true; }
+        langSelect.appendChild(enOption);
+        Object.keys(config.langs).sort(function(a, b) {
+            return config.langs[a].name.localeCompare(config.langs[b].name);
+        }).forEach(function(code) {
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = config.langs[code].name;
+            if (config.currentLang === code) { opt.selected = true; }
+            langSelect.appendChild(opt);
+        });
+        langSelect.addEventListener('change', function() {
+            pendingLang = langSelect.value || null;
+            pendingLangName = pendingLang ? (config.langs[pendingLang] || {}).name : 'English';
+        });
+        langSection.appendChild(langSelect);
+        content.appendChild(langSection);
+
         // ── Coaching Style ──
         const coachSection = document.createElement('div');
         coachSection.className = 'aica-settings-panel__section';
@@ -2239,7 +2270,7 @@ define([
         try { currentCoach = localStorage.getItem('aica_coaching_style') || ''; } catch (e) { /**/ }
         var pendingCoach = currentCoach;
         [
-            {id: '', label: 'Default (Socratic guide)'},
+            {id: '', label: 'Guided Learning (default)'},
             {id: 'coach', label: 'Motivational Coach'},
             {id: 'buddy', label: 'Study Buddy'},
             {id: 'tutor', label: 'Direct Tutor'},
@@ -2271,37 +2302,6 @@ define([
         coachSection.appendChild(firstgenRow);
 
         content.appendChild(coachSection);
-
-        // ── Language ──
-        const langSection = document.createElement('div');
-        langSection.className = 'aica-settings-panel__section';
-        const langHead = document.createElement('h3');
-        langHead.className = 'aica-settings-panel__section-title';
-        langHead.textContent = 'Language';
-        langSection.appendChild(langHead);
-
-        const langSelect = document.createElement('select');
-        langSelect.className = 'aica-settings-panel__select';
-        const enOption = document.createElement('option');
-        enOption.value = '';
-        enOption.textContent = 'English (default)';
-        if (!config.currentLang) { enOption.selected = true; }
-        langSelect.appendChild(enOption);
-        Object.keys(config.langs).sort(function(a, b) {
-            return config.langs[a].name.localeCompare(config.langs[b].name);
-        }).forEach(function(code) {
-            const opt = document.createElement('option');
-            opt.value = code;
-            opt.textContent = config.langs[code].name;
-            if (config.currentLang === code) { opt.selected = true; }
-            langSelect.appendChild(opt);
-        });
-        langSelect.addEventListener('change', function() {
-            pendingLang = langSelect.value || null;
-            pendingLangName = pendingLang ? (config.langs[pendingLang] || {}).name : 'English';
-        });
-        langSection.appendChild(langSelect);
-        content.appendChild(langSection);
 
         // ── Avatar — built here, appended last (after Saved Responses) ──
         let avatarSection = null;
@@ -2585,6 +2585,21 @@ define([
             freqRow.appendChild(freqSelect);
             remSection.appendChild(freqRow);
 
+            // Email study notes toggle.
+            var notesRow = document.createElement('div');
+            notesRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:8px';
+            var notesToggle = document.createElement('input');
+            notesToggle.type = 'checkbox';
+            notesToggle.id = 'aica-email-notes-toggle';
+            try { notesToggle.checked = localStorage.getItem('aica_email_notes') === '1'; } catch (e) { /**/ }
+            var notesLabel = document.createElement('label');
+            notesLabel.htmlFor = 'aica-email-notes-toggle';
+            notesLabel.textContent = 'Email me study session notes';
+            notesLabel.style.cssText = 'font-size:12px;cursor:pointer;color:#6c757d';
+            notesRow.appendChild(notesToggle);
+            notesRow.appendChild(notesLabel);
+            remSection.appendChild(notesRow);
+
             // Store references for save handler.
             remSection._toggle = remToggle;
             remSection._freqSelect = freqSelect;
@@ -2650,6 +2665,12 @@ define([
             const remSec = content.querySelector('[data-has-reminders="1"]');
             if (remSec && remSec._toggle && callbacks.onReminderUpdate) {
                 callbacks.onReminderUpdate(remSec._toggle.checked, remSec._freqSelect.value);
+            }
+            // Save email study notes preference.
+            var notesCheck = content.querySelector('#aica-email-notes-toggle');
+            if (notesCheck) {
+                if (notesCheck.checked) { localStorage.setItem('aica_email_notes', '1'); }
+                else { localStorage.removeItem('aica_email_notes'); }
             }
             panel.remove();
         });
