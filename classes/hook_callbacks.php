@@ -167,23 +167,13 @@ class hook_callbacks {
         $offsetx = (int)(get_config('local_ai_course_assistant', 'position_offset_x') ?: 95);
         $offsety = (int)(get_config('local_ai_course_assistant', 'position_offset_y') ?: 20);
 
-        // Voice mode availability.
+        // Voice mode availability (global flags only; per-course control via starter toggles).
         $realtimeenabled = (bool)get_config('local_ai_course_assistant', 'realtime_enabled');
-
-        // ELL Pronunciation chip: requires realtime enabled globally + per-course opt-in.
-        $ellpronunciationenabled = $realtimeenabled &&
-            (bool)get_config('local_ai_course_assistant', 'ell_pronunciation_course_' . $courseid);
-
-        // TTS proxy URL: available when an OpenAI key is present (realtime or main provider)
-        // AND the per-course Speaking Practice toggle is not explicitly disabled.
         $realtimeapikey = get_config('local_ai_course_assistant', 'realtime_apikey');
         $provider       = get_config('local_ai_course_assistant', 'provider');
         $mainapikey     = get_config('local_ai_course_assistant', 'apikey');
         $hasttskey = !empty($realtimeapikey) || ($provider === 'openai' && !empty($mainapikey));
-        $speakingpracticeraw = get_config('local_ai_course_assistant', 'speaking_practice_course_' . $courseid);
-        // Default to enabled if never set (preserves existing behaviour for courses without the toggle).
-        $speakingpracticeenabled = ($speakingpracticeraw === false) || (bool)$speakingpracticeraw;
-        $ttsurl = ($hasttskey && $speakingpracticeenabled)
+        $ttsurl = $hasttskey
             ? (new \moodle_url('/local/ai_course_assistant/tts.php'))->out(false)
             : '';
 
@@ -206,7 +196,7 @@ class hook_callbacks {
 
         // Load conversation starters from config.
         $starters = \local_ai_course_assistant\starter_manager::get_effective_starters(
-            $courseid, !empty($ttsurl), $ellpronunciationenabled
+            $courseid, !empty($ttsurl), $realtimeenabled
         );
 
         // Render template.
@@ -234,7 +224,7 @@ class hook_callbacks {
             'pagetype'           => $pagetype,
             'quizlocked'         => $quizlocked,
             'realtimeenabled'         => $realtimeenabled,
-            'ellpronunciationenabled' => $ellpronunciationenabled,
+            'ellpronunciationenabled' => $realtimeenabled,
             'ttsurl'             => $ttsurl,
             'avatarcolor'        => get_config('local_ai_course_assistant', 'avatar_color') ?: '#4a6cf7',
             'avatarfill'         => get_config('local_ai_course_assistant', 'avatar_fill') ?: '#ffffff',

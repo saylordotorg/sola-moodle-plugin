@@ -35,6 +35,17 @@ if ($hassiteconfig) {
         0
     ));
 
+    // Conversation Starters link.
+    $startersurl = new moodle_url('/local/ai_course_assistant/starter_settings.php');
+    $settings->add(new admin_setting_description(
+        'local_ai_course_assistant/starters_link',
+        get_string('starters:admin_title', 'local_ai_course_assistant'),
+        '<a href="' . $startersurl->out() . '" class="btn btn-sm btn-outline-primary">' .
+            get_string('starters:admin_title', 'local_ai_course_assistant') . ' &rarr;</a>' .
+        '<p class="text-muted mt-1" style="font-size:13px;">' .
+            get_string('starters:admin_desc', 'local_ai_course_assistant') . '</p>'
+    ));
+
     // Branding.
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/branding_heading',
