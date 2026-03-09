@@ -466,13 +466,26 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
                 }
                 // Accumulate for display. Only emit text that precedes [SOLA_NEXT] —
                 // the tag spans many tokens so single-token regex never matches.
+                // Also hold back any partial tag prefix at the end to prevent leaking.
                 displayBuffer += token;
                 var solaStart = displayBuffer.indexOf('[SOLA_NEXT]');
-                var visible = solaStart === -1 ? displayBuffer : displayBuffer.slice(0, solaStart);
-                if (visible.length > displayEmitted && onTranscriptCb) {
-                    onTranscriptCb('assistant', visible.slice(displayEmitted));
+                var visEnd;
+                if (solaStart !== -1) {
+                    visEnd = solaStart;
+                } else {
+                    var tag = '[SOLA_NEXT]';
+                    var hold = 0;
+                    for (var pi = 1; pi <= tag.length && pi <= displayBuffer.length; pi++) {
+                        if (displayBuffer.slice(-pi) === tag.slice(0, pi)) {
+                            hold = pi;
+                        }
+                    }
+                    visEnd = displayBuffer.length - hold;
                 }
-                displayEmitted = visible.length;
+                if (visEnd > displayEmitted && onTranscriptCb) {
+                    onTranscriptCb('assistant', displayBuffer.slice(displayEmitted, visEnd));
+                }
+                displayEmitted = visEnd;
                 sentenceBuffer += token;
                 maybeSendSentence();
             },
@@ -832,14 +845,32 @@ define(['local_ai_course_assistant/sse_client'], function(SSE) {
                     }
                 });
         } else {
-            // Web Speech API path (existing behaviour).
-            if (config.greeting) {
-                if (onTranscriptCb) { onTranscriptCb('assistant', config.greeting); }
-                ttsQueue.push(config.greeting);
-                processTtsQueue();
-            } else {
-                startRecognition();
-            }
+            // Web Speech API path — pre-request mic permission so the browser prompt
+            // appears before SpeechRecognition.start(). Without this, on first use the
+            // recognition instance may error out while the permission prompt is shown,
+            // and the mic never activates. We request getUserMedia, then release the
+            // stream immediately (SpeechRecognition manages its own stream internally).
+            var micPreRequest = (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+                ? navigator.mediaDevices.getUserMedia({audio: true})
+                : Promise.resolve(null);
+            micPreRequest.then(function(stream) {
+                if (stream) {
+                    stream.getTracks().forEach(function(t) { t.stop(); });
+                }
+                if (!connected) { return; }
+                if (config.greeting) {
+                    if (onTranscriptCb) { onTranscriptCb('assistant', config.greeting); }
+                    ttsQueue.push(config.greeting);
+                    processTtsQueue();
+                } else {
+                    startRecognition();
+                }
+            }).catch(function() {
+                disconnect();
+                if (onErrorCb) {
+                    onErrorCb('Microphone access denied. Please allow microphone access to use voice chat.');
+                }
+            });
         }
     };
 

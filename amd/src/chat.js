@@ -530,6 +530,15 @@ define([
             streamController = null;
         }
 
+        // End any active voice/pronunciation session.
+        if (Voice.isConnected()) {
+            Voice.disconnect();
+        }
+        if (Realtime.isConnected()) {
+            Realtime.disconnect();
+        }
+        UI.hideVoiceOverlay();
+        UI.clearSuggestions();
         UI.showStarters();
     };
 
@@ -705,6 +714,7 @@ define([
 
         const endSession = function() {
             Voice.disconnect();
+            UI.clearSuggestions();
             UI.hideVoiceOverlay();
             UI.showStarters();
         };
@@ -742,6 +752,7 @@ define([
                     onStateChange: function(state) {
                         UI.setVoiceState(state);
                         if (state === 'disconnected') {
+                            UI.clearSuggestions();
                             UI.hideVoiceOverlay();
                             UI.showStarters();
                         }
@@ -749,6 +760,7 @@ define([
                     onError: function(msg) {
                         Voice.disconnect();
                         UI.setVoiceState('disconnected');
+                        UI.clearSuggestions();
                         UI.hideVoiceOverlay();
                         UI.showStarters();
                         addAssistantMsg(msg || 'Voice mode failed.');
@@ -824,6 +836,7 @@ define([
 
         const endSession = function() {
             Realtime.disconnect();
+            UI.clearSuggestions();
             UI.hideVoiceOverlay();
             UI.showStarters();
         };
@@ -885,12 +898,14 @@ define([
                         onStateChange: function(state) {
                             UI.setVoiceState(state);
                             if (state === 'disconnected') {
+                                UI.clearSuggestions();
                                 UI.hideVoiceOverlay();
                                 UI.showStarters();
                             }
                         },
                         onError: function(msg) {
                             UI.setVoiceState('disconnected');
+                            UI.clearSuggestions();
                             UI.hideVoiceOverlay();
                             UI.showStarters();
                             addAssistantMsg(msg || 'Voice connection failed.');
@@ -909,6 +924,7 @@ define([
                 return;
             }).catch(function(err) {
                 UI.setVoiceState('disconnected');
+                UI.clearSuggestions();
                 UI.hideVoiceOverlay();
                 UI.showStarters();
                 const errMsg = (err && err.message) ? err.message : 'Could not get voice token.';

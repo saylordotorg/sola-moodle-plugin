@@ -420,8 +420,23 @@ define([], function() {
                 if (msg.delta) {
                     assistantTranscript += msg.delta;
                     // Strip [SOLA_NEXT] tags from displayed transcript.
+                    // Also hold back any partial tag prefix at the end (e.g. "[SOLA_NEXT"
+                    // without closing "]") so it doesn't leak into the visible transcript.
                     var solaIdx = assistantTranscript.indexOf('[SOLA_NEXT]');
-                    var visibleEnd = solaIdx !== -1 ? solaIdx : assistantTranscript.length;
+                    var visibleEnd;
+                    if (solaIdx !== -1) {
+                        visibleEnd = solaIdx;
+                    } else {
+                        // Check for partial tag prefix at the end of the transcript.
+                        var solaTag = '[SOLA_NEXT]';
+                        var holdBack = 0;
+                        for (var pfx = 1; pfx <= solaTag.length && pfx <= assistantTranscript.length; pfx++) {
+                            if (assistantTranscript.slice(-pfx) === solaTag.slice(0, pfx)) {
+                                holdBack = pfx;
+                            }
+                        }
+                        visibleEnd = assistantTranscript.length - holdBack;
+                    }
                     if (visibleEnd > transcriptEmitted && onTranscriptCb) {
                         onTranscriptCb('assistant', assistantTranscript.slice(transcriptEmitted, visibleEnd));
                     }
