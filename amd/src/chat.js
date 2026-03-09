@@ -737,11 +737,22 @@ define([
         speakChips.push('Free conversation');
 
         var sessionStarted = false;
-        var startSession = function(greeting) {
+        var startSession = function(topic) {
             if (sessionStarted) { return; }
             sessionStarted = true;
             UI.clearSuggestions();
             UI.setVoiceState('connecting');
+
+            // Build a short spoken intro so the student knows what to do.
+            var spokenGreeting = "Hi! I'm " + assistantName + ". ";
+            if (topic) {
+                spokenGreeting += "Let's practice speaking about " + topic +
+                    ". I'll ask you questions and you can respond. Go ahead whenever you're ready!";
+            } else {
+                spokenGreeting += "Let's have a conversation! " +
+                    "You can talk about anything from your course. I'll listen and respond. Go ahead!";
+            }
+
             Voice.connect(
                 '',
                 voice,
@@ -777,14 +788,15 @@ define([
                     sessKey:  sessKey,
                     sseUrl:   sseUrl,
                     lang:     Speech.getLang(),
-                    greeting: greeting || '',
+                    greeting: spokenGreeting,
                 }
             );
         };
 
         // Show speaking topic chips; clicking a chip starts the session with that topic.
         UI.showSuggestions(speakChips, function(text) {
-            startSession(text === 'Free conversation' ? '' : text);
+            var topic = (text === 'Free conversation') ? '' : text.replace(/^(Discuss|Talk about) /, '');
+            startSession(topic);
         });
     };
 
@@ -875,9 +887,14 @@ define([
 
                 // Enrich ELL instructions with course page context for relevant suggestions.
                 let ellInstructions = Realtime.ELL_INSTRUCTIONS;
+                ellInstructions += '\n\nIMPORTANT: Start the session by greeting the student warmly and briefly ' +
+                    'explaining what you will do together. Keep it to 1-2 short sentences. For example: ' +
+                    '"Hi! I\'m here to help you practice pronunciation. ';
                 if (phrase) {
-                    ellInstructions += '\n\nThe student wants to practice pronouncing: "' + phrase +
-                        '". Start by saying this phrase clearly, then ask them to repeat it.';
+                    ellInstructions += 'The student wants to practice pronouncing: "' + phrase +
+                        '". Start by saying this phrase clearly and slowly, then ask them to repeat it.';
+                } else {
+                    ellInstructions += 'Say a word or phrase and I\'ll give you feedback on your pronunciation."';
                 }
                 if (currentPageTitle) {
                     ellInstructions += ' The learner is currently studying: "' + currentPageTitle + '".';
