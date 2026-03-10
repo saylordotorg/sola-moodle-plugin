@@ -26,7 +26,7 @@ namespace local_ai_course_assistant\provider;
 class openai_provider extends openai_compatible_provider {
 
     protected function get_default_model(): string {
-        return 'gpt-4o';
+        return 'gpt-4o-mini';
     }
 
     protected function get_default_base_url(): string {

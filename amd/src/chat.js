@@ -746,11 +746,11 @@ define([
             // Build a short spoken intro so the student knows what to do.
             var spokenGreeting = "Hi! I'm " + assistantName + ". ";
             if (topic) {
-                spokenGreeting += "Let's practice speaking about " + topic +
-                    ". I'll ask you questions and you can respond. Go ahead whenever you're ready!";
+                spokenGreeting += "Great choice! I'll ask you a question about " + topic +
+                    " and you can respond by speaking. Go ahead whenever you're ready!";
             } else {
-                spokenGreeting += "Let's have a conversation! " +
-                    "You can talk about anything from your course. I'll listen and respond. Go ahead!";
+                spokenGreeting += "Please select a topic from your course and I'll ask you a question about it. " +
+                    "You can respond by speaking. Let's get started!";
             }
 
             Voice.connect(

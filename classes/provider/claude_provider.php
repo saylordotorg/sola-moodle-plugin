@@ -43,7 +43,7 @@ class claude_provider extends base_provider {
     }
 
     protected function get_default_model(): string {
-        return 'claude-sonnet-4-5-20250929';
+        return 'claude-haiku-4-5-20251001';
     }
 
     protected function get_default_base_url(): string {

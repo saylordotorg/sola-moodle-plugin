@@ -271,10 +271,17 @@ try {
     $provider = base_provider::create_from_config($courseid);
     $fullresponse = '';
 
+    // Pass max_tokens from config (0 = no limit / provider default).
+    $streamoptions = [];
+    $maxtokens = (int) get_config('local_ai_course_assistant', 'max_tokens');
+    if ($maxtokens > 0) {
+        $streamoptions['max_tokens'] = $maxtokens;
+    }
+
     $provider->chat_completion_stream($systemprompt, $history, function (string $chunk) use (&$fullresponse) {
         $fullresponse .= $chunk;
         sse_send(['token' => $chunk]);
-    });
+    }, $streamoptions);
 
     // Capture token usage immediately after streaming — before any other operations.
     $tokenusage = $provider->get_last_token_usage();
