@@ -282,7 +282,36 @@ $string['unsubscribe:resubscribe'] = 'Changed your mind? You can re-enable remin
 $string['task:send_reminders'] = 'Send AI tutor study reminders';
 $string['task:index_course_content'] = 'Index course content for RAG semantic search';
 $string['task:send_inactivity_reminders'] = 'Send weekly inactivity reminder emails';
+$string['task:run_integrity_checks'] = 'Run daily SOLA plugin integrity checks';
 $string['messageprovider:study_notes'] = 'Study session notes';
+$string['messageprovider:integrity_report'] = 'SOLA integrity check failure report';
+
+// Plugin Updates.
+$string['update:title'] = 'Plugin Updates';
+$string['update:desc'] = 'Check for and install SOLA plugin updates directly from GitHub releases.';
+$string['update:check'] = 'Check for Updates';
+$string['update:install'] = 'Install Update';
+$string['update:current_version'] = 'Installed Version';
+$string['update:latest_version'] = 'Latest Available';
+$string['update:up_to_date'] = 'Up to Date';
+$string['update:available'] = 'Update Available';
+$string['update:confirm'] = 'Install this update? A backup of the current version will be created automatically.';
+$string['update:changelog'] = 'Release Notes';
+$string['update:back_to_settings'] = 'Back to Settings';
+$string['update:github_error'] = 'Could not reach GitHub. Check your connection or add a GitHub token in settings.';
+$string['update:download_failed'] = 'Failed to download the update. Please try again or install manually.';
+$string['update:github_token'] = 'GitHub Token (optional)';
+$string['update:github_token_desc'] = 'Personal access token for accessing private GitHub repositories. Leave blank for public repos.';
+
+// Integrity Checks.
+$string['integrity:title'] = 'Integrity Checks';
+$string['integrity:desc'] = 'Automated daily health checks that verify PHP syntax, JS builds, lang files, database tables, and more. Email alerts are sent only when issues are found.';
+$string['integrity:enabled'] = 'Enable Daily Integrity Checks';
+$string['integrity:enabled_desc'] = 'Run automated plugin health checks daily at 3 AM server time.';
+$string['integrity:email'] = 'Report Email Address';
+$string['integrity:email_desc'] = 'Email address for failure reports. Leave blank to notify the primary site admin.';
+$string['integrity:view_results'] = 'View Integrity Results';
+$string['integrity:run_now'] = 'Run Checks Now';
 
 // RAG admin page.
 $string['ragadmin:title'] = 'RAG Index Status & Reindex';

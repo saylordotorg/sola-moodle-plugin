@@ -582,6 +582,59 @@ if ($hassiteconfig) {
         $realtimevoices
     ));
 
+    // --- Plugin Updates ---
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/updates_heading',
+        get_string('update:title', 'local_ai_course_assistant'),
+        get_string('update:desc', 'local_ai_course_assistant')
+    ));
+
+    $updateurl = new moodle_url('/local/ai_course_assistant/update_admin.php');
+    $settings->add(new admin_setting_description(
+        'local_ai_course_assistant/update_link',
+        '',
+        '<a href="' . $updateurl->out() . '" class="btn btn-sm btn-outline-primary">' .
+            get_string('update:check', 'local_ai_course_assistant') . ' &rarr;</a>'
+    ));
+
+    // GitHub personal access token (optional, for private repos).
+    $settings->add(new admin_setting_configpasswordunmask(
+        'local_ai_course_assistant/github_token',
+        get_string('update:github_token', 'local_ai_course_assistant'),
+        get_string('update:github_token_desc', 'local_ai_course_assistant'),
+        ''
+    ));
+
+    // --- Integrity Monitoring ---
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/integrity_heading',
+        get_string('integrity:title', 'local_ai_course_assistant'),
+        get_string('integrity:desc', 'local_ai_course_assistant')
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/integrity_enabled',
+        get_string('integrity:enabled', 'local_ai_course_assistant'),
+        get_string('integrity:enabled_desc', 'local_ai_course_assistant'),
+        1
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/integrity_email',
+        get_string('integrity:email', 'local_ai_course_assistant'),
+        get_string('integrity:email_desc', 'local_ai_course_assistant'),
+        '',
+        PARAM_EMAIL
+    ));
+
+    $integrityurl = new moodle_url('/local/ai_course_assistant/integrity_admin.php');
+    $settings->add(new admin_setting_description(
+        'local_ai_course_assistant/integrity_link',
+        '',
+        '<a href="' . $integrityurl->out() . '" class="btn btn-sm btn-outline-secondary">' .
+            get_string('integrity:view_results', 'local_ai_course_assistant') . ' &rarr;</a>'
+    ));
+
     $ADMIN->add('localplugins', $settings);
 
     // Register the Starter Settings admin page.
@@ -597,6 +650,22 @@ if ($hassiteconfig) {
         'local_ai_course_assistant_ragadmin',
         get_string('ragadmin:title', 'local_ai_course_assistant'),
         new moodle_url('/local/ai_course_assistant/rag_admin.php'),
+        'moodle/site:config'
+    ));
+
+    // Register the Plugin Updates admin page.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_ai_course_assistant_updates',
+        get_string('update:title', 'local_ai_course_assistant'),
+        new moodle_url('/local/ai_course_assistant/update_admin.php'),
+        'moodle/site:config'
+    ));
+
+    // Register the Integrity Checks admin page.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_ai_course_assistant_integrity',
+        get_string('integrity:title', 'local_ai_course_assistant'),
+        new moodle_url('/local/ai_course_assistant/integrity_admin.php'),
         'moodle/site:config'
     ));
 }

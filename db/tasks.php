@@ -52,4 +52,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '1',
     ],
+    [
+        'classname' => \local_ai_course_assistant\task\run_integrity_checks::class,
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '3',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];
