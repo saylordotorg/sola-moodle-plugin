@@ -91,7 +91,7 @@ if (!empty($lang)) {
 }
 
 $ch = curl_init('https://api.openai.com/v1/audio/transcriptions');
-curl_setopt_array($ch, [
+curl_setopt_array($ch, \local_ai_course_assistant\raw_curl_helper::with_moodle_defaults([
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
     CURLOPT_POSTFIELDS     => $post,
@@ -99,7 +99,7 @@ curl_setopt_array($ch, [
         'Authorization: Bearer ' . $apikey,
     ],
     CURLOPT_TIMEOUT        => 30,
-]);
+]));
 $response = curl_exec($ch);
 $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);

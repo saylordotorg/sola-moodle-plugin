@@ -75,7 +75,7 @@ $body = json_encode([
 ]);
 
 $ch = curl_init('https://api.openai.com/v1/audio/speech');
-curl_setopt_array($ch, [
+curl_setopt_array($ch, \local_ai_course_assistant\raw_curl_helper::with_moodle_defaults([
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
     CURLOPT_POSTFIELDS     => $body,
@@ -85,7 +85,7 @@ curl_setopt_array($ch, [
         'Content-Length: ' . strlen($body),
     ],
     CURLOPT_TIMEOUT        => 30,
-]);
+]));
 $response = curl_exec($ch);
 $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);

@@ -57,13 +57,13 @@ class remote_config_manager {
         }
 
         $ch = curl_init($url);
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, raw_curl_helper::with_moodle_defaults([
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS      => 3,
             CURLOPT_TIMEOUT        => 10,
             CURLOPT_USERAGENT      => 'SOLA-Moodle-Plugin/1.0',
-        ]);
+        ]));
         $body = curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);

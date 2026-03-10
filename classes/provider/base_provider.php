@@ -16,6 +16,8 @@
 
 namespace local_ai_course_assistant\provider;
 
+use local_ai_course_assistant\raw_curl_helper;
+
 /**
  * Base provider with shared configuration and cURL helpers.
  *
@@ -121,7 +123,7 @@ abstract class base_provider implements provider_interface {
     protected function http_post_stream(string $url, array $headers, string $body, callable $writecallback): void {
         $ch = curl_init();
 
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, raw_curl_helper::with_moodle_defaults([
             CURLOPT_URL => $url,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $body,
@@ -132,19 +134,7 @@ abstract class base_provider implements provider_interface {
                 $writecallback($data);
                 return strlen($data);
             },
-        ]);
-
-        // Add proxy settings from Moodle config if present.
-        global $CFG;
-        if (!empty($CFG->proxyhost)) {
-            curl_setopt($ch, CURLOPT_PROXY, $CFG->proxyhost);
-            if (!empty($CFG->proxyport)) {
-                curl_setopt($ch, CURLOPT_PROXYPORT, $CFG->proxyport);
-            }
-            if (!empty($CFG->proxyuser)) {
-                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $CFG->proxyuser . ':' . ($CFG->proxypassword ?? ''));
-            }
-        }
+        ]));
 
         curl_exec($ch);
 

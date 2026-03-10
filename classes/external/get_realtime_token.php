@@ -20,6 +20,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use local_ai_course_assistant\raw_curl_helper;
 
 /**
  * External function to get an ephemeral token for OpenAI Realtime voice mode.
@@ -73,7 +74,7 @@ class get_realtime_token extends external_api {
         $body = '{}';
 
         $ch = curl_init('https://api.openai.com/v1/realtime/client_secrets');
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, raw_curl_helper::with_moodle_defaults([
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $body,
@@ -83,7 +84,7 @@ class get_realtime_token extends external_api {
                 'Content-Length: ' . strlen($body),
             ],
             CURLOPT_TIMEOUT        => 5,
-        ]);
+        ]));
         $response = curl_exec($ch);
         $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);

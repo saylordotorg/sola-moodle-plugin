@@ -60,12 +60,12 @@ class plugin_updater {
         }
 
         $ch = curl_init(self::GITHUB_API);
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, raw_curl_helper::with_moodle_defaults([
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_HTTPHEADER => $headers,
-        ]);
+        ]));
         $body = curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
@@ -138,13 +138,13 @@ class plugin_updater {
 
         $ch = curl_init($zipurl);
         $fp = fopen($zippath, 'w');
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, raw_curl_helper::with_moodle_defaults([
             CURLOPT_FILE => $fp,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_TIMEOUT => 120,
             CURLOPT_HTTPHEADER => $headers,
-        ]);
+        ]));
         curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
