@@ -55,7 +55,7 @@ if ($hassiteconfig) {
         'local_ai_course_assistant/provider',
         get_string('settings:provider', 'local_ai_course_assistant'),
         get_string('settings:provider_desc', 'local_ai_course_assistant'),
-        'claude',
+        'openai',
         $providers
     ));
 
