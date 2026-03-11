@@ -14,6 +14,10 @@ on:
       - ".github/workflows/api-smoke-test.yml"
   workflow_dispatch:       # allow manual trigger from the Actions tab
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   smoke-test:
     runs-on: ubuntu-latest
