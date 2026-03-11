@@ -1,4 +1,4 @@
-// This file is part of Moodle - http://moodle.org/
+﻿// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -70,36 +70,181 @@ define([
     let currentAudio = null;
     /** @type {AudioContext|null} Shared AudioContext unlocked by user gesture (iOS TTS fix) */
     let sharedAudioCtx = null;
-    /** @type {Map} Cache of TTS audio responses keyed by text hash */
-    const ttsCache = new Map();
-    /** @type {number} Max TTS cache entries */
-    const TTS_CACHE_MAX = 20;
     /** @type {number} Count of messages sent in this session (for study break nudge) */
     let sessionMessageCount = 0;
     /** @type {boolean} Whether we've already shown a study break nudge this session */
     let breakNudgeShown = false;
-
-    /** @type {boolean} Whether the admin context debug inspector is enabled */
+    /** @type {boolean} Whether admin context debug inspector is enabled for this user */
     let contextDebugEnabled = false;
-    /** @type {Object} Debug state: browser snapshot, last request, and server response */
+    /** @type {{browser:Object|null,lastRequest:Object|null,lastServer:Object|null}} */
     let contextDebugState = {
         browser: null,
         lastRequest: null,
         lastServer: null,
     };
-
-    // ── Context Debug Inspector (admin only) ──────────────────────────
+    /** @type {'chat'|'voice'|'history'} */
+    let activeBottomMode = 'chat';
+    /** @type {Array<{role:string,text:string,timestamp:number|null}>} */
+    let conversationHistory = [];
+    /** @type {boolean} Whether a history refresh request is in flight */
+    let historyRefreshPending = false;
+    /** @type {boolean} Whether a voice session is currently active or starting */
+    let voiceSessionActive = false;
+    /** @type {number} Monotonic token used to ignore stale async voice startup work */
+    let voiceSessionRequestId = 0;
+    /** @type {RegExp} SOLA follow-up marker parser */
+    const NEXT_BLOCK_RE = /\n*\[SOLA_NEXT\]([\s\S]*?)\[\/SOLA_NEXT\]/;
+    /** @type {RegExp} Source attribution tag parser */
+    const SOURCE_TAG_RE = /\n*\[SOURCE:(page|course|general)\]/;
+    /** @type {Object<string, string>} */
+    const SOURCE_LABELS = {
+        page: 'From: Current Page',
+        course: 'From: Course Materials',
+        general: 'General Knowledge',
+    };
+    /** @type {string} Local intro-dismiss key */
+    const INTRO_DISMISSED_KEY = 'ai_course_assistant_intro_dismissed';
+    /** @type {string} Local provider preference key */
+    const LLM_PROVIDER_KEY = 'aica_llm_provider';
+    /** @type {string} Local model preference key */
+    const LLM_MODEL_KEY = 'aica_llm_model';
 
     /**
-     * Get the main heading text from the page.
+     * Parse SOLA metadata markers from an assistant response.
+     *
+     * @param {string} text
+     * @returns {{text:string,suggestions:Array<string>,sourceType:string|null}}
      */
-    const getContextDebugHeading = function() {
-        var h1 = document.querySelector('h1');
-        return h1 ? h1.textContent.trim() : '';
+    const parseAssistantDecorators = function(text) {
+        let cleanText = ((text || '') + '');
+        let suggestions = [];
+        let sourceType = null;
+
+        const nextMatch = cleanText.match(NEXT_BLOCK_RE);
+        if (nextMatch) {
+            suggestions = nextMatch[1].split('||').map(function(s) {
+                return s.trim();
+            }).filter(Boolean).slice(0, 4);
+            cleanText = cleanText.replace(NEXT_BLOCK_RE, '').trimEnd();
+        }
+
+        const sourceMatch = cleanText.match(SOURCE_TAG_RE);
+        if (sourceMatch) {
+            sourceType = sourceMatch[1];
+            cleanText = cleanText.replace(SOURCE_TAG_RE, '').trimEnd();
+        }
+
+        return {
+            text: cleanText,
+            suggestions: suggestions,
+            sourceType: sourceType,
+        };
     };
 
     /**
-     * Build a snapshot of the browser-side page context.
+     * Sanitize message text before it is stored in the compact History tab.
+     *
+     * @param {string} role
+     * @param {string} text
+     * @returns {string}
+     */
+    const getHistorySafeText = function(role, text) {
+        if (role === 'assistant') {
+            return parseAssistantDecorators(text).text.trim();
+        }
+        return ((text || '') + '').trim();
+    };
+
+    /**
+     * Get the latest assistant bubble in the visible transcript.
+     *
+     * @returns {HTMLElement|null}
+     */
+    const getLastAssistantMessageEl = function() {
+        const root = UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        if (!root) {
+            return null;
+        }
+        const bubbles = root.querySelectorAll('.local-ai-course-assistant__message--assistant');
+        return bubbles.length ? bubbles[bubbles.length - 1] : null;
+    };
+
+    /**
+     * Append a source attribution pill below an assistant bubble.
+     *
+     * @param {HTMLElement|null} msgEl
+     * @param {string|null} sourceType
+     */
+    const appendSourcePill = function(msgEl, sourceType) {
+        if (!msgEl || !sourceType || !SOURCE_LABELS[sourceType]) {
+            return;
+        }
+        const existing = msgEl.querySelector('.aica-source-pill');
+        if (existing) {
+            existing.remove();
+        }
+        const pill = document.createElement('span');
+        pill.className = 'aica-source-pill aica-source-pill--' + sourceType;
+        pill.textContent = SOURCE_LABELS[sourceType];
+        msgEl.appendChild(pill);
+    };
+
+    /**
+     * Create a source attribution pill element (clickable link or plain span).
+     *
+     * @param {string} sourceType 'page', 'course', or 'general'
+     * @param {Object|null} meta SSE metadata with pageurl, courseurl, pagetitle
+     * @returns {HTMLElement}
+     */
+    const createSourcePill = function(sourceType, meta) {
+        var href = '';
+        var title = '';
+        if (sourceType === 'page' && meta && meta.pageurl) {
+            href = meta.pageurl;
+            title = meta.pagetitle || '';
+        } else if (sourceType === 'course' && meta && meta.courseurl) {
+            href = meta.courseurl;
+            title = '';
+        }
+        var pill;
+        if (href) {
+            pill = document.createElement('a');
+            pill.href = href;
+            pill.target = '_blank';
+            pill.rel = 'noopener';
+            if (title) {
+                pill.title = title;
+            }
+            // Small external link icon after label.
+            pill.innerHTML = (SOURCE_LABELS[sourceType] || sourceType)
+                + ' <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"'
+                + ' fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"'
+                + ' stroke-linejoin="round" style="vertical-align:-1px;margin-left:2px">'
+                + '<path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>'
+                + '<polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+        } else {
+            pill = document.createElement('span');
+            pill.textContent = SOURCE_LABELS[sourceType] || sourceType;
+        }
+        pill.className = 'aica-source-pill aica-source-pill--' + sourceType;
+        return pill;
+    };
+
+    /**
+     * Get the visible page heading for debug purposes.
+     *
+     * @returns {string}
+     */
+    const getContextDebugHeading = function() {
+        const heading = document.querySelector('h1');
+        return heading ? heading.textContent.trim() : '';
+    };
+
+    /**
+     * Build a snapshot of the current page state visible to the browser and widget.
+     *
+     * @param {HTMLElement} rootEl
+     * @returns {Object}
      */
     const buildContextDebugBrowserSnapshot = function(rootEl) {
         return {
@@ -108,97 +253,859 @@ define([
             browserHeading: getContextDebugHeading(),
             bodyClasses: document.body ? document.body.className : '',
             widgetCapture: {
-                currentPageId: rootEl ? rootEl.dataset.currentPageId : '',
-                currentPageTitle: rootEl ? rootEl.dataset.currentPageTitle : '',
-                modName: rootEl ? rootEl.dataset.modname : '',
-                pageType: rootEl ? rootEl.dataset.pagetype : '',
+                currentPageId: currentPageId || null,
+                currentPageTitle: currentPageTitle || null,
+                modName: rootEl.dataset.modname || null,
+                pageType: rootEl.dataset.pagetype || null,
+                contextLevel: rootEl.dataset.contextLevel || null,
+                serverPageUrl: rootEl.dataset.serverPageUrl || null,
+                serverPageTitle: rootEl.dataset.serverPageTitle || null,
+                serverPageHeading: rootEl.dataset.serverPageHeading || null,
             },
         };
     };
 
     /**
-     * Write a JSON payload into a debug panel <pre> element.
+     * Write a JSON payload into one section of the debug panel.
+     *
+     * @param {HTMLElement|null} el
+     * @param {Object|null} payload
+     * @param {string} emptyText
      */
     const setContextDebugBlock = function(el, payload, emptyText) {
-        if (!el) { return; }
-        el.textContent = payload ? JSON.stringify(payload, null, 2) : (emptyText || '(empty)');
+        if (!el) {
+            return;
+        }
+        if (!payload || (typeof payload === 'object' && !Array.isArray(payload) &&
+                Object.keys(payload).length === 0)) {
+            el.textContent = emptyText;
+            return;
+        }
+        el.textContent = JSON.stringify(payload, null, 2);
     };
 
     /**
-     * Refresh the debug panel with current state.
+     * Refresh the admin context debug panel with the latest client/server state.
      */
     const refreshContextDebug = function() {
-        var rootEl = document.getElementById('local-ai-course-assistant');
+        if (!contextDebugEnabled) {
+            return;
+        }
+        const rootEl = UI.getElements().root;
+        if (!rootEl) {
+            return;
+        }
+        const panel = rootEl.querySelector('.aica-debug-panel');
+        if (!panel) {
+            return;
+        }
+
         contextDebugState.browser = buildContextDebugBrowserSnapshot(rootEl);
-        var panel = rootEl ? rootEl.querySelector('.aica-debug-panel') : null;
-        if (!panel) { return; }
-        setContextDebugBlock(panel.querySelector('.aica-debug-panel__pre--browser'), contextDebugState.browser, 'No browser context');
-        setContextDebugBlock(panel.querySelector('.aica-debug-panel__pre--request'), contextDebugState.lastRequest, 'No request sent yet');
-        setContextDebugBlock(panel.querySelector('.aica-debug-panel__pre--prompt'), contextDebugState.lastServer, 'No server response yet');
+
+        setContextDebugBlock(
+            panel.querySelector('.aica-debug-panel__pre--browser'),
+            contextDebugState.browser,
+            'No browser snapshot available.'
+        );
+        setContextDebugBlock(
+            panel.querySelector('.aica-debug-panel__pre--request'),
+            contextDebugState.lastRequest,
+            'Send a message to see the next request payload.'
+        );
+        setContextDebugBlock(
+            panel.querySelector('.aica-debug-panel__pre--prompt'),
+            contextDebugState.lastServer,
+            'Waiting for the server debug payload for the latest message.'
+        );
     };
 
     /**
-     * Initialize the context debug feature if the admin flag is set.
+     * Initialise the admin context debug state.
+     *
+     * @param {HTMLElement} rootEl
      */
     const initContextDebug = function(rootEl) {
-        if (!rootEl || rootEl.dataset.contextDebug !== '1') { return; }
-        contextDebugEnabled = true;
+        contextDebugEnabled = !!(rootEl && rootEl.dataset.contextDebug === '1');
+        if (!contextDebugEnabled) {
+            return;
+        }
         contextDebugState.browser = buildContextDebugBrowserSnapshot(rootEl);
+        refreshContextDebug();
     };
 
     /**
-     * Toggle the debug panel visibility.
+     * Toggle the admin context debug panel.
      */
     const handleContextDebugToggle = function() {
-        var rootEl = document.getElementById('local-ai-course-assistant');
-        var panel = rootEl ? rootEl.querySelector('.aica-debug-panel') : null;
-        if (!panel) { return; }
-        var hidden = panel.hasAttribute('hidden');
-        if (hidden) {
-            panel.removeAttribute('hidden');
+        if (!contextDebugEnabled) {
+            return;
+        }
+        const rootEl = UI.getElements().root;
+        if (!rootEl) {
+            return;
+        }
+        const panel = rootEl.querySelector('.aica-debug-panel');
+        const btn = rootEl.querySelector('.local-ai-course-assistant__btn-debug');
+        if (!panel || !btn) {
+            return;
+        }
+
+        const opening = panel.hasAttribute('hidden');
+        if (opening) {
             refreshContextDebug();
+            panel.removeAttribute('hidden');
         } else {
-            panel.setAttribute('hidden', '');
+            panel.setAttribute('hidden', 'hidden');
         }
-        var btn = rootEl.querySelector('.local-ai-course-assistant__btn-debug');
-        if (btn) {
-            btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
-            btn.classList.toggle('active', hidden);
-        }
+        btn.setAttribute('aria-pressed', opening ? 'true' : 'false');
+        btn.classList.toggle('local-ai-course-assistant__btn-debug--active', opening);
     };
 
     /**
-     * Copy all debug panels to clipboard.
+     * Copy the current debug snapshot to the clipboard.
      */
     const handleContextDebugCopy = function() {
-        var lines = [
-            '=== Browser Snapshot ===',
-            JSON.stringify(contextDebugState.browser, null, 2),
+        if (!contextDebugEnabled || !navigator.clipboard) {
+            return;
+        }
+        const text = [
+            'Context debug',
             '',
-            '=== Last Request ===',
-            JSON.stringify(contextDebugState.lastRequest, null, 2),
+            '[Browser snapshot]',
+            JSON.stringify(contextDebugState.browser || {}, null, 2),
             '',
-            '=== Server Response ===',
-            JSON.stringify(contextDebugState.lastServer, null, 2),
-        ];
-        navigator.clipboard.writeText(lines.join('\n')).catch(function() { /* ignore */ });
+            '[Last request]',
+            JSON.stringify(contextDebugState.lastRequest || {}, null, 2),
+            '',
+            '[Prompt view]',
+            JSON.stringify(contextDebugState.lastServer || {}, null, 2),
+        ].join('\n');
+
+        navigator.clipboard.writeText(text).then(function() {
+            UI.showNotification('Context debug copied', 'success');
+        }).catch(function() {
+            UI.showNotification('Could not copy debug snapshot', 'error');
+        });
     };
 
     /**
-     * Store the outbound SSE request for the debug panel.
+     * Store the last outbound request in the debug inspector.
+     *
+     * @param {Object} postData
      */
     const updateContextDebugRequest = function(postData) {
-        contextDebugState.lastRequest = Object.assign({sentAt: new Date().toISOString()}, postData);
+        if (!contextDebugEnabled) {
+            return;
+        }
+        contextDebugState.lastRequest = Object.assign({
+            sentAt: new Date().toISOString(),
+        }, JSON.parse(JSON.stringify(postData)));
         contextDebugState.lastServer = null;
         refreshContextDebug();
     };
 
     /**
-     * Store the server debug payload.
+     * Store the last server-side debug payload in the inspector.
+     *
+     * @param {Object} payload
      */
     const updateContextDebugServer = function(payload) {
+        if (!contextDebugEnabled) {
+            return;
+        }
         contextDebugState.lastServer = payload;
         refreshContextDebug();
+    };
+
+    /**
+     * Determine whether the first-run intro has already been completed.
+     *
+     * @param {HTMLElement|null=} rootEl
+     * @returns {boolean}
+     */
+    const isIntroDismissed = function(rootEl) {
+        rootEl = rootEl || UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        if (rootEl && rootEl.dataset.introDismissed === '1') {
+            return true;
+        }
+        try {
+            return localStorage.getItem(INTRO_DISMISSED_KEY) === '1';
+        } catch (e) {
+            return false;
+        }
+    };
+
+    /**
+     * Persist intro completion locally and on the server once the user accepts it.
+     *
+     * @param {HTMLElement|null=} rootEl
+     */
+    const markIntroDismissed = function(rootEl) {
+        rootEl = rootEl || UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        if (rootEl) {
+            rootEl.dataset.introDismissed = '1';
+        }
+        try {
+            localStorage.setItem(INTRO_DISMISSED_KEY, '1');
+        } catch (e) { /**/ }
+        Repo.dismissIntro().catch(function() {
+            // Silently fail.
+        });
+    };
+
+    /**
+     * Convert a server timestamp into milliseconds when possible.
+     *
+     * @param {number|string|null} value
+     * @returns {number|null}
+     */
+    const normalizeTimestamp = function(value) {
+        if (value === null || value === undefined || value === '') {
+            return null;
+        }
+        const num = Number(value);
+        if (!isFinite(num) || num <= 0) {
+            return null;
+        }
+        return num < 1000000000000 ? num * 1000 : num;
+    };
+
+    /**
+     * Convert a timestamp into a human-friendly relative label for recency UI.
+     *
+     * @param {number|string|null} value
+     * @returns {string}
+     */
+    const formatRelativeTimestamp = function(value) {
+        const ts = normalizeTimestamp(value);
+        if (!ts) {
+            return '';
+        }
+
+        const diffMs = Math.max(0, Date.now() - ts);
+        const minuteMs = 60 * 1000;
+        const hourMs = 60 * minuteMs;
+        const dayMs = 24 * hourMs;
+
+        if (diffMs < 2 * minuteMs) {
+            return 'just now';
+        }
+        if (diffMs < hourMs) {
+            const minutesAgo = Math.floor(diffMs / minuteMs);
+            return minutesAgo + ' minute' + (minutesAgo === 1 ? '' : 's') + ' ago';
+        }
+        if (diffMs < dayMs) {
+            const hoursAgo = Math.floor(diffMs / hourMs);
+            return hoursAgo + ' hour' + (hoursAgo === 1 ? '' : 's') + ' ago';
+        }
+        if (diffMs < 2 * dayMs) {
+            return 'yesterday';
+        }
+
+        const daysAgo = Math.floor(diffMs / dayMs);
+        return daysAgo + ' days ago';
+    };
+
+    /**
+     * Replace the in-memory conversation history used by the History tab.
+     *
+     * @param {Array} messages
+     */
+    const setConversationHistory = function(messages) {
+        conversationHistory = (messages || []).map(function(msg) {
+            const role = msg.role || 'assistant';
+            const rawText = (msg.text !== undefined ? msg.text : msg.message) || '';
+            return {
+                role: role,
+                text: getHistorySafeText(role, rawText),
+                timestamp: normalizeTimestamp(msg.timestamp !== undefined ? msg.timestamp : msg.timecreated),
+            };
+        }).filter(function(msg) {
+            return !!(msg.text && msg.text.trim());
+        });
+        UI.renderHistoryPanel(conversationHistory);
+    };
+
+    /**
+     * Append one message to the in-memory conversation history.
+     *
+     * @param {string} role
+     * @param {string} text
+     * @param {number|string|null} ts
+     */
+    const recordConversationMessage = function(role, text, ts) {
+        const cleanText = getHistorySafeText(role, text);
+        if (!cleanText) {
+            return;
+        }
+        conversationHistory.push({
+            role: role,
+            text: cleanText,
+            timestamp: normalizeTimestamp(ts) || Date.now(),
+        });
+        if (conversationHistory.length > 120) {
+            conversationHistory = conversationHistory.slice(conversationHistory.length - 120);
+        }
+        UI.renderHistoryPanel(conversationHistory);
+    };
+
+    /**
+     * Determine whether voice chat can be started from this page.
+     *
+     * @returns {boolean}
+     */
+    const isVoiceFeatureEnabled = function(root) {
+        return !!(root && root.dataset.ttsurl);
+    };
+
+    /**
+     * Whether the course is configured to prefer OpenAI Realtime for live voice.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {boolean}
+     */
+    const isRealtimeVoicePreferred = function(root) {
+        return !!(root && (root.dataset.realtimeenabled === '1' || root.dataset.realtimeenabled === 'true'));
+    };
+
+    /**
+     * Check for the browser APIs needed by both voice flows.
+     *
+     * @returns {boolean}
+     */
+    const hasVoiceInputEnvironment = function() {
+        return window.isSecureContext && !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+    };
+
+    /**
+     * Audio playback is required for both the legacy and Realtime voice stacks.
+     *
+     * @returns {boolean}
+     */
+    const hasAudioPlaybackSupport = function() {
+        return !!(window.AudioContext || window.webkitAudioContext);
+    };
+
+    /** @type {string} Default SOLA voice preference */
+    const DEFAULT_VOICE = 'marin';
+
+    /**
+     * Get the admin-configured default voice for this widget.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {string}
+     */
+    const getDefaultVoice = function(root) {
+        root = root || UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        return (root && root.dataset.defaultvoice) ? root.dataset.defaultvoice : DEFAULT_VOICE;
+    };
+
+    /**
+     * Get the user's saved SOLA voice preference, if any.
+     *
+     * @returns {string}
+     */
+    const getStoredVoicePreference = function() {
+        try {
+            return localStorage.getItem('aica_tts_voice') || '';
+        } catch (e) {
+            return '';
+        }
+    };
+
+    /**
+     * Normalize a SOLA voice preference for Realtime sessions.
+     *
+     * Realtime and TTS do not share an identical OpenAI voice catalog, so
+     * older TTS-only voices are mapped to the closest supported Realtime option.
+     *
+     * @param {string} voice
+     * @returns {string}
+     */
+    const getRealtimeCompatibleVoice = function(voice) {
+        const fallbacks = {
+            fable: 'ballad',
+            nova: 'coral',
+            onyx: 'cedar',
+        };
+        return fallbacks[voice] || voice || DEFAULT_VOICE;
+    };
+
+    /**
+     * Resolve the current SOLA voice preference for UI and legacy TTS.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {string}
+     */
+    const getPreferredVoice = function(root) {
+        return getStoredVoicePreference() || getDefaultVoice(root);
+    };
+
+    /**
+     * Parse the active LLM switcher options from the widget dataset.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {{enabled:boolean,providers:Array,defaultProvider:string,defaultModel:string}}
+     */
+    const getLlmOptions = function(root) {
+        root = root || UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        let options = {};
+        try {
+            options = root && root.dataset && root.dataset.llmOptions ? JSON.parse(root.dataset.llmOptions) : {};
+        } catch (e) {
+            options = {};
+        }
+
+        const normalizeModelOption = function(model) {
+            if (typeof model === 'string') {
+                return {
+                    id: model,
+                    label: model,
+                    status: 'setup',
+                };
+            }
+            if (!model || typeof model !== 'object') {
+                return null;
+            }
+            const id = model.id || model.value || model.name || model.label || '';
+            if (!id) {
+                return null;
+            }
+            return {
+                id: id,
+                label: model.label || model.name || id,
+                status: (model.status || 'setup').toLowerCase(),
+            };
+        };
+
+        /**
+         * Return only the models that should be shown in the composer dropdown.
+         *
+         * @param {Array} models
+         * @returns {Array<{id:string,label:string,status:string}>}
+         */
+        const getVisibleModels = function(models) {
+            return (Array.isArray(models) ? models : []).map(normalizeModelOption).filter(function(model) {
+                return !!(model && model.id && (model.status === 'active' || model.status === 'setup'));
+            });
+        };
+
+        const providers = (Array.isArray(options && options.providers) ? options.providers : []).map(function(provider) {
+            if (!provider || !provider.id) {
+                return null;
+            }
+            const models = getVisibleModels(provider.models);
+            if (!models.length) {
+                return null;
+            }
+            return {
+                id: provider.id,
+                label: provider.label || provider.id,
+                models: models,
+            };
+        }).filter(Boolean);
+
+        return {
+            enabled: !!(options && options.enabled),
+            providers: providers,
+            defaultProvider: (options && options.defaultProvider) || '',
+            defaultModel: (options && options.defaultModel) || '',
+        };
+    };
+
+    /**
+     * Persist the user's preferred LLM provider/model pair.
+     *
+     * @param {string} provider
+     * @param {string} model
+     */
+    const saveLlmSelection = function(provider, model) {
+        try {
+            if (provider) {
+                localStorage.setItem(LLM_PROVIDER_KEY, provider);
+            } else {
+                localStorage.removeItem(LLM_PROVIDER_KEY);
+            }
+            if (model) {
+                localStorage.setItem(LLM_MODEL_KEY, model);
+            } else {
+                localStorage.removeItem(LLM_MODEL_KEY);
+            }
+        } catch (e) { /**/ }
+    };
+
+    /**
+     * Resolve the current active provider/model pair for the student model switcher.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {{enabled:boolean,provider:string,model:string,options:Object}}
+     */
+    const getResolvedLlmSelection = function(root) {
+        const options = getLlmOptions(root);
+        const providers = options.providers || [];
+        if (!options.enabled || !providers.length) {
+            return {
+                enabled: false,
+                provider: '',
+                model: '',
+                options: options,
+            };
+        }
+
+        let storedProvider = '';
+        let storedModel = '';
+        try {
+            storedProvider = localStorage.getItem(LLM_PROVIDER_KEY) || '';
+            storedModel = localStorage.getItem(LLM_MODEL_KEY) || '';
+        } catch (e) { /**/ }
+
+        let providerConfig = providers.find(function(item) {
+            return item.id === storedProvider;
+        }) || providers.find(function(item) {
+            return item.id === options.defaultProvider;
+        }) || providers[0];
+
+        if (!providerConfig) {
+            return {
+                enabled: false,
+                provider: '',
+                model: '',
+                options: options,
+            };
+        }
+
+        let model = storedModel;
+        const providerModelIds = Array.isArray(providerConfig.models)
+            ? providerConfig.models.map(function(item) { return item.id; })
+            : [];
+        if (!model || providerModelIds.indexOf(model) === -1) {
+            if (providerConfig.id === options.defaultProvider &&
+                    providerModelIds.indexOf(options.defaultModel) !== -1) {
+                model = options.defaultModel;
+            } else {
+                model = (providerConfig.models && providerConfig.models[0] && providerConfig.models[0].id) || '';
+            }
+        }
+
+        if (storedProvider !== providerConfig.id || storedModel !== model) {
+            saveLlmSelection(providerConfig.id, model);
+        }
+
+        return {
+            enabled: true,
+            provider: providerConfig.id,
+            model: model,
+            options: options,
+        };
+    };
+
+    /**
+     * Resolve the current SOLA voice preference for Realtime.
+     *
+     * @param {HTMLElement|null} root
+     * @param {string=} fallbackVoice
+     * @returns {string}
+     */
+    const getRealtimeVoicePreference = function(root, fallbackVoice) {
+        const preferred = getStoredVoicePreference() || fallbackVoice || getDefaultVoice(root);
+        return getRealtimeCompatibleVoice(preferred);
+    };
+
+    /**
+     * Sync the Codex-style composer LLM controls with the active frontend options.
+     *
+     * @param {HTMLElement} root
+     */
+    const syncComposerLlmControls = function(root) {
+        const llmSelection = getResolvedLlmSelection(root);
+        UI.setComposerLlmOptions({
+            enabled: llmSelection.enabled,
+            providers: llmSelection.options.providers || [],
+            currentProvider: llmSelection.provider,
+            currentModel: llmSelection.model,
+            onChange: function(provider, model) {
+                saveLlmSelection(provider, model);
+            },
+        });
+    };
+
+    /**
+     * Preferred microphone constraints for live voice.
+     * Echo cancellation keeps assistant playback from retriggering the mic path.
+     *
+     * @returns {Object}
+     */
+    const getRealtimeMicConstraints = function() {
+        return {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+            },
+        };
+    };
+
+    /**
+     * Request microphone access for Realtime voice mode.
+     *
+     * @returns {Promise<MediaStream>}
+     */
+    const getRealtimeMicStream = function() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            return Promise.reject(new Error('Microphone access is not available in this browser.'));
+        }
+        return navigator.mediaDevices.getUserMedia(getRealtimeMicConstraints());
+    };
+
+    /**
+     * Normalize browser getUserMedia failures into user-facing copy.
+     *
+     * @param {Error|DOMException|Object|string|null} err
+     * @returns {string}
+     */
+    const formatRealtimeVoiceStartError = function(err) {
+        const name = err && err.name ? err.name : '';
+        if (name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError') {
+            return 'Microphone access was blocked. Please allow microphone access and try again.';
+        }
+        if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+            return 'No microphone was found on this device.';
+        }
+        if (name === 'NotReadableError' || name === 'TrackStartError') {
+            return 'Your microphone is busy in another app. Close the other app and try again.';
+        }
+        if (err && err.message) {
+            return err.message;
+        }
+        return 'Could not start live voice chat.';
+    };
+
+    /**
+     * Legacy speaking practice can use browser STT or MediaRecorder + Whisper fallback.
+     *
+     * @returns {boolean}
+     */
+    const supportsLegacyVoiceFlow = function() {
+        return hasAudioPlaybackSupport() && (
+            Speech.isSTTSupported() ||
+            (!!window.MediaRecorder && !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia)
+        );
+    };
+
+    /**
+     * Realtime voice uses raw microphone capture, so it does not depend on SpeechRecognition.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {boolean}
+     */
+    const canUseRealtimeVoiceChat = function(root) {
+        return isVoiceFeatureEnabled(root) && isRealtimeVoicePreferred(root) &&
+            hasVoiceInputEnvironment() && hasAudioPlaybackSupport();
+    };
+
+    /**
+     * Legacy voice remains available anywhere the browser can support it.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {boolean}
+     */
+    const canUseLegacyVoiceChat = function(root) {
+        return isVoiceFeatureEnabled(root) && hasVoiceInputEnvironment() && supportsLegacyVoiceFlow();
+    };
+
+    const hasActiveVoiceSession = function() {
+        return voiceSessionActive || Voice.isConnected() || Realtime.isConnected();
+    };
+
+    const beginVoiceSession = function() {
+        voiceSessionActive = true;
+        voiceSessionRequestId += 1;
+        return voiceSessionRequestId;
+    };
+
+    const clearVoiceSession = function() {
+        voiceSessionActive = false;
+        voiceSessionRequestId += 1;
+    };
+
+    const isCurrentVoiceSessionRequest = function(requestId) {
+        return voiceSessionActive && requestId === voiceSessionRequestId;
+    };
+
+    const getVoicePanelButtonLabel = function(active) {
+        const btn = UI.getElements().voiceStartBtn;
+        if (!btn) {
+            return active ? 'End voice session' : 'Start voice chat';
+        }
+        if (active) {
+            return btn.dataset.stopLabel || 'End voice session';
+        }
+        return btn.dataset.startLabel || btn.textContent.trim() || 'Start voice chat';
+    };
+
+    const isVoiceChatAvailable = function() {
+        const root = UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        return canUseRealtimeVoiceChat(root) || canUseLegacyVoiceChat(root);
+    };
+
+    /**
+     * Refresh the copy and CTA state in the voice panel.
+     */
+    const syncVoicePanel = function() {
+        const root = UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        if (!root) {
+            return;
+        }
+        const available = isVoiceChatAvailable();
+        const sessionActive = hasActiveVoiceSession();
+        const contextText = sessionActive
+            ? (currentPageTitle
+                ? 'Voice chat is open for "' + currentPageTitle + '". Keep speaking, type a follow-up, or end the session when you are done.'
+                : 'Voice chat is open for this page or another course topic. Keep speaking, type a follow-up, or end the session when you are done.')
+            : (currentPageTitle
+                ? 'Start a voice conversation about "' + currentPageTitle + '" or another course topic. Your transcript will still show up in chat.'
+                : 'Start a voice conversation about this page or another course topic. Your transcript will still show up in chat.');
+        let status = 'Ready when you are.';
+        if (sessionActive && !Voice.isConnected() && !Realtime.isConnected()) {
+            status = 'Voice chat is starting. You can end the session at any time.';
+        } else if (Voice.isConnected() || Realtime.isConnected()) {
+            status = 'Voice chat is live. Speak or type to continue.';
+        } else if (!isVoiceFeatureEnabled(root)) {
+            status = 'Voice chat is not enabled for this course yet.';
+        } else if (!hasVoiceInputEnvironment()) {
+            status = 'Voice chat needs HTTPS and microphone access.';
+        } else if (!hasAudioPlaybackSupport()) {
+            status = 'Audio playback is not available in this browser.';
+        } else if (!isRealtimeVoicePreferred(root) && !supportsLegacyVoiceFlow()) {
+            status = 'This browser does not support speech input.';
+        }
+        UI.configureVoicePanel({
+            text: contextText,
+            status: status,
+            buttonText: getVoicePanelButtonLabel(sessionActive),
+            disabled: sessionActive ? false : !available,
+        });
+    };
+
+    const stopActiveVoiceSession = function() {
+        clearVoiceSession();
+        if (Voice.isConnected()) {
+            Voice.disconnect();
+        }
+        if (Realtime.isConnected()) {
+            Realtime.disconnect();
+        }
+        teardownVoiceSessionUi();
+    };
+
+    /**
+     * Build the server request context for a Realtime voice session.
+     *
+     * @param {HTMLElement|null} root
+     * @returns {Object}
+     */
+    const getRealtimeVoiceRequestContext = function(root) {
+        root = root || UI.getElements().root || document.getElementById('local-ai-course-assistant');
+
+        let coachingStyle = '';
+        let firstGen = false;
+        try {
+            coachingStyle = localStorage.getItem('aica_coaching_style') || '';
+        } catch (e) { /**/ }
+        try {
+            firstGen = localStorage.getItem('aica_firstgen') === '1';
+        } catch (e) { /**/ }
+
+        return {
+            lang: Speech.getLang() || '',
+            pageId: currentPageId || 0,
+            pageTitle: currentPageTitle || '',
+            pageHeading: getContextDebugHeading() || (root ? (root.dataset.serverPageHeading || '') : ''),
+            clientTitle: document.title || (root ? (root.dataset.serverPageTitle || '') : ''),
+            modName: root ? (root.dataset.modname || '') : '',
+            coachingStyle: coachingStyle,
+            firstGen: firstGen,
+            completion: root ? (parseInt(root.dataset.completionpct, 10) || 0) : 0,
+        };
+    };
+
+    /**
+     * Refresh the compact History tab from the server.
+     *
+     * @param {boolean} showError
+     */
+    const refreshConversationHistory = function(showError) {
+        if (historyRefreshPending) {
+            return;
+        }
+        historyRefreshPending = true;
+        const refreshBtn = UI.getElements().historyRefreshBtn;
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
+        }
+        Repo.getHistory(courseId).then(function(result) {
+            setConversationHistory(result && result.messages ? result.messages : []);
+            return;
+        }).catch(function() {
+            UI.renderHistoryPanel(conversationHistory);
+            if (showError) {
+                UI.showNotification('Could not refresh history right now.', 'error');
+            }
+        }).then(function() {
+            historyRefreshPending = false;
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+            }
+        });
+    };
+
+    /**
+     * Switch the footer mode and clean up conflicting UI state.
+     *
+     * @param {string} mode
+     * @param {{force?:boolean,refreshHistory?:boolean}} options
+     */
+    const setBottomMode = function(mode, options) {
+        options = options || {};
+        const normalized = ['chat', 'voice', 'history'].indexOf(mode) !== -1 ? mode : 'chat';
+        if (normalized === activeBottomMode && !options.force) {
+            if (normalized === 'history' && options.refreshHistory) {
+                refreshConversationHistory(false);
+            }
+            return;
+        }
+
+        if (normalized !== 'voice') {
+            clearVoiceSession();
+            if (Voice.isConnected()) {
+                Voice.disconnect();
+            }
+            if (Realtime.isConnected()) {
+                Realtime.disconnect();
+            }
+            UI.clearSuggestions();
+            UI.hideVoiceOverlay();
+        }
+
+        UI.hideTopicPicker();
+        UI.hideQuizSetup();
+        if (quizModeActive) {
+            quizModeActive = false;
+            const root = UI.getElements().root;
+            const quizBtn = root ? root.querySelector('.local-ai-course-assistant__btn-quiz') : null;
+            setQuizBtnActive(quizBtn, false);
+        }
+
+        activeBottomMode = normalized;
+        UI.setBottomMode(normalized);
+        if (normalized === 'voice') {
+            syncVoicePanel();
+        } else if (normalized === 'history') {
+            UI.renderHistoryPanel(conversationHistory);
+            if (options.refreshHistory) {
+                refreshConversationHistory(false);
+            }
+        }
     };
 
     /**
@@ -220,6 +1127,29 @@ define([
         currentPageTitle = root.dataset.currentPageTitle || '';
         quizLocked = root.dataset.quizLocked === '1';
 
+        // Fallbacks for themes/pages where Moodle does not populate PAGE->cm in the footer hook.
+        if (!currentPageId && document.body) {
+            var cmidMatch = document.body.className.match(/(?:^|\s)cmid-(\d+)(?:\s|$)/);
+            if (cmidMatch) {
+                currentPageId = parseInt(cmidMatch[1], 10) || 0;
+                if (currentPageId) {
+                    root.dataset.currentPageId = String(currentPageId);
+                }
+            }
+        }
+        if (!currentPageTitle) {
+            currentPageTitle = getContextDebugHeading() || root.dataset.serverPageTitle || '';
+            if (currentPageTitle) {
+                root.dataset.currentPageTitle = currentPageTitle;
+            }
+        }
+        if (!root.dataset.modname && document.body) {
+            var modTypeMatch = document.body.className.match(/(?:^|\s)cm-type-([a-z0-9_]+)(?:\s|$)/i);
+            if (modTypeMatch) {
+                root.dataset.modname = modTypeMatch[1].toLowerCase();
+            }
+        }
+
         // Parse quiz topics from data attribute.
         try {
             const raw = root.dataset.quizTopics;
@@ -239,7 +1169,11 @@ define([
         UI.initUI(root);
         initContextDebug(root);
         bindEvents();
+        syncComposerLlmControls(root);
         initSpeech();
+        syncVoicePanel();
+        UI.setModeButtonsEnabled(!quizLocked);
+        setBottomMode('chat', {force: true});
         // Cache English starter labels before any language update overwrites them.
         root.querySelectorAll('.local-ai-course-assistant__starter').forEach(function(btn) {
             var span = btn.querySelector('span:not(.aica-starter-icon)');
@@ -248,25 +1182,17 @@ define([
             }
         });
         initLanguage();
-
-        // First-ever visit: pulse the toggle to attract attention (don't auto-open).
-        // Subsequent new-course visits: auto-open after 600ms on desktop only.
-        // Mobile (≤600px) never auto-opens — full-screen takeover is too aggressive.
+        if (root.dataset.introDismissed === '1') {
+            try {
+                localStorage.setItem(INTRO_DISMISSED_KEY, '1');
+            } catch (e) { /**/ }
+        }        // First-ever visit: pulse the toggle to attract attention, but keep
+        // the drawer closed until the user opens it.
         try {
-            const introDismissed = localStorage.getItem('ai_course_assistant_intro_dismissed');
-            const visitedKey = 'ai_course_assistant_visited_' + courseId;
-            const isMobile = window.innerWidth <= 600;
-            if (!introDismissed) {
-                // True first-timer — pulse the toggle until they click it.
+            if (!isIntroDismissed(root)) {
                 var toggleEl = document.getElementById('local-ai-course-assistant-toggle');
                 if (toggleEl) {
                     toggleEl.classList.add('aica-first-visit');
-                }
-            } else if (!localStorage.getItem(visitedKey)) {
-                localStorage.setItem(visitedKey, '1');
-                if (!isMobile) {
-                    // Returning user, new course, desktop — auto-open.
-                    setTimeout(handleToggle, 600);
                 }
             }
         } catch (e) {
@@ -289,7 +1215,7 @@ define([
         const stored = Speech.getLang();
 
         if (stored) {
-            // Already has a saved preference — update the label and starter texts.
+            // Already has a saved preference â€” update the label and starter texts.
             const info = Speech.getLangInfo(stored);
             if (info) {
                 UI.setLangLabel(info.name);
@@ -310,7 +1236,7 @@ define([
             }
         }
 
-        // No language set — show English label so chip is always meaningful.
+        // No language set â€” show English label so chip is always meaningful.
         UI.setLangLabel('English');
     };
 
@@ -330,20 +1256,25 @@ define([
             'help-page':    labels ? labels.helpPage     : null,
             'quiz':         labels ? labels.quiz         : null,
             'study-plan':   labels ? labels.studyPlan    : null,
-            'ask-anything': labels ? labels.askAnything   : null,
+            'ask-anything': labels ? labels.askAnything  : null,
             'review-practice': labels ? labels.reviewPractice : null,
             'ell-practice':       labels ? labels.ellPractice       : null,
             'ell-pronunciation':  labels ? labels.ellPronunciation  : null,
             // Legacy starter keys.
             'explain':      labels ? labels.helpPage     : null,
             'key-concepts': labels ? labels.helpPage     : null,
-            'ai-coach':     labels ? labels.askAnything   : null,
+            'ai-coach':     labels ? labels.askAnything  : null,
+            'quick-study':  labels ? labels.reviewPractice : null,
             'help-lesson':  labels ? labels.helpPage     : null,
             'help-me':      labels ? labels.helpMe       : null,
         };
         rootEl.querySelectorAll('.local-ai-course-assistant__starter').forEach(function(btn) {
             var span = btn.querySelector('span:not(.aica-starter-icon)');
             if (!span) {
+                return;
+            }
+            if (btn.dataset.translatable !== '1') {
+                span.textContent = btn.dataset.labelEn || span.textContent;
                 return;
             }
             const text = keyMap[btn.dataset.starter];
@@ -370,6 +1301,12 @@ define([
             UI.closeDrawer();
         });
 
+        if (els.closeToggle) {
+            els.closeToggle.addEventListener('click', function() {
+                UI.closeDrawer();
+            });
+        }
+
         // Send button.
         els.sendBtn.addEventListener('click', handleSend);
 
@@ -395,7 +1332,35 @@ define([
             els.micBtn.addEventListener('click', handleMic);
         }
 
-        // Language chip — opens compact language picker.
+        if (els.modeButtons && els.modeButtons.forEach) {
+            els.modeButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    setBottomMode(btn.dataset.mode, {
+                        force: btn.dataset.mode === activeBottomMode,
+                        refreshHistory: btn.dataset.mode === 'history',
+                    });
+                });
+            });
+        }
+
+        if (els.voiceStartBtn) {
+            els.voiceStartBtn.addEventListener('click', function() {
+                setBottomMode('voice', {force: true});
+                if (hasActiveVoiceSession()) {
+                    stopActiveVoiceSession();
+                    return;
+                }
+                handlePracticeSpeaking();
+            });
+        }
+
+        if (els.historyRefreshBtn) {
+            els.historyRefreshBtn.addEventListener('click', function() {
+                refreshConversationHistory(true);
+            });
+        }
+
+        // Language chip â€” opens compact language picker.
         if (els.langBtn) {
             els.langBtn.addEventListener('click', function() {
                 UI.showLangPicker(
@@ -420,21 +1385,11 @@ define([
             starterVoiceBtn.addEventListener('click', handleMic);
         }
 
-        // Settings panel button (gear icon) — opens language / avatar / voice settings.
+        // Settings panel button (gear icon) â€” opens language / avatar / voice settings.
         const settingsPanelBtn = els.root ? els.root.querySelector('.local-ai-course-assistant__btn-settings-panel') : null;
         if (settingsPanelBtn) {
             settingsPanelBtn.addEventListener('click', handleSettingsPanel);
         }
-
-        // Voice mode button (header shortcut — triggers Practice Speaking / Option B).
-        const voiceBtn = els.root ? els.root.querySelector('.local-ai-course-assistant__btn-voice') : null;
-        if (voiceBtn) {
-            voiceBtn.addEventListener('click', function() {
-                handlePracticeSpeaking();
-            });
-        }
-
-        // Context debug toggle (admin only).
         const debugBtn = els.root ? els.root.querySelector('.local-ai-course-assistant__btn-debug') : null;
         if (debugBtn) {
             debugBtn.addEventListener('click', handleContextDebugToggle);
@@ -452,13 +1407,21 @@ define([
             debugRefreshBtn.addEventListener('click', refreshContextDebug);
         }
 
+        // Voice mode button (header shortcut â€” triggers Practice Speaking / Option B).
+        const voiceBtn = els.root ? els.root.querySelector('.local-ai-course-assistant__btn-voice') : null;
+        if (voiceBtn) {
+            voiceBtn.addEventListener('click', function() {
+                handlePracticeSpeaking();
+            });
+        }
+
         // Feedback button.
         const feedbackBtn = els.root ? els.root.querySelector('.local-ai-course-assistant__btn-feedback') : null;
         if (feedbackBtn) {
             feedbackBtn.addEventListener('click', function() {
                 UI.showFeedbackPanel(function(rating, comment, deviceInfo) {
                     Repo.submitFeedback(courseId, rating, comment, deviceInfo).catch(function() {
-                        // Silently ignore — feedback is best-effort.
+                        // Silently ignore â€” feedback is best-effort.
                     });
                 });
             });
@@ -471,7 +1434,7 @@ define([
         }
 
 
-        // Conversation starters — pass button element for data-type/data-prompt access.
+        // Conversation starters.
         if (els.root) {
             els.root.querySelectorAll('.local-ai-course-assistant__starter').forEach(function(btn) {
                 btn.addEventListener('click', function() {
@@ -494,9 +1457,28 @@ define([
     };
 
     /**
+     * Resolve a starter button from the current DOM.
+     *
+     * @param {string} starterKey
+     * @returns {HTMLElement|null}
+     */
+    const getStarterButtonByKey = function(starterKey) {
+        if (!starterKey) {
+            return null;
+        }
+        const rootEl = document.getElementById('local-ai-course-assistant');
+        if (!rootEl) {
+            return null;
+        }
+        return rootEl.querySelector(
+            '.local-ai-course-assistant__starter[data-starter="' + starterKey + '"]'
+        );
+    };
+
+    /**
      * Build a prompt string for a conversation starter + chosen topic.
      *
-     * @param {string} starterKey Starter key (e.g. 'help-page', 'study-plan', 'ask-anything')
+     * @param {string} starterKey Starter key (e.g. 'help-page' | 'study-plan' | 'ask-anything')
      * @param {string} topic      Resolved topic ('' = default, '__guided__' = AI-guided)
      * @returns {string}
      */
@@ -504,7 +1486,7 @@ define([
         const isGuided = topic === '__guided__';
         const isEmpty  = !topic || topic === '';
 
-        // Help With This Page — combines old 'explain' + 'key-concepts'.
+        // Help With This Page â€” combines old "Explain This" + "Key Concepts".
         if (starterKey === 'help-page' || starterKey === 'explain' || starterKey === 'help-lesson') {
             if (isGuided) {
                 return 'Based on my progress and what I\'ve been asking about, which concept from ' +
@@ -544,14 +1526,13 @@ define([
                 'how much time I have available, then create a focused study plan.';
         }
 
-        // Ask Anything — replaces old 'ai-coach', open-ended.
+        // Ask Anything â€” replaces old "AI Coach".
         if (starterKey === 'ask-anything' || starterKey === 'ai-coach') {
             const pageRef = currentPageTitle ? ' about "' + currentPageTitle + '"' : '';
-            return 'I have a question' + pageRef + '. Can you help me? I\'d like to explore this topic, ' +
-                'ask follow-up questions, and understand it better.';
+            return 'I have a question' + pageRef + '. Can you help me? I\'d like to explore this ' +
+                'topic, ask follow-up questions, and understand it better.';
         }
 
-        // Review & Practice — replaces old 'quick-study'.
         if (starterKey === 'review-practice') {
             const pageRef = currentPageTitle ? ' from "' + currentPageTitle + '"' : ' from recent lessons';
             return 'I\'d like to review and practice what I\'ve been learning' + pageRef + '. ' +
@@ -565,15 +1546,30 @@ define([
     /**
      * Handle a conversation starter button click.
      *
-     * 'quiz' opens the quiz setup panel directly.
-     * All other starters show a topic picker first, then send the constructed prompt.
+     * Starter behavior primarily comes from the button's data attributes.
+     * Topic picker fallback is kept only for legacy starter keys.
      *
      * @param {string} starterKey
+     * @param {HTMLElement=} starterBtn
      */
     const handleStarter = function(starterKey, starterBtn) {
+        setBottomMode('chat', {force: true});
         UI.hideStarters();
 
-        // Read type and prompt from the button's data attributes (set by admin config).
+        if (!starterBtn) {
+            starterBtn = getStarterButtonByKey(starterKey);
+        }
+
+        const sendStarterPrompt = function(prompt) {
+            if (!prompt) {
+                return;
+            }
+            UI.getElements().input.value = prompt;
+            UI.autoResizeInput();
+            UI.updateSendButton();
+            handleSend();
+        };
+
         var starterType = 'prompt';
         var starterPrompt = '';
         if (starterBtn) {
@@ -581,28 +1577,36 @@ define([
             starterPrompt = starterBtn.dataset.prompt || '';
         }
 
-        // Special handler types.
         if (starterType === 'quiz' || starterKey === 'quiz') {
             handleQuiz();
             return;
         }
-        if (starterType === 'voice' || starterKey === 'ell-practice') {
-            handlePracticeSpeaking();
-            return;
-        }
-        if (starterType === 'pronunciation' || starterKey === 'ell-pronunciation') {
-            handleELLPronunciation();
-            return;
-        }
 
-        // Legacy quick-study still works.
         if (starterKey === 'quick-study') {
             handleQuickStudy();
             return;
         }
 
+        // Practice Speaking â€” Option B (SSE + TTS + Web Speech API).
+        if (starterType === 'voice' || starterKey === 'ell-practice') {
+            handlePracticeSpeaking();
+            return;
+        }
+
+        // ELL Pronunciation â€” Option C (Realtime), phoneme-level feedback.
+        if (starterType === 'pronunciation' || starterKey === 'ell-pronunciation') {
+            handleELLPronunciation();
+            return;
+        }
+
+        // "Help Me" fires directly without a topic picker.
+        if (starterKey === 'help-me') {
+            sendStarterPrompt('I need some help!');
+            return;
+        }
+
         // Map kebab-case data-starter keys to camelCase STARTER_PROMPTS keys.
-        const camelKeyMap = {
+        var camelKeyMap = {
             'help-page': 'helpPage',
             'quiz': 'quiz',
             'study-plan': 'studyPlan',
@@ -614,45 +1618,32 @@ define([
         };
 
         // Try translated prompt first when UI is set to a non-English language.
-        const currentLang = Speech.getLang ? Speech.getLang() : '';
-        const promptKey = camelKeyMap[starterKey];
+        var currentLang = Speech.getLang ? Speech.getLang() : '';
+        var promptKey = camelKeyMap[starterKey];
         if (currentLang && currentLang !== 'en' && promptKey) {
-            const translatedPrompt = Speech.getStarterPrompt(currentLang, promptKey);
+            var translatedPrompt = Speech.getStarterPrompt(currentLang, promptKey);
             if (translatedPrompt) {
-                UI.getElements().input.value = translatedPrompt;
-                UI.autoResizeInput();
-                UI.updateSendButton();
-                handleSend();
+                sendStarterPrompt(translatedPrompt);
                 return;
             }
         }
 
-        // Use admin-configured prompt if set.
         if (starterPrompt) {
             const pageRef = currentPageTitle ? '"' + currentPageTitle + '"' : 'this lesson';
-            const finalPrompt = starterPrompt.replace(/\{page\}/g, pageRef);
-            UI.getElements().input.value = finalPrompt;
-            UI.autoResizeInput();
-            UI.updateSendButton();
-            handleSend();
+            sendStarterPrompt(starterPrompt.replace(/\{page\}/g, pageRef));
             return;
         }
 
-        // Fallback: use buildStarterPrompt for known keys.
-        var prompt = buildStarterPrompt(starterKey, '');
+        const prompt = buildStarterPrompt(starterKey, '');
         if (prompt) {
-            UI.getElements().input.value = prompt;
-            UI.autoResizeInput();
-            UI.updateSendButton();
-            handleSend();
+            sendStarterPrompt(prompt);
             return;
         }
 
-        // Topic-picker fallback for legacy starters (explain, study-plan, help-lesson).
         const titleKeyMap = {
             'help-lesson':  'chat:topic_picker_title_help',
             'explain':      'chat:topic_picker_title_explain',
-            'study-plan':   'chat:topic_picker_title_study',
+            'key-concepts': 'chat:topic_picker_title_explain',
         };
         const titleKey = titleKeyMap[starterKey] || 'chat:topic_picker_title';
 
@@ -667,14 +1658,11 @@ define([
                 titleStr, actionStr,
                 function onSelect(topic) {
                     UI.hideTopicPicker();
-                    const builtPrompt = buildStarterPrompt(starterKey, topic);
-                    if (!builtPrompt) {
+                    const topicPrompt = buildStarterPrompt(starterKey, topic);
+                    if (!topicPrompt) {
                         return;
                     }
-                    UI.getElements().input.value = builtPrompt;
-                    UI.autoResizeInput();
-                    UI.updateSendButton();
-                    handleSend();
+                    sendStarterPrompt(topicPrompt);
                 },
                 function onCancel() {
                     UI.hideTopicPicker();
@@ -686,7 +1674,7 @@ define([
     };
 
     /**
-     * Handle reset/home button — cancel any active panels and restore the conversation
+     * Handle reset/home button â€” cancel any active panels and restore the conversation
      * starters. Message history remains visible so students can scroll back.
      */
     const handleReset = function() {
@@ -703,6 +1691,7 @@ define([
         }
 
         // End any active voice/pronunciation session.
+        clearVoiceSession();
         if (Voice.isConnected()) {
             Voice.disconnect();
         }
@@ -711,11 +1700,13 @@ define([
         }
         UI.hideVoiceOverlay();
         UI.clearSuggestions();
+        setBottomMode('chat', {force: true});
+        syncVoicePanel();
         UI.showStarters();
     };
 
     /**
-     * Handle the settings panel gear button — show language, avatar, and voice settings.
+     * Handle the settings panel gear button â€” show language, avatar, and voice settings.
      */
     const handleSettingsPanel = function() {
         const root = UI.getElements().root;
@@ -745,7 +1736,7 @@ define([
                     currentAvatarUrl: root.dataset.avatarurl || '',
                     realtimeEnabled: root.dataset.realtimeenabled === '1' || root.dataset.realtimeenabled === 'true',
                     hasTts: !!(root.dataset.ttsurl),
-                    currentVoice: localStorage.getItem('aica_tts_voice') || 'shimmer',
+                    currentVoice: getPreferredVoice(root),
                     studySessions: studySessions,
                     quizHistory: quizHistory,
                     emailRemindersEnabled: root.dataset.emailreminders === '1',
@@ -808,12 +1799,12 @@ define([
     };
 
     /**
-     * Handle suggestion chip click — fill input and send as new message.
+     * Handle suggestion chip click â€” fill input and send as new message.
      *
      * @param {string} text The suggestion text to send
      */
     const handleSuggestionClick = function(text) {
-        // Special chip: "Continue: <topic>" — build a resume prompt.
+        // Special chip: "Continue: <topic>" â€” build a resume prompt.
         if (text.startsWith('Continue: ')) {
             const rawTopic = text.slice('Continue: '.length).replace(/ \(last quiz: \d+%\)$/, '');
             UI.clearSuggestions();
@@ -851,6 +1842,7 @@ define([
         // Special chip: show starters overlay.
         if (text === 'Start something new' || text === 'Start fresh') {
             UI.clearSuggestions();
+            setBottomMode('chat', {force: true});
             UI.showStarters();
             return;
         }
@@ -862,40 +1854,22 @@ define([
     };
 
     /**
-     * Start a Practice Speaking session (Option B: SSE + TTS + Web Speech API).
-     * Cheaper and more reliable than Realtime; suitable for conversational practice.
+     * Reset overlay state once a voice session ends or fails.
      */
-    const handlePracticeSpeaking = function() {
-        // Practice Speaking uses the Web Speech API (STT), which also requires HTTPS on iOS.
-        if (!window.isSecureContext || !navigator.mediaDevices) {
-            addAssistantMsg(
-                'Practice Speaking requires a secure connection (HTTPS). ' +
-                'Please use the HTTPS version of this site to access voice features.'
-            );
-            return;
-        }
+    const teardownVoiceSessionUi = function() {
+        clearVoiceSession();
+        UI.clearSuggestions();
+        UI.hideVoiceOverlay();
+        syncVoicePanel();
+        UI.showStarters();
+    };
 
-        // Clean up any existing session before starting.
-        if (Realtime.isConnected()) { Realtime.disconnect(); }
-        // Voice.connect() calls disconnect() internally if already connected.
-
-        const root = document.getElementById('local-ai-course-assistant');
-        const avatarUrl = root ? root.dataset.avatarurl : '';
-        const voice = localStorage.getItem('aica_tts_voice') || 'shimmer';
-        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
-
-        const endSession = function() {
-            Voice.disconnect();
-            UI.clearSuggestions();
-            UI.hideVoiceOverlay();
-            UI.showStarters();
-        };
-
-        UI.showVoiceOverlay(avatarUrl, endSession,
-            'Choose a topic or start speaking \u2014 ' + assistantName + ' will listen and respond.');
-        UI.setVoiceState('idle');
-
-        // Build context-aware conversation starters for speaking practice.
+    /**
+     * Build context-aware conversation starters for general voice chat.
+     *
+     * @returns {Array<string>}
+     */
+    const buildPracticeSpeakingChips = function() {
         var speakChips = [];
         if (currentPageTitle) {
             speakChips.push('Discuss ' + currentPageTitle);
@@ -907,97 +1881,120 @@ define([
             }
         }
         speakChips.push('Free conversation');
-
-        var sessionStarted = false;
-        var startSession = function(topic) {
-            if (sessionStarted) { return; }
-            sessionStarted = true;
-            UI.clearSuggestions();
-            UI.setVoiceState('connecting');
-
-            // Build a short spoken intro so the student knows what to do.
-            var spokenGreeting = "Hi! I'm " + assistantName + ". ";
-            if (topic) {
-                spokenGreeting += "Great choice! I'll ask you a question about " + topic +
-                    " and you can respond by speaking. Go ahead whenever you're ready!";
-            } else {
-                spokenGreeting += "Please select a topic from your course and I'll ask you a question about it. " +
-                    "You can respond by speaking. Let's get started!";
-            }
-
-            Voice.connect(
-                '',
-                voice,
-                {
-                    onTranscript: function(role, text) {
-                        UI.appendVoiceTranscript(role, text);
-                    },
-                    onStateChange: function(state) {
-                        UI.setVoiceState(state);
-                        if (state === 'disconnected') {
-                            UI.clearSuggestions();
-                            UI.hideVoiceOverlay();
-                            UI.showStarters();
-                        }
-                    },
-                    onError: function(msg) {
-                        Voice.disconnect();
-                        UI.setVoiceState('disconnected');
-                        UI.clearSuggestions();
-                        UI.hideVoiceOverlay();
-                        UI.showStarters();
-                        addAssistantMsg(msg || 'Voice mode failed.');
-                    },
-                    onSuggestions: function(chips) {
-                        UI.showSuggestions(chips, function(text) {
-                            UI.clearSuggestions();
-                            Voice.sendText(text);
-                        });
-                    },
-                },
-                {
-                    courseId: courseId,
-                    sessKey:  sessKey,
-                    sseUrl:   sseUrl,
-                    lang:     Speech.getLang(),
-                    greeting: spokenGreeting,
-                }
-            );
-        };
-
-        // Show speaking topic chips; clicking a chip starts the session with that topic.
-        UI.showSuggestions(speakChips, function(text) {
-            var topic = (text === 'Free conversation') ? '' : text.replace(/^(Discuss|Talk about) /, '');
-            startSession(topic);
-        });
+        return speakChips;
     };
 
     /**
-     * Start an ELL Pronunciation session (Option C: OpenAI Realtime WebSocket).
-     * Uses phoneme-level audio analysis — requires realtime_enabled and an OpenAI key.
+     * Extract the raw discussion topic from a speaking suggestion chip.
+     *
+     * @param {string} label
+     * @returns {string}
      */
-    const handleELLPronunciation = function() {
-        // Microphone API requires a secure context (HTTPS). On iOS Chrome even
-        // localhost over HTTP is not treated as secure, so navigator.mediaDevices
-        // is undefined. Fail fast with a clear message rather than the cryptic
-        // "getUserMedia not supported" error from deep inside the Realtime module.
-        if (!window.isSecureContext || !navigator.mediaDevices) {
-            addAssistantMsg(
-                'ELL Pronunciation requires a secure connection (HTTPS). ' +
-                'Please use the HTTPS version of this site to access voice features.'
-            );
-            return;
+    const extractPracticeSpeakingTopic = function(label) {
+        if (!label || label === 'Free conversation') {
+            return '';
         }
+        return label.replace(/^(Discuss|Talk about) /, '');
+    };
 
-        // Clean up any existing session (Realtime or Practice Speaking) before starting.
+    /**
+     * Build the spoken greeting for legacy speaking practice mode.
+     *
+     * @param {string=} selection
+     * @returns {string}
+     */
+    const buildPracticeSpeakingGreeting = function(selection) {
+        var topic = extractPracticeSpeakingTopic(selection);
+        if (topic) {
+            return 'Let\'s practice speaking about ' + topic + '. '
+                + 'Speak in full sentences, and I\'ll keep the conversation going. '
+                + 'If you get stuck, that\'s okay. I\'ll help.';
+        }
+        return 'Let\'s practice speaking. '
+            + 'Speak in full sentences, and I\'ll keep the conversation going. '
+            + 'If you get stuck, that\'s okay. I\'ll help.';
+    };
+
+    /**
+     * Build the natural-language kickoff message for realtime speaking practice.
+     *
+     * @param {string=} selection
+     * @returns {string}
+     */
+    const buildPracticeSpeakingInitialText = function(selection) {
+        var topic = extractPracticeSpeakingTopic(selection);
+        if (topic) {
+            return 'Let\'s practice speaking about ' + topic + '.';
+        }
+        return 'Let\'s practice speaking.';
+    };
+
+    /**
+     * Build phrase suggestions for pronunciation coaching.
+     *
+     * @returns {Array<string>}
+     */
+    const buildELLPronunciationChips = function() {
+        var vocabChips = [];
+        if (currentPageTitle) {
+            vocabChips.push('Practice saying: ' + currentPageTitle);
+        }
+        for (var i = 0; i < moduleTitles.length && vocabChips.length < 4; i++) {
+            var title = moduleTitles[i] && moduleTitles[i].name ? moduleTitles[i].name : '';
+            if (title && title !== currentPageTitle) {
+                vocabChips.push('Pronounce: ' + title);
+            }
+        }
+        vocabChips.push('Free practice');
+        return vocabChips;
+    };
+
+    /**
+     * Extract the raw practice phrase from a pronunciation suggestion chip.
+     *
+     * @param {string} label
+     * @returns {string}
+     */
+    const extractPronunciationPhrase = function(label) {
+        if (!label || label === 'Free practice') {
+            return '';
+        }
+        return label.replace(/^(Practice saying|Pronounce): /, '');
+    };
+
+    /**
+     * Build the natural-language kickoff message for realtime pronunciation mode.
+     *
+     * @param {string=} selection
+     * @returns {string}
+     */
+    const buildELLPronunciationInitialText = function(selection) {
+        var phrase = extractPronunciationPhrase(selection);
+        if (phrase) {
+            return 'Let\'s practice pronouncing "' + phrase + '".';
+        }
+        return 'Let\'s practice pronunciation.';
+    };
+
+    /**
+     * Shared OpenAI Realtime session bootstrap for voice chat and pronunciation.
+     *
+     * @param {Object} config
+     * @param {HTMLElement} config.root
+     * @param {string} config.overlayInstruction
+     * @param {Array<string>} config.chips
+     * @param {string=} config.autoStartSelection
+     * @param {Function=} config.getInitialText
+     * @param {Function=} config.getInstructions
+     */
+    const startRealtimeVoiceSession = function(config) {
+        const root = config.root || document.getElementById('local-ai-course-assistant');
+        const avatarUrl = root ? root.dataset.avatarurl : '';
+
         if (Realtime.isConnected()) { Realtime.disconnect(); }
         if (Voice.isConnected())    { Voice.disconnect(); }
 
-        const root = document.getElementById('local-ai-course-assistant');
-        const avatarUrl = root ? root.dataset.avatarurl : '';
-        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
-
-        // Create AudioContext synchronously — iOS/WKWebView require it inside the user gesture.
+        // Create AudioContext synchronously so iOS/WKWebView keeps playback unlocked.
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
         if (AudioContextClass) {
@@ -1011,97 +2008,99 @@ define([
             }
         }
 
-        // Pre-request microphone access within the user-gesture call stack.
-        // iOS/WKWebView requires getUserMedia to be initiated synchronously during a user
-        // gesture; the WebSocket 'session.created' callback fires too late.
-        const micPromise = (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
-            ? navigator.mediaDevices.getUserMedia({audio: true}).catch(function() { return null; })
-            : Promise.resolve(null);
+        if (!audioCtx) {
+            addAssistantMsg('Audio playback is not available in this browser.');
+            syncVoicePanel();
+            return;
+        }
 
         const endSession = function() {
-            Realtime.disconnect();
-            UI.clearSuggestions();
-            UI.hideVoiceOverlay();
-            UI.showStarters();
+            stopActiveVoiceSession();
         };
 
-        const overlay = UI.showVoiceOverlay(avatarUrl, endSession,
-            'Choose a phrase to practice or start speaking \u2014 ' + assistantName + ' will give you feedback.');
+        const overlay = UI.showVoiceOverlay(avatarUrl, endSession, config.overlayInstruction || '');
+        const sessionRequestId = beginVoiceSession();
         UI.setVoiceState('idle');
+        syncVoicePanel();
 
-        // Build vocabulary chips from course context.
-        var vocabChips = [];
-        if (currentPageTitle) {
-            vocabChips.push('Practice saying: ' + currentPageTitle);
-        }
-        for (var i = 0; i < moduleTitles.length && vocabChips.length < 4; i++) {
-            var title = moduleTitles[i] && moduleTitles[i].name ? moduleTitles[i].name : '';
-            if (title && title !== currentPageTitle) {
-                vocabChips.push('Pronounce: ' + title);
-            }
-        }
-        vocabChips.push('Free practice');
-
+        const chips = (config.chips && config.chips.length) ? config.chips.slice() : ['Free conversation'];
         var sessionStarted = false;
-        var startPronunciation = function(phrase) {
+        var startSession = function(selection) {
             if (sessionStarted) { return; }
             sessionStarted = true;
             UI.clearSuggestions();
             UI.setVoiceState('connecting');
+            let acquiredMicStream = null;
+            const micPromise = getRealtimeMicStream().then(function(stream) {
+                acquiredMicStream = stream;
+                return stream;
+            });
 
-            // Fetch token and mic stream in parallel — both initiated within the user gesture.
-            Promise.all([Repo.getRealtimeToken(courseId), micPromise]).then(function(results) {
-                const result    = results[0];
-                const micStream = results[1]; // null if getUserMedia failed or unsupported
-
+            Promise.all([
+                Repo.getRealtimeToken(courseId, getRealtimeVoiceRequestContext(root)),
+                micPromise,
+            ]).then(function(results) {
+                if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                    if (acquiredMicStream) {
+                        acquiredMicStream.getTracks().forEach(function(track) { track.stop(); });
+                    }
+                    return;
+                }
+                const result = results[0] || {};
+                const micStream = results[1];
                 const token = result.token;
-                const voice = localStorage.getItem('aica_tts_voice') || result.voice;
-
-                // Enrich ELL instructions with course page context for relevant suggestions.
-                let ellInstructions = Realtime.ELL_INSTRUCTIONS;
-                ellInstructions += '\n\nIMPORTANT: Start the session by greeting the student warmly and briefly ' +
-                    'explaining what you will do together. Keep it to 1-2 short sentences. For example: ' +
-                    '"Hi! I\'m here to help you practice pronunciation. ';
-                if (phrase) {
-                    ellInstructions += 'The student wants to practice pronouncing: "' + phrase +
-                        '". Start by saying this phrase clearly and slowly, then ask them to repeat it.';
-                } else {
-                    ellInstructions += 'Say a word or phrase and I\'ll give you feedback on your pronunciation."';
-                }
-                if (currentPageTitle) {
-                    ellInstructions += ' The learner is currently studying: "' + currentPageTitle + '".';
-                }
-                if (moduleTitles.length) {
-                    ellInstructions += ' Course topics include: ' + moduleTitles.slice(0, 8).join(', ') + '.';
-                }
-                ellInstructions += ' Use course content for pronunciation examples when possible.';
+                const voice = getRealtimeVoicePreference(root, result.voice);
+                const baseInstructions = result.instructions || '';
+                const instructions = config.getInstructions
+                    ? config.getInstructions(baseInstructions, selection)
+                    : baseInstructions;
+                const initialText = config.getInitialText ? config.getInitialText(selection) : '';
+                let initialTextSent = false;
 
                 Realtime.connect(
                     token,
-                    ellInstructions,
+                    instructions,
                     voice,
                     {
                         onTranscript: function(role, text) {
+                            if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                                return;
+                            }
                             UI.appendVoiceTranscript(role, text);
                         },
                         onStateChange: function(state) {
+                            if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                                return;
+                            }
                             UI.setVoiceState(state);
+                            syncVoicePanel();
+                            if (state === 'idle' && initialText && !initialTextSent) {
+                                initialTextSent = true;
+                                Realtime.sendText(initialText);
+                                return;
+                            }
                             if (state === 'disconnected') {
-                                UI.clearSuggestions();
-                                UI.hideVoiceOverlay();
-                                UI.showStarters();
+                                teardownVoiceSessionUi();
                             }
                         },
                         onError: function(msg) {
+                            if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                                return;
+                            }
                             UI.setVoiceState('disconnected');
-                            UI.clearSuggestions();
-                            UI.hideVoiceOverlay();
-                            UI.showStarters();
+                            teardownVoiceSessionUi();
                             addAssistantMsg(msg || 'Voice connection failed.');
                         },
-                        onSuggestions: function(chips) {
-                            UI.showSuggestions(chips, function(text) {
+                        onSuggestions: function(nextChips) {
+                            if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                                return;
+                            }
+                            UI.showSuggestions(nextChips, function(text) {
                                 UI.clearSuggestions();
+                                if (text === 'End practice') {
+                                    endSession();
+                                    return;
+                                }
                                 Realtime.sendText(text);
                             });
                         },
@@ -1110,30 +2109,231 @@ define([
                     audioCtx,
                     micStream
                 );
-                return;
             }).catch(function(err) {
-                UI.setVoiceState('disconnected');
-                UI.clearSuggestions();
-                UI.hideVoiceOverlay();
-                UI.showStarters();
-                const errMsg = (err && err.message) ? err.message : 'Could not get voice token.';
-                Str.get_string('chat:voice_error', 'local_ai_course_assistant').then(function(s) {
-                    addAssistantMsg((s || 'Voice connection failed') + ': ' + errMsg);
+                if (acquiredMicStream) {
+                    acquiredMicStream.getTracks().forEach(function(track) { track.stop(); });
+                    acquiredMicStream = null;
+                }
+                if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
                     return;
-                }).catch(function() {
-                    addAssistantMsg(errMsg);
-                });
+                }
+                UI.setVoiceState('disconnected');
+                teardownVoiceSessionUi();
+                addAssistantMsg(formatRealtimeVoiceStartError(err));
             });
         };
 
-        // Show vocabulary chips; clicking a chip starts the pronunciation session.
-        UI.showSuggestions(vocabChips, function(text) {
-            var phrase = '';
-            if (text !== 'Free practice') {
-                // Strip "Practice saying: " or "Pronounce: " prefix to get the raw phrase.
-                phrase = text.replace(/^(Practice saying|Pronounce): /, '');
-            }
-            startPronunciation(phrase);
+        if (config.autoStartSelection) {
+            startSession(config.autoStartSelection);
+            return;
+        }
+
+        UI.showSuggestions(chips, function(text) {
+            startSession(text);
+        });
+    };
+
+    /**
+     * Start a legacy Practice Speaking session (SSE + TTS + browser STT/fallback).
+     *
+     * @param {HTMLElement} root
+     * @param {string=} selection
+     */
+    const startLegacyPracticeSpeaking = function(root, selection) {
+        if (!supportsLegacyVoiceFlow()) {
+            UI.showNotification('This browser does not support speech input.', 'error');
+            syncVoicePanel();
+            return;
+        }
+
+        if (Realtime.isConnected()) { Realtime.disconnect(); }
+
+        const avatarUrl = root ? root.dataset.avatarurl : '';
+        const voice = getPreferredVoice(root);
+        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
+
+        const endSession = function() {
+            stopActiveVoiceSession();
+        };
+
+        UI.showVoiceOverlay(avatarUrl, endSession,
+            'Start speaking \u2014 ' + assistantName + ' will listen and respond.');
+        const sessionRequestId = beginVoiceSession();
+        UI.setVoiceState('idle');
+        syncVoicePanel();
+
+        var sessionStarted = false;
+        var startSession = function(selectionLabel) {
+            if (sessionStarted) { return; }
+            sessionStarted = true;
+            UI.clearSuggestions();
+            UI.setVoiceState('connecting');
+            Voice.connect(
+                '',
+                voice,
+                {
+                    onTranscript: function(role, text) {
+                        if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                            return;
+                        }
+                        UI.appendVoiceTranscript(role, text);
+                    },
+                    onStateChange: function(state) {
+                        if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                            return;
+                        }
+                        UI.setVoiceState(state);
+                        syncVoicePanel();
+                        if (state === 'disconnected') {
+                            teardownVoiceSessionUi();
+                        }
+                    },
+                    onError: function(msg) {
+                        if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                            return;
+                        }
+                        Voice.disconnect();
+                        UI.setVoiceState('disconnected');
+                        teardownVoiceSessionUi();
+                        addAssistantMsg(msg || 'Voice mode failed.');
+                    },
+                    onSuggestions: function(chips) {
+                        if (!isCurrentVoiceSessionRequest(sessionRequestId)) {
+                            return;
+                        }
+                        UI.showSuggestions(chips, function(text) {
+                            UI.clearSuggestions();
+                            Voice.sendText(text);
+                        });
+                    },
+                },
+                {
+                    courseId: courseId,
+                    sessKey:  sessKey,
+                    sseUrl:   sseUrl,
+                    lang:     Speech.getLang(),
+                    greeting: buildPracticeSpeakingGreeting(selectionLabel),
+                }
+            );
+        };
+
+        if (selection !== undefined) {
+            startSession(selection);
+            return;
+        }
+
+        UI.showSuggestions(buildPracticeSpeakingChips(), function(text) {
+            startSession(text);
+        });
+    };
+
+    /**
+     * Start the main Voice Chat flow, preferring OpenAI Realtime when enabled.
+     */
+    const handlePracticeSpeaking = function() {
+        if (sending || streamController) {
+            UI.showNotification('Please wait for the current response to finish before starting voice chat.', 'error');
+            return;
+        }
+        setBottomMode('voice', {force: true});
+        syncVoicePanel();
+        const root = document.getElementById('local-ai-course-assistant');
+        if (!root || !isVoiceFeatureEnabled(root)) {
+            UI.showNotification('Voice chat is not enabled for this course yet.', 'error');
+            syncVoicePanel();
+            return;
+        }
+
+        if (!hasVoiceInputEnvironment()) {
+            addAssistantMsg(
+                'Voice chat requires a secure connection (HTTPS). ' +
+                'Please use the HTTPS version of this site to access voice features.'
+            );
+            syncVoicePanel();
+            return;
+        }
+
+        if (isRealtimeVoicePreferred(root)) {
+            var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
+            startRealtimeVoiceSession({
+                root: root,
+                overlayInstruction: 'Start speaking \u2014 ' + assistantName +
+                    ' will listen and respond.',
+                chips: buildPracticeSpeakingChips(),
+                autoStartSelection: 'Free conversation',
+                getInitialText: function(selection) {
+                    return buildPracticeSpeakingInitialText(selection);
+                },
+                getInstructions: function(baseInstructions, selection) {
+                    var instructions = baseInstructions || '';
+                    var topic = extractPracticeSpeakingTopic(selection);
+                    instructions += '\n\n## Voice Conversation\n'
+                        + 'Keep the conversation grounded in the current page when relevant. '
+                        + 'Respond naturally to follow-up questions and let the student interrupt or redirect the topic. '
+                        + 'Begin the session with a warm spoken welcome, briefly explain how the speaking practice works, '
+                        + 'and ask one simple opening question.';
+                    if (topic) {
+                        instructions += ' Use "' + topic + '" as the opening topic.';
+                    }
+                    return instructions;
+                },
+            });
+            return;
+        }
+
+        startLegacyPracticeSpeaking(root, 'Free conversation');
+    };
+
+    /**
+     * Start an ELL Pronunciation session (OpenAI Realtime WebSocket).
+     * Uses phoneme-level audio analysis and page-aware instructions.
+     */
+    const handleELLPronunciation = function() {
+        if (sending || streamController) {
+            UI.showNotification('Please wait for the current response to finish before starting voice chat.', 'error');
+            return;
+        }
+        setBottomMode('voice', {force: true});
+        syncVoicePanel();
+
+        if (!hasVoiceInputEnvironment()) {
+            addAssistantMsg(
+                'ELL Pronunciation requires a secure connection (HTTPS). ' +
+                'Please use the HTTPS version of this site to access voice features.'
+            );
+            syncVoicePanel();
+            return;
+        }
+
+        const root = document.getElementById('local-ai-course-assistant');
+        if (!root || !isRealtimeVoicePreferred(root)) {
+            addAssistantMsg('ELL Pronunciation is not enabled for this course yet.');
+            syncVoicePanel();
+            return;
+        }
+
+        var assistantName = (root && root.dataset.displayname) ? root.dataset.displayname : 'SOLA';
+        startRealtimeVoiceSession({
+            root: root,
+            overlayInstruction: 'Choose a phrase to practice or start speaking \u2014 ' + assistantName +
+                ' will give you feedback.',
+            chips: buildELLPronunciationChips(),
+            getInitialText: function(selection) {
+                return buildELLPronunciationInitialText(selection);
+            },
+            getInstructions: function(baseInstructions, selection) {
+                var phrase = extractPronunciationPhrase(selection);
+                var instructions = baseInstructions ? (baseInstructions + '\n\n') : '';
+                instructions += Realtime.ELL_INSTRUCTIONS;
+                if (phrase) {
+                    instructions += '\n\nThe student wants to practice pronouncing: "' + phrase +
+                        '". Begin by welcoming the student, briefly explain the exercise, say this phrase clearly, then ask them to repeat it.';
+                } else {
+                    instructions += '\n\nBegin by welcoming the student, briefly explain the exercise, then invite them to try a word or short phrase from the current page.';
+                }
+                instructions += ' Base your pronunciation feedback and examples on the current page and nearby course content when possible.';
+                return instructions;
+            },
         });
     };
 
@@ -1153,26 +2353,42 @@ define([
      */
     const matchStarterByVoice = function(transcript) {
         const lower = transcript.toLowerCase().trim();
+        const rootEl = document.getElementById('local-ai-course-assistant');
+        if (rootEl) {
+            const buttons = rootEl.querySelectorAll('.local-ai-course-assistant__starter');
+            for (let i = 0; i < buttons.length; i++) {
+                const labelEl = buttons[i].querySelector('span:not(.aica-starter-icon)');
+                const label = labelEl ? labelEl.textContent.toLowerCase().trim() : '';
+                if (label && lower.includes(label)) {
+                    return buttons[i].dataset.starter || null;
+                }
+            }
+        }
         const enKeywords = {
             'help-page':    ['help with this page', 'help me with this', 'explain this', 'explain',
-                             'key concepts', 'concepts', 'this page'],
+                'key concepts', 'key concept', 'concepts', 'main concepts'],
             'quiz':         ['quiz', 'test', 'quiz me', 'test me'],
             'study-plan':   ['study plan', 'study', 'plan', 'schedule'],
             'ask-anything': ['ask anything', 'ask a question', 'question', 'ai coach',
-                             'learn about ai', 'ai tools'],
-            'review-practice': ['review', 'practice', 'review and practice', 'quick study'],
+                'learn about ai', 'artificial intelligence', 'ai tools'],
+            'review-practice': ['review and practice', 'review practice', 'quick study', 'review'],
             'ell-practice':      ['practice speaking', 'speaking practice'],
             'ell-pronunciation': ['pronunciation', 'pronunciation coach', 'ell pronunciation'],
         };
         // Check translated labels for the current language first.
         const labels = Speech.getStarterLabels(Speech.getLang ? Speech.getLang() : null);
         const labelMap = {
-            helpPage:     'help-page',
-            quiz:         'quiz',
-            studyPlan:    'study-plan',
-            askAnything:  'ask-anything',
-            reviewPractice: 'review-practice',
-            ellPractice:  'ell-practice',
+            helpPage:         'help-page',
+            helpLesson:       'help-page',
+            keyConcepts:      'help-page',
+            quiz:             'quiz',
+            studyPlan:        'study-plan',
+            askAnything:      'ask-anything',
+            reviewPractice:   'review-practice',
+            helpMe:           'ask-anything',
+            aiCoach:          'ask-anything',
+            ellPractice:      'ell-practice',
+            ellPronunciation: 'ell-pronunciation',
         };
         if (labels) {
             for (const key in labelMap) {
@@ -1194,7 +2410,7 @@ define([
     };
 
     /**
-     * Handle mic button click — start or stop speech recognition.
+     * Handle mic button click â€” start or stop speech recognition.
      */
     const handleMic = function() {
         if (Speech.isRecording()) {
@@ -1218,7 +2434,7 @@ define([
                             UI.getElements().input.value = '';
                             UI.autoResizeInput();
                             UI.updateSendButton();
-                            handleStarter({currentTarget: {dataset: {starter: matched}}});
+                            handleStarter(matched);
                             return;
                         }
                     }
@@ -1297,140 +2513,15 @@ define([
     };
 
     /**
-     * Play TTS audio from a data object (base64 audio + type).
-     * Extracted so both fresh fetches and cache hits share the same playback path.
-     *
-     * @param {Object}        data       {audio: base64String, type: mimeType}
-     * @param {string}        text       Plain text (fallback for browser TTS)
-     * @param {Function}      callback   Called when speech ends or fails
-     * @param {Array|null}    wordSpans  From UI.startWordHighlight — for word highlighting
-     * @param {string|null}   cleanText  Clean plain text matching the wordSpans
-     */
-    const playTtsData = function(data, text, callback, wordSpans, cleanText) {
-        try {
-            const byteChars = atob(data.audio);
-            const byteArr = new Uint8Array(byteChars.length);
-            for (var i = 0; i < byteChars.length; i++) {
-                byteArr[i] = byteChars.charCodeAt(i);
-            }
-
-            // ── AudioContext path (iOS-compatible) ────────────────────────────
-            // sharedAudioCtx was unlocked synchronously in handleSpeak() within
-            // the user gesture; decoding + playing here (in a Promise chain) is
-            // safe because the context is already running.
-            const ctx = sharedAudioCtx;
-            if (ctx && ctx.decodeAudioData) {
-                ctx.decodeAudioData(byteArr.buffer.slice(0), function(audioBuffer) {
-                    const source = ctx.createBufferSource();
-                    source.buffer = audioBuffer;
-
-                    // Route through analyser for SVG mouth sync.
-                    const analyser = ctx.createAnalyser();
-                    source.connect(analyser);
-                    analyser.connect(ctx.destination);
-
-                    // Duck-typed proxy so stopAllTts() can call .pause().
-                    var startedAt = ctx.currentTime;
-                    currentAudio = {
-                        pause: function() {
-                            try { source.stop(); } catch (e) { /**/ }
-                        },
-                        _duration: audioBuffer.duration,
-                        _startedAt: startedAt
-                    };
-
-                    UI.startMouthSyncFromAnalyser(analyser);
-
-                    if (wordSpans && cleanText) {
-                        var rafId;
-                        var onFrame = function() {
-                            if (!currentAudio) { return; }
-                            var elapsed = ctx.currentTime - startedAt;
-                            var charIndex = Math.floor(
-                                (elapsed / audioBuffer.duration) * cleanText.length
-                            );
-                            UI.highlightWordAt(wordSpans, charIndex);
-                            rafId = requestAnimationFrame(onFrame);
-                        };
-                        rafId = requestAnimationFrame(onFrame);
-                        source.onended = function() {
-                            cancelAnimationFrame(rafId);
-                            currentAudio = null;
-                            UI.stopMouthSync();
-                            if (callback) { callback(); }
-                        };
-                    } else {
-                        source.onended = function() {
-                            currentAudio = null;
-                            UI.stopMouthSync();
-                            if (callback) { callback(); }
-                        };
-                    }
-                    source.start(0);
-                }, function() {
-                    // decodeAudioData failed — fall back to browser TTS.
-                    currentAudio = null;
-                    Speech.speak(text, callback);
-                });
-                return;
-            }
-
-            // ── HTMLAudioElement fallback (non-iOS / no AudioContext) ──────────
-            const blob = new Blob([byteArr], {type: data.type || 'audio/mpeg'});
-            const objUrl = URL.createObjectURL(blob);
-            const audio = new Audio(objUrl);
-            currentAudio = audio;
-            UI.startMouthSync(audio);
-            if (wordSpans && cleanText) {
-                audio.addEventListener('timeupdate', function() {
-                    if (!audio.duration) { return; }
-                    const charIndex = Math.floor(
-                        (audio.currentTime / audio.duration) * cleanText.length
-                    );
-                    UI.highlightWordAt(wordSpans, charIndex);
-                });
-            }
-            audio.addEventListener('ended', function() {
-                URL.revokeObjectURL(objUrl);
-                currentAudio = null;
-                UI.stopMouthSync();
-                if (callback) { callback(); }
-            });
-            audio.addEventListener('error', function() {
-                URL.revokeObjectURL(objUrl);
-                currentAudio = null;
-                UI.stopMouthSync();
-                Speech.speak(text, callback);
-            });
-            audio.play().catch(function() {
-                URL.revokeObjectURL(objUrl);
-                currentAudio = null;
-                UI.stopMouthSync();
-                Speech.speak(text, callback);
-            });
-        } catch (e) {
-            Speech.speak(text, callback);
-        }
-    };
-
-    /**
      * Speak text using OpenAI TTS proxy (tts.php), falling back to browser TTS on error.
      *
      * @param {string}        text       Plain text to read aloud
      * @param {string}        ttsUrl     URL of tts.php
      * @param {Function}      callback   Called when speech ends or fails
-     * @param {Array|null}    wordSpans  From UI.startWordHighlight — for word highlighting
+     * @param {Array|null}    wordSpans  From UI.startWordHighlight â€” for word highlighting
      * @param {string|null}   cleanText  Clean plain text matching the wordSpans
      */
     const speakWithOpenAI = function(text, ttsUrl, callback, wordSpans, cleanText) {
-        // TTS cache: reuse previously fetched audio.
-        const cacheKey = (localStorage.getItem('aica_tts_voice') || 'shimmer') + ':' + text.substring(0, 300);
-        const cached = ttsCache.get(cacheKey);
-        if (cached) {
-            playTtsData(cached, text, callback, wordSpans, cleanText);
-            return;
-        }
-
         const formData = new URLSearchParams();
         formData.append('text', text.length > 2000 ? text.substring(0, 2000) : text);
         formData.append('sesskey', sessKey);
@@ -1449,12 +2540,110 @@ define([
                 Speech.speak(text, callback);
                 return;
             }
-            // Store in TTS cache before playback.
-            ttsCache.set(cacheKey, {audio: data.audio, type: data.type});
-            if (ttsCache.size > TTS_CACHE_MAX) {
-                ttsCache.delete(ttsCache.keys().next().value);
+            try {
+                const byteChars = atob(data.audio);
+                const byteArr = new Uint8Array(byteChars.length);
+                for (var i = 0; i < byteChars.length; i++) {
+                    byteArr[i] = byteChars.charCodeAt(i);
+                }
+
+                // â”€â”€ AudioContext path (iOS-compatible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                // sharedAudioCtx was unlocked synchronously in handleSpeak() within
+                // the user gesture; decoding + playing here (in a Promise chain) is
+                // safe because the context is already running.
+                const ctx = sharedAudioCtx;
+                if (ctx && ctx.decodeAudioData) {
+                    ctx.decodeAudioData(byteArr.buffer, function(audioBuffer) {
+                        const source = ctx.createBufferSource();
+                        source.buffer = audioBuffer;
+
+                        // Route through analyser for SVG mouth sync.
+                        const analyser = ctx.createAnalyser();
+                        source.connect(analyser);
+                        analyser.connect(ctx.destination);
+
+                        // Duck-typed proxy so stopAllTts() can call .pause().
+                        var startedAt = ctx.currentTime;
+                        currentAudio = {
+                            pause: function() {
+                                try { source.stop(); } catch (e) { /**/ }
+                            },
+                            _duration: audioBuffer.duration,
+                            _startedAt: startedAt
+                        };
+
+                        UI.startMouthSyncFromAnalyser(analyser);
+
+                        if (wordSpans && cleanText) {
+                            var rafId;
+                            var onFrame = function() {
+                                if (!currentAudio) { return; }
+                                var elapsed = ctx.currentTime - startedAt;
+                                var charIndex = Math.floor(
+                                    (elapsed / audioBuffer.duration) * cleanText.length
+                                );
+                                UI.highlightWordAt(wordSpans, charIndex);
+                                rafId = requestAnimationFrame(onFrame);
+                            };
+                            rafId = requestAnimationFrame(onFrame);
+                            source.onended = function() {
+                                cancelAnimationFrame(rafId);
+                                currentAudio = null;
+                                UI.stopMouthSync();
+                                if (callback) { callback(); }
+                            };
+                        } else {
+                            source.onended = function() {
+                                currentAudio = null;
+                                UI.stopMouthSync();
+                                if (callback) { callback(); }
+                            };
+                        }
+                        source.start(0);
+                    }, function() {
+                        // decodeAudioData failed â€” fall back to browser TTS.
+                        currentAudio = null;
+                        Speech.speak(text, callback);
+                    });
+                    return;
+                }
+
+                // â”€â”€ HTMLAudioElement fallback (non-iOS / no AudioContext) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                const blob = new Blob([byteArr], {type: data.type || 'audio/mpeg'});
+                const objUrl = URL.createObjectURL(blob);
+                const audio = new Audio(objUrl);
+                currentAudio = audio;
+                UI.startMouthSync(audio);
+                if (wordSpans && cleanText) {
+                    audio.addEventListener('timeupdate', function() {
+                        if (!audio.duration) { return; }
+                        const charIndex = Math.floor(
+                            (audio.currentTime / audio.duration) * cleanText.length
+                        );
+                        UI.highlightWordAt(wordSpans, charIndex);
+                    });
+                }
+                audio.addEventListener('ended', function() {
+                    URL.revokeObjectURL(objUrl);
+                    currentAudio = null;
+                    UI.stopMouthSync();
+                    if (callback) { callback(); }
+                });
+                audio.addEventListener('error', function() {
+                    URL.revokeObjectURL(objUrl);
+                    currentAudio = null;
+                    UI.stopMouthSync();
+                    Speech.speak(text, callback);
+                });
+                audio.play().catch(function() {
+                    URL.revokeObjectURL(objUrl);
+                    currentAudio = null;
+                    UI.stopMouthSync();
+                    Speech.speak(text, callback);
+                });
+            } catch (e) {
+                Speech.speak(text, callback);
             }
-            playTtsData(data, text, callback, wordSpans, cleanText);
         })
         .catch(function() {
             Speech.speak(text, callback);
@@ -1508,68 +2697,61 @@ define([
     };
 
     /**
+     * Add a user message to the chat and History tab.
+     *
+     * @param {string} text
+     * @param {number|null} ts
+     * @param {{skipHistory?:boolean}=} options
+     * @returns {HTMLElement}
+     */
+    const addUserMsg = function(text, ts, options) {
+        options = options || {};
+        if (!options.skipHistory) {
+            recordConversationMessage('user', text, ts || Date.now());
+        }
+        return UI.addMessage('user', text, null, ts || null);
+    };
+
+    /**
      * Add an assistant message with the speak button always present (when TTS is available).
      * Use this instead of UI.addMessage('assistant', ...) everywhere so every
      * assistant bubble consistently has the speaker icon.
      *
      * @param {string}      text  Message text
      * @param {number|null} ts    Optional Unix timestamp (ms)
+     * @param {{skipHistory?:boolean,sourceType?:string|null,alreadyClean?:boolean}=} options
      * @returns {HTMLElement}
      */
-    /**
-     * Create a source attribution pill element (clickable link or plain span).
-     *
-     * @param {string} sourceType 'page', 'course', or 'general'
-     * @param {Object|null} meta SSE metadata with pageurl, courseurl, pagetitle
-     * @returns {HTMLElement}
-     */
-    const createSourcePill = function(sourceType, meta) {
-        const SOURCE_LABELS = {
-            page: 'From: Current Page',
-            course: 'From: Course Materials',
-            general: 'General Knowledge'
-        };
-        var href = '';
-        var title = '';
-        if (sourceType === 'page' && meta && meta.pageurl) {
-            href = meta.pageurl;
-            title = meta.pagetitle || '';
-        } else if (sourceType === 'course' && meta && meta.courseurl) {
-            href = meta.courseurl;
-            title = '';
+    const addAssistantMsg = function(text, ts, options) {
+        options = options || {};
+        const parsed = options.alreadyClean ? {
+            text: (text || '') + '',
+            suggestions: [],
+            sourceType: options.sourceType || null,
+        } : parseAssistantDecorators(text);
+        const displayText = parsed.text;
+        const sourceType = options.sourceType || parsed.sourceType;
+        if (!options.skipHistory) {
+            recordConversationMessage('assistant', displayText, ts || Date.now());
         }
-        var pill;
-        if (href) {
-            pill = document.createElement('a');
-            pill.href = href;
-            pill.target = '_blank';
-            pill.rel = 'noopener';
-            if (title) {
-                pill.title = title;
-            }
-            // Small external link icon after label.
-            pill.innerHTML = (SOURCE_LABELS[sourceType] || sourceType)
-                + ' <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"'
-                + ' fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"'
-                + ' stroke-linejoin="round" style="vertical-align:-1px;margin-left:2px">'
-                + '<path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>'
-                + '<polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
-        } else {
-            pill = document.createElement('span');
-            pill.textContent = SOURCE_LABELS[sourceType] || sourceType;
-        }
-        pill.className = 'aica-source-pill aica-source-pill--' + sourceType;
-        return pill;
-    };
-
-    const addAssistantMsg = function(text, ts) {
         const fn = (getTtsUrl() || Speech.isTTSSupported()) ? handleSpeak : null;
-        return UI.addMessage('assistant', text, fn, ts || null);
+        const el = UI.addMessage('assistant', displayText, fn, ts || null);
+        // For history-loaded messages, create a clickable pill with course URL.
+        if (sourceType && el) {
+            var histMeta = {
+                courseurl: (new URL('/course/view.php?id=' + courseId,
+                    window.location.origin)).href,
+                pageurl: '',
+                pagetitle: ''
+            };
+            el.appendChild(createSourcePill(sourceType, histMeta));
+        }
+        return el;
     };
 
     /**
      * Handle expand/collapse button click.
-     * On mobile (≤600px): toggles half-screen minimized state.
+     * On mobile (â‰¤600px): toggles half-screen minimized state.
      * On desktop: toggles the wider expanded state.
      */
     const handleExpand = function() {
@@ -1618,7 +2800,7 @@ define([
     };
 
     /**
-     * Handle quiz button click — toggles quiz mode on/off.
+     * Handle quiz button click â€” toggles quiz mode on/off.
      */
     const handleQuiz = function() {
         const root = document.getElementById('local-ai-course-assistant');
@@ -1654,7 +2836,15 @@ define([
 
                 // Pass cmid when "Current page" is selected (topic = '') on a module page.
                 const cmidForQuiz = (!topic && currentPageId > 0) ? currentPageId : 0;
-                Repo.generateQuiz(courseId, count, topic, cmidForQuiz).then(function(result) {
+                const llmSelection = getResolvedLlmSelection(UI.getElements().root);
+                Repo.generateQuiz(
+                    courseId,
+                    count,
+                    topic,
+                    cmidForQuiz,
+                    llmSelection.enabled ? llmSelection.provider : '',
+                    llmSelection.enabled ? llmSelection.model : ''
+                ).then(function(result) {
                     UI.showTyping(false);
                     if (!result.success) {
                         quizModeActive = false;
@@ -1690,7 +2880,7 @@ define([
                                 'Solid effort! A quick review of the tricky parts will get you even further.';
                         } else {
                             encourageMsg = 'Quiz complete: **' + score + '/' + total + '** (' + pctVal + '%) on *' + topic + '*. ' +
-                                'This topic trips a lot of people up — that\'s OK. Let\'s review the material together and try again.';
+                                'This topic trips a lot of people up â€” that\'s OK. Let\'s review the material together and try again.';
                         }
                         addAssistantMsg(encourageMsg);
                         // Prepare adaptive follow-up chips for when user exits the summary.
@@ -1759,7 +2949,12 @@ define([
             if (!stored || !stored.topic) {
                 return;
             }
-            const daysSince = (Date.now() - stored.ts) / 86400000;
+            const lastSessionTs = normalizeTimestamp(stored.ts);
+            if (!lastSessionTs) {
+                return;
+            }
+
+            const daysSince = Math.max(0, Date.now() - lastSessionTs) / 86400000;
             if (daysSince > 14) {
                 return; // Too long ago
             }
@@ -1792,14 +2987,14 @@ define([
             } catch (e) { /**/ }
 
             const daysAgo = Math.max(1, Math.round(daysSince));
-            const timeStr = daysAgo === 1 ? 'yesterday' : daysAgo + ' days ago';
+            const timeStr = formatRelativeTimestamp(lastSessionTs) || 'recently';
 
             // Extended re-engagement for 5+ day absence.
             let msg;
             let chips;
             if (daysSince >= 5) {
                 msg = 'Welcome back, **' + name + '**! It\'s been a while (' + daysAgo + ' days). \ud83d\udc4b\n\n' +
-                    'No worries — picking back up is what matters most. ' +
+                    'No worries â€” picking back up is what matters most. ' +
                     'Last time you were working on **' + topic + '**.' +
                     studyNote + quizNote +
                     '\n\nWould you like a quick refresher, or would you rather start fresh?';
@@ -1832,7 +3027,7 @@ define([
     };
 
     /**
-     * Handle the Quick Study chip.
+     * Handle the Review & Practice chip (legacy Quick Study flow).
      * Shows a time picker + topic selector (with objectives/modules sub-select),
      * recent sessions with Resume buttons, then sends a focused study prompt.
      */
@@ -1860,7 +3055,7 @@ define([
         // Title.
         const title = document.createElement('h3');
         title.className = 'aica-quiz-setup__title';
-        title.textContent = 'Quick Study';
+        title.textContent = 'Review & Practice';
         panel.appendChild(title);
 
         // --- Recent sessions ---
@@ -1870,7 +3065,7 @@ define([
             if (recent.length > 0) {
                 const recentLabel = document.createElement('p');
                 recentLabel.className = 'aica-quiz-setup__label';
-                recentLabel.textContent = 'Recent sessions';
+                recentLabel.textContent = 'Recent review sessions';
                 panel.appendChild(recentLabel);
 
                 const recentList = document.createElement('div');
@@ -1888,12 +3083,13 @@ define([
                     const resumeBtn = document.createElement('button');
                     resumeBtn.type = 'button';
                     resumeBtn.className = 'aica-study-setup__resume-btn';
-                    resumeBtn.textContent = 'Resume';
+                    resumeBtn.textContent = 'Continue';
                     resumeBtn.addEventListener('click', function() {
                         panel.remove();
                         drawer.classList.remove('local-ai-course-assistant__drawer--quiz-setup');
-                        const prompt = 'Let\'s continue studying "' + sess.topic + '" from where I left off. ' +
-                            'Briefly remind me what we covered and what I should learn next.';
+                        const prompt = 'Let\'s continue reviewing and practicing "' + sess.topic +
+                            '" from where I left off. Briefly remind me what we covered, then help ' +
+                            'me practice the next most important thing.';
                         UI.getElements().input.value = prompt;
                         UI.autoResizeInput();
                         UI.updateSendButton();
@@ -1909,7 +3105,7 @@ define([
         // --- Time picker ---
         const timeLabel = document.createElement('p');
         timeLabel.className = 'aica-quiz-setup__label';
-        timeLabel.textContent = 'How much time do you have?';
+        timeLabel.textContent = 'How much time do you have to review?';
         panel.appendChild(timeLabel);
 
         const timeRow = document.createElement('div');
@@ -1937,7 +3133,7 @@ define([
         // --- Topic selector ---
         const topicLabel = document.createElement('p');
         topicLabel.className = 'aica-quiz-setup__label';
-        topicLabel.textContent = 'What would you like to study?';
+        topicLabel.textContent = 'What would you like to review?';
         panel.appendChild(topicLabel);
 
         const select = document.createElement('select');
@@ -2010,7 +3206,7 @@ define([
         const startBtn = document.createElement('button');
         startBtn.type = 'button';
         startBtn.className = 'aica-quiz-setup__start';
-        startBtn.textContent = 'Start';
+        startBtn.textContent = 'Start review';
         startBtn.addEventListener('click', function() {
             let topic;
             if (select.value === '__custom__') {
@@ -2029,15 +3225,15 @@ define([
 
             let prompt;
             if (topic) {
-                prompt = 'I have ' + selectedMinutes + ' minutes. Please give me a focused ' +
-                    selectedMinutes + '-minute study session on "' + topic +
-                    '". Start with the most important concept, keep responses concise, ' +
-                    'and guide me step by step.';
+                prompt = 'I have ' + selectedMinutes + ' minutes. Please help me review and ' +
+                    'practice "' + topic + '" in a focused ' + selectedMinutes +
+                    '-minute session. Start with the most important concept, keep responses ' +
+                    'concise, and quiz me or coach me step by step.';
             } else {
-                prompt = 'I have ' + selectedMinutes + ' minutes to study. Based on my recent ' +
-                    'activity and this course, what should I focus on? Give me a focused ' +
-                    selectedMinutes + '-minute study session \u2014 start immediately with the most ' +
-                    'important topic and keep responses concise.';
+                prompt = 'I have ' + selectedMinutes + ' minutes to review and practice. Based ' +
+                    'on my recent activity and this course, what should I focus on? Give me a ' +
+                    'focused ' + selectedMinutes + '-minute review session \u2014 start immediately ' +
+                    'with the most important topic, keep responses concise, and include practice.';
             }
 
             // Track study session.
@@ -2116,12 +3312,12 @@ define([
         sessHead.className = 'aica-settings-panel__section-title';
         let sessions = [];
         try { sessions = JSON.parse(localStorage.getItem('aica_study_sessions_' + courseId) || '[]'); } catch (e) { /**/ }
-        sessHead.textContent = 'Study sessions (' + sessions.length + ')';
+        sessHead.textContent = 'Review & Practice sessions (' + sessions.length + ')';
         sessSection.appendChild(sessHead);
         if (sessions.length === 0) {
             const p = document.createElement('p');
             p.className = 'aica-settings-panel__empty-note';
-            p.textContent = 'No study sessions yet. Start a Quick Study!';
+            p.textContent = 'No review sessions yet. Start a Review & Practice session!';
             sessSection.appendChild(p);
         } else {
             const totalMins = sessions.reduce(function(s, x) { return s + (x.minutes || 0); }, 0);
@@ -2209,9 +3405,6 @@ define([
         var isFirstVisit = toggleEl && toggleEl.classList.contains('aica-first-visit');
         if (isFirstVisit) {
             toggleEl.classList.remove('aica-first-visit');
-            try {
-                localStorage.setItem('ai_course_assistant_visited_' + courseId, '1');
-            } catch (e) { /**/ }
         }
         // Pre-apply welcome class before opening so the drawer doesn't flash
         // empty content on mobile before the welcome panel is injected.
@@ -2219,26 +3412,33 @@ define([
             UI.preWelcome();
         }
         const opened = UI.toggleDrawer();
+        if (opened) {
+            setBottomMode('chat', {force: true});
+            syncVoicePanel();
+        }
         if (opened && quizLocked && !historyLoaded) {
             // Show quiz-locked notice instead of normal history/starters flow.
             // Explicitly clear any messages to prevent previous chat from being visible (cheating risk).
             historyLoaded = true;
             UI.clearMessages();
+            setConversationHistory([]);
             Str.get_string('chat:quiz_locked', 'local_ai_course_assistant').then(function(msg) {
-                addAssistantMsg(msg);
+                addAssistantMsg(msg, null, {skipHistory: true});
                 return;
             }).catch(function() {
-                addAssistantMsg('SOLA is paused during quizzes to support academic integrity. Good luck!');
+                addAssistantMsg('SOLA is paused during quizzes to support academic integrity. Good luck!', null, {skipHistory: true});
             });
             UI.setInputEnabled(false);
             return;
         }
-        if (opened && !historyLoaded) {
-            loadHistory();
+        if (opened) {
+            if (!historyLoaded) {
+                loadHistory();
+                updateStreak();
+                checkWelcomeBack();
+                checkSpacedRepetition();
+            }
             checkAndShowIntro();
-            updateStreak();
-            checkWelcomeBack();
-            checkSpacedRepetition();
         }
     };
 
@@ -2246,26 +3446,13 @@ define([
      * Check if user needs to see intro, show if needed.
      */
     const checkAndShowIntro = function() {
-        // Check if intro already dismissed.
-        try {
-            const introDismissed = localStorage.getItem('ai_course_assistant_intro_dismissed');
-            if (introDismissed) {
-                return;
-            }
-
-            // Show intro modal.
-            UI.showIntroModal();
-
-            // Mark as dismissed locally.
-            localStorage.setItem('ai_course_assistant_intro_dismissed', '1');
-
-            // Sync to server.
-            Repo.dismissIntro().catch(function() {
-                // Silently fail.
-            });
-        } catch (e) {
-            // localStorage might be disabled.
+        const root = UI.getElements().root || document.getElementById('local-ai-course-assistant');
+        if (!root || isIntroDismissed(root)) {
+            return;
         }
+        UI.showIntroModal(function() {
+            markIntroDismissed(root);
+        });
     };
 
     /**
@@ -2281,7 +3468,7 @@ define([
             const lastDate = stored.lastDate || '';
 
             if (lastDate === today) {
-                // Already opened today — no change, no notification.
+                // Already opened today â€” no change, no notification.
                 return;
             }
 
@@ -2289,7 +3476,7 @@ define([
             if (lastDate === yesterday) {
                 streak += 1; // Consecutive day.
             } else {
-                streak = 1; // Gap or first time — start fresh.
+                streak = 1; // Gap or first time â€” start fresh.
             }
 
             localStorage.setItem(key, JSON.stringify({streak: streak, lastDate: today}));
@@ -2300,7 +3487,7 @@ define([
                 UI.showNotification('\uD83D\uDD25 ' + label);
             }
         } catch (e) {
-            // localStorage disabled — skip silently.
+            // localStorage disabled â€” skip silently.
         }
     };
 
@@ -2365,7 +3552,7 @@ define([
 
             setTimeout(function() {
                 var msg = 'Research shows that reviewing material a few days later strengthens memory. ' +
-                    'You studied **' + best.topic + '** ' + daysAgo + ' days ago — want a quick refresher?';
+                    'You studied **' + best.topic + '** ' + daysAgo + ' days ago â€” want a quick refresher?';
                 addAssistantMsg(msg);
                 setTimeout(function() {
                     UI.showSuggestions([
@@ -2398,7 +3585,7 @@ define([
             var msg = customGreeting
                 .replace(/\{\{firstname\}\}/gi, firstName || 'there')
                 .replace(/\{\{coursename\}\}/gi, courseName);
-            addAssistantMsg(msg);
+            addAssistantMsg(msg, null, {skipHistory: true});
             return;
         }
         var displayName = 'SOLA';
@@ -2412,11 +3599,11 @@ define([
             if (displayName !== 'SOLA') {
                 msg = msg.replace(/SOLA/g, displayName);
             }
-            addAssistantMsg(msg);
+            addAssistantMsg(msg, null, {skipHistory: true});
             return;
         }).catch(function() {
             addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m ' + displayName +
-                ', your personal learning assistant.');
+                ', your personal learning assistant.', null, {skipHistory: true});
         });
     };
 
@@ -2426,9 +3613,8 @@ define([
     const loadHistory = function() {
         historyLoaded = true;
         Repo.getHistory(courseId).then(function(result) {
+            setConversationHistory(result && result.messages ? result.messages : []);
             if (result.messages && result.messages.length > 0) {
-                const NEXT_RE = /\n*\[SOLA_NEXT\]([\s\S]*?)\[\/SOLA_NEXT\]/;
-                const SOURCE_RE = /[\s]*\[SOURCE:\s*(page|course|general)\s*\]/;
                 let lastSuggestions = [];
                 let prevDateKey = null;
                 const today = new Date();
@@ -2457,44 +3643,17 @@ define([
                     }
 
                     let text = msg.message;
-                    let histSourceType = null;
                     if (msg.role === 'assistant') {
-                        const match = text.match(NEXT_RE);
-                        if (match) {
-                            lastSuggestions = match[1].split('||')
-                                .map(function(s) { return s.trim(); })
-                                .filter(Boolean).slice(0, 4);
-                            text = text.replace(NEXT_RE, '').trimEnd();
-                        } else {
-                            lastSuggestions = [];
-                        }
-                        // Strip source attribution tag.
-                        const srcMatch = text.match(SOURCE_RE);
-                        if (srcMatch) {
-                            histSourceType = srcMatch[1];
-                            text = text.replace(SOURCE_RE, '').trimEnd();
-                        }
-                    }
-                    if (msg.role === 'assistant') {
-                        addAssistantMsg(text, msg.timecreated ? msg.timecreated * 1000 : null);
-                        // Append source pill for history messages.
-                        if (histSourceType) {
-                            const allMsgs = document.querySelectorAll(
-                                '.local-ai-course-assistant__message--assistant');
-                            const lastEl = allMsgs.length ? allMsgs[allMsgs.length - 1] : null;
-                            if (lastEl) {
-                                // History pills: use current page meta if available, otherwise course-level only.
-                                var histMeta = {
-                                    courseurl: (new URL('/course/view.php?id=' + courseId,
-                                        window.location.origin)).href,
-                                    pageurl: '',
-                                    pagetitle: ''
-                                };
-                                lastEl.appendChild(createSourcePill(histSourceType, histMeta));
-                            }
-                        }
+                        const parsed = parseAssistantDecorators(text);
+                        text = parsed.text;
+                        lastSuggestions = parsed.suggestions;
+                        addAssistantMsg(text, msg.timecreated ? msg.timecreated * 1000 : null, {
+                            skipHistory: true,
+                            sourceType: parsed.sourceType,
+                            alreadyClean: true,
+                        });
                     } else {
-                        UI.addMessage('user', text, null, msg.timecreated ? msg.timecreated * 1000 : null);
+                        addUserMsg(text, msg.timecreated ? msg.timecreated * 1000 : null, {skipHistory: true});
                     }
                 });
                 UI.scrollToBottom(true);
@@ -2516,6 +3675,7 @@ define([
                 showGreeting();
             }
         }).catch(function() {
+            setConversationHistory([]);
             showGreeting();
         });
     };
@@ -2571,6 +3731,7 @@ define([
             return;
         }
 
+        setBottomMode('chat', {force: true});
         sending = true;
         sessionMessageCount++;
         UI.hideStarters();
@@ -2581,7 +3742,7 @@ define([
         updateLastSession();
 
         // Add user message.
-        UI.addMessage('user', text, null);
+        addUserMsg(text, null);
         UI.showTyping(true);
 
         // Accumulated response text.
@@ -2625,8 +3786,11 @@ define([
         if (completionPct > 0) {
             postData.completion = completionPct;
         }
-
-        // Append browser context for admin debug inspector.
+        var llmSelection = getResolvedLlmSelection(rootEl);
+        if (llmSelection.enabled && llmSelection.provider && llmSelection.model) {
+            postData.provider = llmSelection.provider;
+            postData.model = llmSelection.model;
+        }
         if (contextDebugEnabled) {
             postData.clienturl = window.location.href;
             postData.clienttitle = document.title || '';
@@ -2638,6 +3802,9 @@ define([
             if (rootEl && rootEl.dataset.modname) {
                 postData.clientmodname = rootEl.dataset.modname;
             }
+            if (rootEl && rootEl.dataset.contextLevel) {
+                postData.clientcontextlevel = rootEl.dataset.contextLevel;
+            }
             updateContextDebugRequest(postData);
         }
 
@@ -2647,13 +3814,11 @@ define([
                 streamMeta = meta;
             },
             onDebug: function(payload) {
-                if (contextDebugEnabled) {
-                    updateContextDebugServer(payload);
-                }
+                updateContextDebugServer(payload);
             },
             onToken: function(token) {
                 if (!fullText) {
-                    // First token — create the streaming message element.
+                    // First token â€” create the streaming message element.
                     UI.startStreaming();
                 }
                 fullText += token;
@@ -2662,38 +3827,21 @@ define([
             onDone: function() {
                 UI.showTyping(false);
                 if (fullText) {
-                    const NEXT_RE = /\n*\[SOLA_NEXT\]([\s\S]*?)\[\/SOLA_NEXT\]/;
-                    const SOURCE_RE = /[\s]*\[SOURCE:\s*(page|course|general)\s*\]/;
-                    const match = fullText.match(NEXT_RE);
-                    let suggestions = [];
-                    let displayText = fullText;
-                    if (match) {
-                        suggestions = match[1].split('||').map(function(s) { return s.trim(); })
-                            .filter(Boolean).slice(0, 4);
-                        displayText = fullText.replace(NEXT_RE, '').trimEnd();
-                    }
-                    // Parse source attribution.
-                    const sourceMatch = displayText.match(SOURCE_RE);
-                    let sourceType = null;
-                    if (sourceMatch) {
-                        sourceType = sourceMatch[1];
-                        displayText = displayText.replace(SOURCE_RE, '').trimEnd();
-                    }
-                    UI.finishStreaming(displayText, (getTtsUrl() || Speech.isTTSSupported()) ? handleSpeak : null);
-                    // Append source pill to the last assistant message.
-                    if (sourceType) {
-                        const msgs = document.querySelectorAll(
-                            '.local-ai-course-assistant__message--assistant');
-                        const lastMsg = msgs.length ? msgs[msgs.length - 1] : null;
-                        if (lastMsg) {
-                            lastMsg.appendChild(createSourcePill(sourceType, streamMeta));
+                    const parsed = parseAssistantDecorators(fullText);
+                    UI.finishStreaming(parsed.text, (getTtsUrl() || Speech.isTTSSupported()) ? handleSpeak : null);
+                    // Append clickable source pill using SSE metadata (page/course URLs).
+                    if (parsed.sourceType) {
+                        var lastMsgEl = getLastAssistantMessageEl();
+                        if (lastMsgEl) {
+                            lastMsgEl.appendChild(createSourcePill(parsed.sourceType, streamMeta));
                         }
                     }
-                    if (suggestions.length) {
-                        UI.showSuggestions(suggestions, handleSuggestionClick);
-                    } else if (fullText.trim().length > 0) {
+                    recordConversationMessage('assistant', parsed.text, Date.now());
+                    if (parsed.suggestions.length) {
+                        UI.showSuggestions(parsed.suggestions, handleSuggestionClick);
+                    } else if (parsed.text.trim().length > 0) {
                         // Smart fallback chips: comprehension-focused for long responses.
-                        const wordCount = displayText.trim().split(/\s+/).length;
+                        const wordCount = parsed.text.trim().split(/\s+/).length;
                         const chips = wordCount > 120
                             ? ['Quiz me on this', 'Summarize this', 'Give me an example']
                             : ['Tell me more', 'Give me an example', 'Quiz me on this'];
@@ -2704,11 +3852,11 @@ define([
                 if (!breakNudgeShown && sessionMessageCount >= 30) {
                     breakNudgeShown = true;
                     setTimeout(function() {
-                        UI.addMessage('assistant',
-                            "You've been studying for a while — nice dedication! " +
+                        addAssistantMsg(
+                            "You've been studying for a while â€” nice dedication! " +
                             "Research shows short breaks improve retention. " +
-                            "Consider stepping away for 5\u201310 minutes, then come back refreshed. \ud83d\udcaa",
-                            null);
+                            "Consider stepping away for 5\u201310 minutes, then come back refreshed. \ud83d\udcaa"
+                        );
                     }, 1500);
                 }
                 sending = false;
@@ -2718,7 +3866,15 @@ define([
             onError: function(errorMsg) {
                 UI.showTyping(false);
                 if (fullText) {
-                    UI.finishStreaming(fullText);
+                    const parsed = parseAssistantDecorators(fullText);
+                    UI.finishStreaming(parsed.text);
+                    if (parsed.sourceType) {
+                        var errLastMsgEl = getLastAssistantMessageEl();
+                        if (errLastMsgEl) {
+                            errLastMsgEl.appendChild(createSourcePill(parsed.sourceType, streamMeta));
+                        }
+                    }
+                    recordConversationMessage('assistant', parsed.text, Date.now());
                 }
                 window.console && console.error('[SOLA]', errorMsg); // eslint-disable-line no-console
                 // Show error as assistant message.
@@ -2779,6 +3935,7 @@ define([
 
             Repo.clearHistory(courseId).then(function() {
                 UI.clearMessages();
+                setConversationHistory([]);
                 showGreeting();
             }).catch(function() {
                 // Silently fail.

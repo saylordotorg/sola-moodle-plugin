@@ -215,6 +215,43 @@ class hook_callbacks {
             $courseid, !empty($ttsurl), $realtimeenabled
         );
 
+        // Starter icon color (CSS custom property).
+        $startericoncolor = get_config('local_ai_course_assistant', 'starter_icon_color') ?: '#173140';
+
+        // Whether user has dismissed the intro overlay.
+        $introdismissed = (bool)\get_user_preferences('local_ai_course_assistant_intro_dismissed', false);
+
+        // Default TTS voice.
+        $defaultvoice = get_config('local_ai_course_assistant', 'realtime_voice') ?: 'marin';
+
+        // Context level name for debug panel.
+        $contextlevelname = $context->contextlevel === CONTEXT_MODULE ? 'Module' : 'Course';
+
+        // Server page context for debug panel and page grounding.
+        $serverpageurl = $PAGE->url ? $PAGE->url->out(false) : '';
+        $serverpagetitle = $PAGE->title ?? '';
+        $serverpageheading = $PAGE->heading ?? '';
+
+        // Build LLM options JSON for composer model switcher (admin-only feature).
+        $llmoptions = [];
+        if ($cansiteconfig) {
+            $configprovider = get_config('local_ai_course_assistant', 'provider') ?: 'openai';
+            $configmodel = get_config('local_ai_course_assistant', 'model') ?: '';
+            $llmoptions = [
+                'enabled' => true,
+                'providers' => [
+                    [
+                        'id' => $configprovider,
+                        'label' => ucfirst($configprovider),
+                        'models' => $configmodel ? [['id' => $configmodel, 'label' => $configmodel, 'status' => 'active']] : [],
+                    ],
+                ],
+            ];
+        }
+
+        // Whether admin-configured starters exist (controls fallback defaults in template).
+        $hasstarterdata = !empty($starters);
+
         // Render template.
         $templatedata = [
             'courseid'           => $courseid,
@@ -242,7 +279,7 @@ class hook_callbacks {
             'realtimeenabled'         => $realtimeenabled,
             'ellpronunciationenabled' => $realtimeenabled,
             'ttsurl'             => $ttsurl,
-            'avatarcolor'        => get_config('local_ai_course_assistant', 'avatar_color') ?: '#4a6cf7',
+            'avatarcolor'        => get_config('local_ai_course_assistant', 'avatar_color') ?: '#173140',
             'avatarfill'         => get_config('local_ai_course_assistant', 'avatar_fill') ?: '#ffffff',
             'displaymode'        => $displaymode,
             'displayname'        => get_config('local_ai_course_assistant', 'display_name') ?: 'SOLA',
@@ -252,9 +289,18 @@ class hook_callbacks {
             'coursename'         => $course->fullname,
             'emailreminders'     => (bool)get_config('local_ai_course_assistant', 'reminders_email_enabled'),
             'completionpct'      => $completionpct,
-            'contextdebug'       => $cansiteconfig ? 1 : 0,
+            'contextdebugvisible' => $cansiteconfig,
             'starters'           => $starters,
             'startersjson'       => json_encode($starters),
+            'startericoncolor'   => $startericoncolor,
+            'introdismissed'     => $introdismissed,
+            'defaultvoice'       => $defaultvoice,
+            'contextlevelname'   => $contextlevelname,
+            'serverpageurl'      => $serverpageurl,
+            'serverpagetitle'    => $serverpagetitle,
+            'serverpageheading'  => $serverpageheading,
+            'llmoptionsjson'     => json_encode($llmoptions),
+            'hasstarterdata'     => $hasstarterdata,
         ];
 
         $html = $OUTPUT->render_from_template('local_ai_course_assistant/chat_widget', $templatedata);

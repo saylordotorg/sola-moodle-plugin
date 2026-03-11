@@ -508,6 +508,10 @@ $string['chat:settings_voice_admin']    = 'Voice settings are managed in the sit
 
 // Voice mode (OpenAI Realtime).
 $string['chat:voice_mode']              = 'Voice mode';
+$string['chat:voice_title']             = 'Talk with SOLA';
+$string['chat:voice_copy']              = 'Have a natural voice conversation with your learning assistant.';
+$string['chat:voice_ready']             = 'Ready to start';
+$string['chat:voice_start']             = 'Start conversation';
 $string['chat:voice_end']               = 'End voice session';
 $string['chat:voice_connecting']        = 'Connecting...';
 $string['chat:voice_listening']         = 'Listening...';
@@ -515,6 +519,26 @@ $string['chat:voice_speaking']          = 'SOLA is speaking...';
 $string['chat:voice_idle']              = 'Ready';
 $string['chat:voice_error']             = 'Voice connection failed. Please check your settings.';
 $string['chat:quiz_locked']             = 'SOLA is paused during quizzes to support academic integrity. Good luck!';
+
+// Bottom navigation modes.
+$string['chat:mode_nav']                = 'Mode navigation';
+$string['chat:mode_chat']               = 'Chat';
+$string['chat:mode_voice']              = 'Voice';
+$string['chat:mode_history']            = 'History';
+
+// History panel.
+$string['chat:history_title']           = 'Conversation History';
+$string['chat:history_subtitle']        = 'Your recent messages in this course.';
+$string['chat:history_empty']           = 'No conversations yet.';
+$string['chat:history_refresh']         = 'Refresh';
+
+// Debug panel.
+$string['chat:debug_context']           = 'Context Debug';
+$string['chat:debug_context_toggle']    = 'Toggle context debug inspector';
+$string['chat:debug_context_copy']      = 'Copy';
+$string['chat:debug_context_browser']   = 'Browser Snapshot';
+$string['chat:debug_context_request']   = 'Last SSE Request';
+$string['chat:debug_context_prompt']    = 'Server Response';
 
 // Quiz hide settings.
 $string['settings:quiz_hide_heading'] = 'Quiz Page Visibility';
