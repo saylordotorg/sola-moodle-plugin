@@ -149,7 +149,7 @@
         <FIELD NAME="chunkindex" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Position within document"/>
         <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Raw text of this chunk"/>
         <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" COMMENT="sha1 for change detection"/>
-        <FIELD NAME="embedding" TYPE="longtext" NOTNULL="false" SEQUENCE="false" COMMENT="JSON float array, null if not yet embedded"/>
+        <FIELD NAME="embedding" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="JSON float array, null if not yet embedded"/>
         <FIELD NAME="embed_model" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="e.g. text-embedding-3-small"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timeindexed" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="When embedding was computed"/>
