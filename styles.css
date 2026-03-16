@@ -926,8 +926,8 @@ a.aica-source-pill:hover svg {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 6px 8px 8px;
+    gap: 2px;
+    padding: 4px 8px 4px;
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 20px;
@@ -945,7 +945,7 @@ a.aica-source-pill:hover svg {
     width: 100%;
     min-width: 0;
     border: none;
-    padding: 4px 12px 4px;
+    padding: 2px 12px 2px;
     font-size: 14px;
     resize: none;
     max-height: 160px;
