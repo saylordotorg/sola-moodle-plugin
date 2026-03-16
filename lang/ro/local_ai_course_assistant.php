@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Sunteți sigur că doriți să ștergeți istor
 $string['chat:copy'] = 'Copiați conversația';
 $string['chat:copied'] = 'Conversația a fost copiată în clipboard';
 $string['chat:copy_failed'] = 'Nu s-a putut copia conversația';
-$string['chat:greeting'] = 'Bună! Sunt tutorele tău AI pentru acest curs. Cum te pot ajuta astăzi?';
 $string['chat:thinking'] = 'Se gândește...';
 $string['chat:error'] = 'Ne pare rău, a apărut o eroare. Vă rugăm să încercați din nou.';
 $string['chat:error_auth'] = 'Eroare de autentificare. Contactați administratorul.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Datele dvs. au fost șterse.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Bună, {$a}! Sunt SOLA, asistentul tău de învățare online Saylor.';
+$string['chat:greeting'] = 'Bună, {$a}! Sunt SOLA, asistentul tău de învățare online {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Deschideți SOLA';

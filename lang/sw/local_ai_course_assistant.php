@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Je, una uhakika unataka kufuta historia yako ya
 $string['chat:copy'] = 'Nakili mazungumzo';
 $string['chat:copied'] = 'Mazungumzo yamenakiliwa kwenye ubao wa kunakili';
 $string['chat:copy_failed'] = 'Imeshindwa kunakili mazungumzo';
-$string['chat:greeting'] = 'Habari! Mimi ni mshauri wako wa AI kwa kozi hii. Ninaweza kukusaidiaje leo?';
 $string['chat:thinking'] = 'Ninafikiria...';
 $string['chat:error'] = 'Samahani, kuna kitu kimeenda vibaya. Tafadhali jaribu tena.';
 $string['chat:error_auth'] = 'Hitilafu ya uthibitishaji. Tafadhali wasiliana na msimamizi wako.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Data yako imefutwa.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Habari, {$a}! Mimi ni SOLA, msaidizi wako wa kujifunza mtandaoni wa Saylor.';
+$string['chat:greeting'] = 'Habari, {$a}! Mimi ni SOLA, msaidizi wako wa kujifunza mtandaoni wa {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Fungua SOLA';

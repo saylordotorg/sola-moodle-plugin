@@ -284,6 +284,7 @@ class hook_callbacks {
             'avatarfill'         => get_config('local_ai_course_assistant', 'avatar_fill') ?: '#ffffff',
             'displaymode'        => $displaymode,
             'displayname'        => get_config('local_ai_course_assistant', 'display_name') ?: 'SOLA',
+            'institution'        => get_config('local_ai_course_assistant', 'institution_name') ?: 'Saylor University',
             'shortname_label'    => get_config('local_ai_course_assistant', 'short_name') ?: 'SOLA',
             'welcomemessage'     => get_config('local_ai_course_assistant', 'welcome_message') ?: '',
             'chatgreeting'       => get_config('local_ai_course_assistant', 'chat_greeting') ?: '',

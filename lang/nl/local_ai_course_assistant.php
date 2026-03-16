@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Weet u zeker dat u uw chatgeschiedenis voor dez
 $string['chat:copy'] = 'Gesprek kopiëren';
 $string['chat:copied'] = 'Gesprek gekopieerd naar klembord';
 $string['chat:copy_failed'] = 'Kopiëren van gesprek mislukt';
-$string['chat:greeting'] = 'Hallo! Ik ben uw AI-tutor voor deze cursus. Hoe kan ik u vandaag helpen?';
 $string['chat:thinking'] = 'Aan het denken...';
 $string['chat:error'] = 'Sorry, er is een fout opgetreden. Probeer het opnieuw.';
 $string['chat:error_auth'] = 'Authenticatiefout. Neem contact op met uw beheerder.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Uw gegevens zijn verwijderd.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Hallo {$a}! Ik ben SOLA, uw Saylor online leerassistent.';
+$string['chat:greeting'] = 'Hallo {$a}! Ik ben SOLA, uw {INSTITUTION} online leerassistent.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'SOLA openen';

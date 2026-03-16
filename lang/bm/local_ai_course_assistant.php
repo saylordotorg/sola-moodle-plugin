@@ -114,7 +114,6 @@ $string['chat:clear_confirm'] = 'I b\'a fɛ i ka kumakanbali kɔkɔ tigɛ kalans
 $string['chat:copy'] = 'Kumakanbali copie kɛ';
 $string['chat:copied'] = 'Kumakanbali copier kɛra clipboard kan';
 $string['chat:copy_failed'] = 'Kumakanbali copie kɛ ma se ka kɛ';
-$string['chat:greeting'] = 'I ni sogoma! Ne ye i ka AI karamɔgɔ ye kalanso in kama. Ne bɛ se ka i dɛmɛ cogo di bi?';
 $string['chat:thinking'] = 'Miiriya kɛ la...';
 $string['chat:error'] = 'Hakɛ, fɛn dɔ ma ɲɛ. I ka ko a laban kɔsɔbɛ.';
 $string['chat:error_auth'] = 'Authentification fɔlɔfɔli. I ka administrateur ka telefɔni kɛ.';
@@ -276,7 +275,7 @@ $string['usersettings:confirm_delete_all'] = 'I b\'a fɛ ka i ka AI karamɔgɔ k
 $string['usersettings:data_deleted'] = 'I ka kunnafoniw bɔra.';
 
 // === SOLA v1.0.12 — new features translation ===
-$string['chat:greeting'] = 'I ni ce, {$a}! Ne ye SOLA ye, i ka kalanko dɛmɛbaga Saylor fɛ.';
+$string['chat:greeting'] = 'I ni ce, {$a}! Ne ye SOLA ye, i ka kalanko dɛmɛbaga {INSTITUTION} fɛ.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'SOLA dayɛlɛ';

@@ -3885,13 +3885,18 @@ define([
             return;
         }
         var displayName = 'SOLA';
+        var institutionName = 'Saylor University';
         var rootEl = document.getElementById('local-ai-course-assistant');
         if (rootEl && rootEl.dataset.displayname) {
             displayName = rootEl.dataset.displayname;
         }
+        if (rootEl && rootEl.dataset.institution) {
+            institutionName = rootEl.dataset.institution;
+        }
         Str.get_string('chat:greeting', 'local_ai_course_assistant').then(function(greeting) {
-            // Replace {$a} with first name and update hardcoded SOLA with display name.
+            // Replace placeholders with configured values.
             var msg = greeting.replace('{$a}', firstName || 'there');
+            msg = msg.replace('{INSTITUTION}', institutionName);
             if (displayName !== 'SOLA') {
                 msg = msg.replace(/SOLA/g, displayName);
             }
@@ -3899,7 +3904,7 @@ define([
             return;
         }).catch(function() {
             addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m ' + displayName +
-                ', your personal learning assistant.', null, {skipHistory: true});
+                ', your ' + institutionName + ' online learning assistant.', null, {skipHistory: true});
         });
     };
 

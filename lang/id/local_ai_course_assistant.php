@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Apakah Anda yakin ingin menghapus riwayat chat 
 $string['chat:copy'] = 'Salin percakapan';
 $string['chat:copied'] = 'Percakapan disalin ke clipboard';
 $string['chat:copy_failed'] = 'Gagal menyalin percakapan';
-$string['chat:greeting'] = 'Halo! Saya tutor AI Anda untuk kursus ini. Ada yang bisa saya bantu hari ini?';
 $string['chat:thinking'] = 'Sedang berpikir...';
 $string['chat:error'] = 'Maaf, terjadi kesalahan. Silakan coba lagi.';
 $string['chat:error_auth'] = 'Kesalahan autentikasi. Hubungi administrator Anda.';
@@ -277,7 +276,7 @@ $string['usersettings:data_deleted'] = 'Data Anda telah dihapus.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Halo, {$a}! Saya SOLA, asisten belajar online Saylor Anda.';
+$string['chat:greeting'] = 'Halo, {$a}! Saya SOLA, asisten belajar online {INSTITUTION} Anda.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Buka SOLA';

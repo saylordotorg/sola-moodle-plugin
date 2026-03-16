@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Shin ka tabbata kana son share tarihin tattauna
 $string['chat:copy'] = 'Kwafi tattaunawa';
 $string['chat:copied'] = 'An kwafi tattaunawar zuwa allo';
 $string['chat:copy_failed'] = 'An kasa kwafi tattaunawar';
-$string['chat:greeting'] = 'Sannu! Ni ne malamin AI naka don wannan kozi. Ta yaya zan iya taimakon ka yau?';
 $string['chat:thinking'] = 'Ina tunani...';
 $string['chat:error'] = 'Yi hakuri, wani abu ya tafi ba daidai ba. Da fatan za a sake gwadawa.';
 $string['chat:error_auth'] = 'Kuskuren tabbatarwa. Da fatan za a tuntuɓi mai gudanarwa ka.';
@@ -277,7 +276,7 @@ $string['usersettings:data_deleted'] = 'An share bayananku.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Sannu, {$a}! Ni ne SOLA, mataimakin koyon kan layi na Saylor.';
+$string['chat:greeting'] = 'Sannu, {$a}! Ni ne SOLA, mataimakin koyon kan layi na {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Bude SOLA';

@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Sind Sie sicher, dass Sie Ihren Chatverlauf fü
 $string['chat:copy'] = 'Unterhaltung kopieren';
 $string['chat:copied'] = 'Unterhaltung in die Zwischenablage kopiert';
 $string['chat:copy_failed'] = 'Kopieren der Unterhaltung fehlgeschlagen';
-$string['chat:greeting'] = 'Hallo! Ich bin Ihr KI-Tutor für diesen Kurs. Wie kann ich Ihnen heute helfen?';
 $string['chat:thinking'] = 'Denke nach...';
 $string['chat:error'] = 'Entschuldigung, ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
 $string['chat:error_auth'] = 'Authentifizierungsfehler. Bitte kontaktieren Sie Ihren Administrator.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Ihre Daten wurden gelöscht.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Hallo {$a}! Ich bin SOLA, Ihr Saylor Online-Lernassistent.';
+$string['chat:greeting'] = 'Hallo {$a}! Ich bin SOLA, Ihr {INSTITUTION} Online-Lernassistent.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'SOLA öffnen';

@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Adakah anda pasti mahu mengosongkan sejarah cha
 $string['chat:copy'] = 'Salin perbualan';
 $string['chat:copied'] = 'Perbualan disalin ke clipboard';
 $string['chat:copy_failed'] = 'Gagal menyalin perbualan';
-$string['chat:greeting'] = 'Helo! Saya tutor AI anda untuk kursus ini. Bagaimana saya boleh membantu anda hari ini?';
 $string['chat:thinking'] = 'Sedang berfikir...';
 $string['chat:error'] = 'Maaf, ada yang tidak kena. Sila cuba lagi.';
 $string['chat:error_auth'] = 'Ralat pengesahan. Sila hubungi pentadbir anda.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Data anda telah dipadam.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Hai, {$a}! Saya SOLA, Pembantu Pembelajaran Dalam Talian Saylor anda.';
+$string['chat:greeting'] = 'Hai, {$a}! Saya SOLA, Pembantu Pembelajaran Dalam Talian {INSTITUTION} anda.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Buka SOLA';

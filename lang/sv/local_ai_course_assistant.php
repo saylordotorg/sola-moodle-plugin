@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Är du säker på att du vill rensa chatthistor
 $string['chat:copy'] = 'Kopiera konversation';
 $string['chat:copied'] = 'Konversationen har kopierats till urklipp';
 $string['chat:copy_failed'] = 'Det gick inte att kopiera konversationen';
-$string['chat:greeting'] = 'Hej! Jag är din AI-handledare för den här kursen. Hur kan jag hjälpa dig idag?';
 $string['chat:thinking'] = 'Tänker...';
 $string['chat:error'] = 'Tyvärr uppstod ett fel. Försök igen.';
 $string['chat:error_auth'] = 'Autentiseringsfel. Kontakta din administratör.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Dina data har raderats.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Hej, {$a}! Jag är SOLA, din Saylor-onlinestudieassistent.';
+$string['chat:greeting'] = 'Hej, {$a}! Jag är SOLA, din {INSTITUTION}-onlinestudieassistent.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Öppna SOLA';

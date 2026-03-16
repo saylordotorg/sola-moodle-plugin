@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Вы уверены, что хотите очи
 $string['chat:copy'] = 'Скопировать беседу';
 $string['chat:copied'] = 'Беседа скопирована в буфер обмена';
 $string['chat:copy_failed'] = 'Не удалось скопировать беседу';
-$string['chat:greeting'] = 'Привет! Я ваш ИИ-репетитор по этому курсу. Чем могу помочь сегодня?';
 $string['chat:thinking'] = 'Думаю...';
 $string['chat:error'] = 'Извините, что-то пошло не так. Попробуйте ещё раз.';
 $string['chat:error_auth'] = 'Ошибка аутентификации. Обратитесь к администратору.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Ваши данные удалены.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Привет, {$a}! Я SOLA, твой онлайн-помощник Saylor по обучению.';
+$string['chat:greeting'] = 'Привет, {$a}! Я SOLA, твой онлайн-помощник {INSTITUTION} по обучению.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Открыть SOLA';

@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Sigurado ka bang nais mong linisin ang iyong ka
 $string['chat:copy'] = 'Kopyahin ang pakikipag-usap';
 $string['chat:copied'] = 'Nakopya ang pakikipag-usap sa clipboard';
 $string['chat:copy_failed'] = 'Nabigo sa pagkopya ng pakikipag-usap';
-$string['chat:greeting'] = 'Kamusta! Ako ang iyong AI tutor para sa kursong ito. Paano kita matutulungan ngayon?';
 $string['chat:thinking'] = 'Nag-iisip...';
 $string['chat:error'] = 'Paumanhin, may nangyaring mali. Pakisubukan muli.';
 $string['chat:error_auth'] = 'Error sa pagpapatunay. Makipag-ugnayan sa iyong administrator.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Natanggal na ang iyong data.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Kumusta, {$a}! Ako si SOLA, ang iyong Saylor Online Learning Assistant.';
+$string['chat:greeting'] = 'Kumusta, {$a}! Ako si SOLA, ang iyong {INSTITUTION} Online Learning Assistant.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Buksan ang SOLA';

@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Mbaa dëgg nga bëgg a fay sa historique wax-ak
 $string['chat:copy'] = 'Copie wax-ak-wax bi';
 $string['chat:copied'] = 'Wax-ak-wax bi dañ ko copié ci clipboard bi';
 $string['chat:copy_failed'] = 'Copie wax-ak-wax bi defoo kaay';
-$string['chat:greeting'] = 'Salaam! Maa ngi professeur AI bi ci cours boobu. Ana luy moo dem ngay mënna ndimmal ma jàng tey?';
 $string['chat:thinking'] = 'Xam xamam...';
 $string['chat:error'] = 'Baal ma, dafa am problème. Jëf alal ci kanam.';
 $string['chat:error_auth'] = 'Erreur authentification. Jooy administrateur bi.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Say données dañ ko effacer.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Mangi fi, {$a}! Maa ngi di SOLA, wërsëg-jàng ji ci biir internet bi Saylor.';
+$string['chat:greeting'] = 'Mangi fi, {$a}! Maa ngi di SOLA, wërsëg-jàng ji ci biir internet bi {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Ubbi SOLA';

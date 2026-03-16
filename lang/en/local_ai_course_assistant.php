@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // General.
-$string['pluginname'] = 'Saylor Online Learning Assistant (SOLA)';
+$string['pluginname'] = 'Online Learning Assistant (SOLA)';
 $string['error'] = '{$a}';
 $string['privacy:metadata:local_ai_course_assistant_convs'] = 'Stores AI tutor chat conversations per user and course.';
 $string['privacy:metadata:local_ai_course_assistant_convs:userid'] = 'The ID of the user who owns the conversation.';
@@ -66,7 +66,7 @@ $string['settings:apibaseurl'] = 'API Base URL';
 $string['settings:apibaseurl_desc'] = 'Base URL for the API. Auto-filled per provider but can be overridden. Leave blank for provider default.';
 $string['settings:systemprompt'] = 'System Prompt Template';
 $string['settings:systemprompt_desc'] = 'System prompt sent to the AI. Use placeholders: {{coursename}}, {{userrole}}, {{coursetopics}}, {{institution}}.';
-$string['settings:systemprompt_default'] = 'You are SOLA (Saylor Online Learning Assistant), an AI learning coach for {{institution}} students enrolled in "{{coursename}}". The student\'s role is {{userrole}}.
+$string['settings:systemprompt_default'] = 'You are SOLA (Online Learning Assistant), an AI learning coach for {{institution}} students enrolled in "{{coursename}}". The student\'s role is {{userrole}}.
 
 ## Role
 Provide supportive, course-aligned academic help that encourages learning, practice, motivation, and responsible AI use. You complement faculty-designed courses but do not replace instructors.
@@ -166,7 +166,7 @@ $string['chat:clear_confirm'] = 'Are you sure you want to clear your chat histor
 $string['chat:copy'] = 'Copy conversation';
 $string['chat:copied'] = 'Conversation copied to clipboard';
 $string['chat:copy_failed'] = 'Failed to copy conversation';
-$string['chat:greeting'] = 'Hi, {$a}! I\'m SOLA, your Saylor Online Learning Assistant.';
+$string['chat:greeting'] = 'Hi, {$a}! I\'m SOLA, your {INSTITUTION} online learning assistant.';
 $string['chat:thinking'] = 'Thinking...';
 $string['chat:error'] = 'Sorry, something went wrong. Please try again.';
 $string['chat:error_auth'] = 'Authentication error. Please contact your administrator.';

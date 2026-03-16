@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Ste si istí, že chcete vymazať históriu cha
 $string['chat:copy'] = 'Kopírovať konverzáciu';
 $string['chat:copied'] = 'Konverzácia skopírovaná do schránky';
 $string['chat:copy_failed'] = 'Nepodarilo sa skopírovať konverzáciu';
-$string['chat:greeting'] = 'Ahoj! Som váš AI tútor pre tento kurz. Ako vám môžem dnes pomôcť?';
 $string['chat:thinking'] = 'Premýšľam...';
 $string['chat:error'] = 'Prepáčte, vyskytla sa chyba. Skúste to znova.';
 $string['chat:error_auth'] = 'Chyba overenia. Kontaktujte správcu.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Vaše údaje boli vymazané.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Ahoj, {$a}! Som SOLA, váš online asistent učenia Saylor.';
+$string['chat:greeting'] = 'Ahoj, {$a}! Som SOLA, váš online asistent učenia {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Otvoriť SOLA';

@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Czy na pewno chcesz wyczyścić historię czatu
 $string['chat:copy'] = 'Kopiuj rozmowę';
 $string['chat:copied'] = 'Rozmowa skopiowana do schowka';
 $string['chat:copy_failed'] = 'Nie udało się skopiować rozmowy';
-$string['chat:greeting'] = 'Cześć! Jestem Twoim korepetytorem AI w tym kursie. Jak mogę Ci dziś pomóc?';
 $string['chat:thinking'] = 'Myślę...';
 $string['chat:error'] = 'Przepraszamy, wystąpił błąd. Spróbuj ponownie.';
 $string['chat:error_auth'] = 'Błąd uwierzytelniania. Skontaktuj się z administratorem.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Twoje dane zostały usunięte.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Cześć, {$a}! Jestem SOLA, Twój asystent nauki online Saylor.';
+$string['chat:greeting'] = 'Cześć, {$a}! Jestem SOLA, Twój asystent nauki online {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Otwórz SOLA';

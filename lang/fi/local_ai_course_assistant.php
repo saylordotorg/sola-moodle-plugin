@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Haluatko varmasti tyhjentää keskusteluhistori
 $string['chat:copy'] = 'Kopioi keskustelu';
 $string['chat:copied'] = 'Keskustelu kopioitu leikepöydälle';
 $string['chat:copy_failed'] = 'Keskustelun kopiointi epäonnistui';
-$string['chat:greeting'] = 'Hei! Olen AI-tutorisi tälle kurssille. Miten voin auttaa sinua tänään?';
 $string['chat:thinking'] = 'Mietin...';
 $string['chat:error'] = 'Valitettavasti tapahtui virhe. Yritä uudelleen.';
 $string['chat:error_auth'] = 'Todennusvirhe. Ota yhteyttä ylläpitäjääsi.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Tietosi on poistettu.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Hei {$a}! Olen SOLA, Saylor-verkko-oppimisavustajasi.';
+$string['chat:greeting'] = 'Hei {$a}! Olen SOLA, {INSTITUTION}-verkko-oppimisavustajasi.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Avaa SOLA';

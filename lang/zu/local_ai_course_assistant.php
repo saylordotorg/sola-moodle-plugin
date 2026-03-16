@@ -113,7 +113,6 @@ $string['chat:clear_confirm'] = 'Uqinisekile ukuthi ufuna ukusula umlando wengxo
 $string['chat:copy'] = 'Kopisha ingxoxo';
 $string['chat:copied'] = 'Ingxoxo ikopishiwe ku-clipboard';
 $string['chat:copy_failed'] = 'Ukukopisha ingxoxo kuhlulekile';
-$string['chat:greeting'] = 'Sawubona! Ngingumfundisi wakho we-AI walesi sifundo. Ngingakusiza kanjani namuhla?';
 $string['chat:thinking'] = 'Ngicabanga...';
 $string['chat:error'] = 'Ngiyaxolisa, kukhona okungahambanga kahle. Sicela uzame futhi.';
 $string['chat:error_auth'] = 'Iphutha lokufakazela. Sicela uxhumane nomphathi wakho.';
@@ -276,7 +275,7 @@ $string['usersettings:data_deleted'] = 'Idatha yakho isuswe.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Sawubona, {$a}! Ngingu-SOLA, umsizi wakho wokufunda online we-Saylor.';
+$string['chat:greeting'] = 'Sawubona, {$a}! Ngingu-SOLA, umsizi wakho wokufunda online we-{INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Vula SOLA';

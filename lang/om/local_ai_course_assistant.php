@@ -258,7 +258,7 @@ $string['usersettings:data_deleted'] = 'Ragaa kee haqqame.';
 
 // === SOLA v1.0.12 — updated/new strings ===
 
-$string['chat:greeting'] = 'Akkam, {$a}! Ani SOLA dha, gargaaraa barumsaa onlaayinii Saylor keessan.';
+$string['chat:greeting'] = 'Akkam, {$a}! Ani SOLA dha, gargaaraa barumsaa onlaayinii {INSTITUTION} keessan.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'SOLA bani';

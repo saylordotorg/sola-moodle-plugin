@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Êtes-vous sûr de vouloir effacer votre histor
 $string['chat:copy'] = 'Copier la conversation';
 $string['chat:copied'] = 'Conversation copiée dans le presse-papiers';
 $string['chat:copy_failed'] = 'Échec de la copie de la conversation';
-$string['chat:greeting'] = 'Bonjour ! Je suis votre tuteur IA pour ce cours. Comment puis-je vous aider aujourd\'hui ?';
 $string['chat:thinking'] = 'Réflexion en cours...';
 $string['chat:error'] = 'Désolé, une erreur s\'est produite. Veuillez réessayer.';
 $string['chat:error_auth'] = 'Erreur d\'authentification. Veuillez contacter votre administrateur.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Vos données ont été supprimées.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Bonjour, {$a} ! Je suis SOLA, votre assistant d\'apprentissage en ligne Saylor.';
+$string['chat:greeting'] = 'Bonjour, {$a} ! Je suis SOLA, votre assistant d\'apprentissage en ligne {INSTITUTION}.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Ouvrir SOLA';

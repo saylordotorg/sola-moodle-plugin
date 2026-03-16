@@ -108,7 +108,6 @@ $string['chat:clear_confirm'] = 'Ị na-agwa m na ị chefuo akụkọ ihe mere 
 $string['chat:copy'] = 'Detuo mkparịta ụka';
 $string['chat:copied'] = 'Akopịrị mkparịta ụka n\'clipboard';
 $string['chat:copy_failed'] = 'Ọ dị njọ ikopịa mkparịta ụka';
-$string['chat:greeting'] = 'Nnọọ! Abụ m nkuzi AI gị maka kọọsị a. Kedu ka m ga-esi nyere gị aka taa?';
 $string['chat:thinking'] = 'Na-eche echiche...';
 $string['chat:error'] = 'Ndo, ihe ọjọọ mere. Nwaa ọzọ.';
 $string['chat:error_auth'] = 'Njehie nyocha. Biko kpọtụrụ onye njikwa gị.';
@@ -263,7 +262,7 @@ $string['usersettings:data_deleted'] = 'Ehichapụrụ data gị.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Nnọọ, {$a}! Abụ m SOLA, onye enyemaka mụta n\'ịntanetị Saylor gị.';
+$string['chat:greeting'] = 'Nnọọ, {$a}! Abụ m SOLA, onye enyemaka mụta n\'ịntanetị {INSTITUTION} gị.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'Meghee SOLA';

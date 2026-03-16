@@ -102,7 +102,6 @@ $string['chat:clear_confirm'] = 'Bu ders için sohbet geçmişinizi temizlemek i
 $string['chat:copy'] = 'Konuşmayı kopyala';
 $string['chat:copied'] = 'Konuşma panoya kopyalandı';
 $string['chat:copy_failed'] = 'Konuşma kopyalanamadı';
-$string['chat:greeting'] = 'Merhaba! Bu ders için AI eğitmeninizim. Bugün size nasıl yardımcı olabilirim?';
 $string['chat:thinking'] = 'Düşünüyor...';
 $string['chat:error'] = 'Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.';
 $string['chat:error_auth'] = 'Kimlik doğrulama hatası. Lütfen yöneticinizle iletişime geçin.';
@@ -248,7 +247,7 @@ $string['usersettings:data_deleted'] = 'Verileriniz silindi.';
 // === SOLA v1.0.12 — updated/new strings ===
 
 // Updated strings (override earlier values):
-$string['chat:greeting'] = 'Merhaba, {$a}! Ben SOLA, Saylor çevrimiçi öğrenme asistanınız.';
+$string['chat:greeting'] = 'Merhaba, {$a}! Ben SOLA, {INSTITUTION} çevrimiçi öğrenme asistanınız.';
 $string['chat:title'] = 'SOLA';
 $string['chat:assistant'] = 'SOLA';
 $string['chat:open'] = 'SOLA\'yı aç';
