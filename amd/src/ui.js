@@ -1594,27 +1594,9 @@ define([
         scrollFollowMode = false;
         streamingEl = addMessage('assistant', '');
 
-        // If a stop button was already shown (e.g. during typing indicator),
-        // move it below the new streaming message so it stays at the bottom.
-        if (stopStreamBtn && stopStreamBtn.parentNode) {
-            stopStreamBtn.parentNode.removeChild(stopStreamBtn);
-            appendMessageNode(stopStreamBtn);
-        }
-
-        // Show a stop button below the streaming message so the user can interrupt.
-        if (onStop && messagesContainer) {
-            stopStreamBtn = document.createElement('button');
-            stopStreamBtn.className = 'aica-stop-stream-btn';
-            stopStreamBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">'
-                + '<rect x="4" y="4" width="16" height="16" rx="2"/></svg> Stop';
-            stopStreamBtn.addEventListener('click', function() {
-                onStop();
-                removeStopButton();
-            });
-            appendMessageNode(stopStreamBtn);
-            programmaticScroll = true;
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            programmaticScroll = false;
+        // If onStop provided and no stop button already showing, create one in the fixed slot.
+        if (onStop && !stopStreamBtn) {
+            showStopButton(onStop);
         }
 
         return streamingEl;
@@ -1625,19 +1607,25 @@ define([
      */
     const removeStopButton = function() {
         if (stopStreamBtn && stopStreamBtn.parentNode) {
-            stopStreamBtn.parentNode.removeChild(stopStreamBtn);
+            var slot = stopStreamBtn.parentNode;
+            slot.removeChild(stopStreamBtn);
+            if (slot.classList && slot.classList.contains('local-ai-course-assistant__stop-slot')) {
+                slot.hidden = true;
+            }
         }
         stopStreamBtn = null;
     };
 
     /**
-     * Show a standalone stop button (before streaming starts, e.g. during typing indicator).
+     * Show a standalone stop button in the fixed slot (always visible, not scrollable).
      *
      * @param {Function} onStop  Callback when the user clicks Stop
      */
     const showStopButton = function(onStop) {
         removeStopButton();
-        if (!messagesContainer || !onStop) { return; }
+        if (!onStop) { return; }
+        var slot = root ? root.querySelector('.local-ai-course-assistant__stop-slot') : null;
+        if (!slot) { return; }
         stopStreamBtn = document.createElement('button');
         stopStreamBtn.className = 'aica-stop-stream-btn';
         stopStreamBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">'
@@ -1646,10 +1634,8 @@ define([
             onStop();
             removeStopButton();
         });
-        appendMessageNode(stopStreamBtn);
-        programmaticScroll = true;
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        programmaticScroll = false;
+        slot.appendChild(stopStreamBtn);
+        slot.hidden = false;
     };
 
     /**

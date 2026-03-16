@@ -549,6 +549,12 @@ a.aica-source-pill:hover svg {
 }
 
 
+/* Stop button slot — always visible outside scrollable messages */
+.local-ai-course-assistant__stop-slot {
+    flex-shrink: 0;
+    text-align: center;
+}
+
 /* Typing indicator */
 .local-ai-course-assistant__typing {
     display: none;
