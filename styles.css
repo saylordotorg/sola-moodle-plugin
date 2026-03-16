@@ -4371,3 +4371,160 @@ a.aica-history-panel__source:hover {
 .local-ai-course-assistant__drawer--dark .aica-stop-stream-btn:hover {
     background: #4b5563;
 }
+
+/* ─── Practice Score Card ─── */
+.aica-score-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.aica-score-card__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+    text-align: center;
+}
+.aica-score-card__overall {
+    text-align: center;
+    margin-bottom: 16px;
+}
+.aica-score-card__overall-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--aica-brand-color, #173140);
+    line-height: 1;
+}
+.aica-score-card__overall-max {
+    font-size: 16px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+.aica-score-card__criteria {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.aica-score-card__criterion {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 2px 8px;
+    align-items: center;
+}
+.aica-score-card__criterion-name {
+    grid-column: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+.aica-score-card__criterion-score {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    white-space: nowrap;
+}
+.aica-score-card__bar-wrap {
+    grid-column: 1 / -1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.aica-score-card__bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+.aica-score-card__bar--high { background: #22c55e; }
+.aica-score-card__bar--mid  { background: #f59e0b; }
+.aica-score-card__bar--low  { background: #ef4444; }
+.aica-score-card__criterion-feedback {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+.aica-score-card__summary {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+.aica-score-card__encourage {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--aica-brand-color, #173140);
+    text-align: center;
+    margin-bottom: 12px;
+}
+.aica-score-card__actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+.aica-score-card__btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s, transform 0.1s;
+}
+.aica-score-card__btn:active {
+    transform: scale(0.97);
+}
+.aica-score-card__btn--retry {
+    background: var(--aica-brand-color, #173140);
+    color: #fff;
+}
+.aica-score-card__btn--retry:hover {
+    opacity: 0.9;
+}
+.aica-score-card__btn--done {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #d1d5db;
+}
+.aica-score-card__btn--done:hover {
+    background: #e2e8f0;
+}
+/* Dark mode */
+[data-theme="dark"] .aica-score-card,
+.local-ai-course-assistant__drawer--dark .aica-score-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+[data-theme="dark"] .aica-score-card__title,
+.local-ai-course-assistant__drawer--dark .aica-score-card__title {
+    color: #f1f5f9;
+}
+[data-theme="dark"] .aica-score-card__criterion-name,
+.local-ai-course-assistant__drawer--dark .aica-score-card__criterion-name {
+    color: #e2e8f0;
+}
+[data-theme="dark"] .aica-score-card__summary,
+.local-ai-course-assistant__drawer--dark .aica-score-card__summary {
+    background: #0f172a;
+    color: #cbd5e1;
+}
+[data-theme="dark"] .aica-score-card__bar-wrap,
+.local-ai-course-assistant__drawer--dark .aica-score-card__bar-wrap {
+    background: #334155;
+}
+[data-theme="dark"] .aica-score-card__btn--done,
+.local-ai-course-assistant__drawer--dark .aica-score-card__btn--done {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+}

@@ -381,5 +381,68 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026031204, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026031712) {
+        $dbman = $DB->get_manager();
+
+        // Create rubrics table.
+        $table = new xmldb_table('local_ai_course_assistant_rubrics');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('type', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL);
+            $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL);
+            $table->add_field('criteria', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
+            $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_index('courseid_type_active', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'type', 'active']);
+            $dbman->create_table($table);
+        }
+
+        // Create practice_scores table.
+        $table = new xmldb_table('local_ai_course_assistant_practice_scores');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('rubricid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('session_type', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL);
+            $table->add_field('scores', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
+            $table->add_field('overall_score', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('ai_feedback', XMLDB_TYPE_TEXT);
+            $table->add_field('session_duration', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('rubricid_fk', XMLDB_KEY_FOREIGN, ['rubricid'], 'local_ai_course_assistant_rubrics', ['id']);
+            $table->add_key('userid_fk', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_index('userid_courseid_type', XMLDB_INDEX_NOTUNIQUE, ['userid', 'courseid', 'session_type']);
+            $table->add_index('courseid_time', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'timecreated']);
+            $dbman->create_table($table);
+        }
+
+        // Seed default rubrics.
+        $now = time();
+        if (!$DB->record_exists('local_ai_course_assistant_rubrics', ['courseid' => 0, 'type' => 'conversation'])) {
+            $DB->insert_record('local_ai_course_assistant_rubrics', (object) [
+                'courseid' => 0, 'type' => 'conversation',
+                'title' => 'Conversation Practice Rubric',
+                'criteria' => json_encode(\local_ai_course_assistant\rubric_manager::DEFAULT_CONVERSATION_CRITERIA),
+                'active' => 1, 'timecreated' => $now, 'timemodified' => $now,
+            ]);
+        }
+        if (!$DB->record_exists('local_ai_course_assistant_rubrics', ['courseid' => 0, 'type' => 'pronunciation'])) {
+            $DB->insert_record('local_ai_course_assistant_rubrics', (object) [
+                'courseid' => 0, 'type' => 'pronunciation',
+                'title' => 'Pronunciation Practice Rubric',
+                'criteria' => json_encode(\local_ai_course_assistant\rubric_manager::DEFAULT_PRONUNCIATION_CRITERIA),
+                'active' => 1, 'timecreated' => $now, 'timemodified' => $now,
+            ]);
+        }
+
+        upgrade_plugin_savepoint(true, 2026031712, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

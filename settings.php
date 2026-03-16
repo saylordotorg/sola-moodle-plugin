@@ -716,6 +716,22 @@ if ($hassiteconfig) {
         ]
     ));
 
+    // ── Practice Scoring Rubrics ─────────────────────────────────────────
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/rubric_heading',
+        'Practice Scoring Rubrics',
+        'Configure scoring rubrics for conversation and pronunciation practice sessions. '
+        . 'Students receive AI-generated scores and feedback when a practice session ends. '
+        . '<a href="' . (new moodle_url('/local/ai_course_assistant/rubric_admin.php'))->out() . '" class="btn btn-sm btn-outline-primary ml-2">Edit Rubrics &rarr;</a>'
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/practice_scoring_enabled',
+        'Enable practice scoring',
+        'When enabled, students receive a score card with per-criterion ratings and feedback after conversation and pronunciation practice sessions.',
+        1
+    ));
+
     // --- Usability Testing ---
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/usertesting_heading',
@@ -762,6 +778,14 @@ if ($hassiteconfig) {
         'local_ai_course_assistant_usertesting',
         'SOLA Usability Testing Editor',
         new moodle_url('/local/ai_course_assistant/usertesting_admin.php'),
+        'moodle/site:config'
+    ));
+
+    // Register the Rubric Editor admin page.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_ai_course_assistant_rubric',
+        'SOLA Rubric Editor',
+        new moodle_url('/local/ai_course_assistant/rubric_admin.php'),
         'moodle/site:config'
     ));
 

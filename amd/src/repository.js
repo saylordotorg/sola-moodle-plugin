@@ -317,6 +317,47 @@ define(['core/ajax'], function(Ajax) {
         }])[0];
     };
 
+    /**
+     * Get the active scoring rubric for a practice session type.
+     *
+     * @param {number} courseid
+     * @param {string} type 'conversation' or 'pronunciation'
+     * @returns {Promise}
+     */
+    const getRubric = function(courseid, type) {
+        return Ajax.call([{
+            methodname: 'local_ai_course_assistant_get_rubric',
+            args: {courseid: courseid, type: type},
+        }])[0];
+    };
+
+    /**
+     * Save a practice session score.
+     *
+     * @param {number} courseid
+     * @param {number} rubricid
+     * @param {string} sessionType
+     * @param {string} scoresJson
+     * @param {number} overallScore
+     * @param {string} aiFeedback
+     * @param {number} sessionDuration
+     * @returns {Promise}
+     */
+    const savePracticeScore = function(courseid, rubricid, sessionType, scoresJson, overallScore, aiFeedback, sessionDuration) {
+        return Ajax.call([{
+            methodname: 'local_ai_course_assistant_save_practice_score',
+            args: {
+                courseid: courseid,
+                rubricid: rubricid,
+                session_type: sessionType,
+                scores: scoresJson,
+                overall_score: overallScore,
+                ai_feedback: aiFeedback || '',
+                session_duration: sessionDuration || 0,
+            },
+        }])[0];
+    };
+
     return {
         sendMessage: sendMessage,
         getHistory: getHistory,
@@ -336,5 +377,7 @@ define(['core/ajax'], function(Ajax) {
         submitSurveyResponse: submitSurveyResponse,
         getUserTesting: getUserTesting,
         submitUserTestingResponse: submitUserTestingResponse,
+        getRubric: getRubric,
+        savePracticeScore: savePracticeScore,
     };
 });

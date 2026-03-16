@@ -155,6 +155,20 @@ $functions = [
         'ajax'         => true,
         'capabilities' => 'local/ai_course_assistant:use',
     ],
+    'local_ai_course_assistant_get_rubric' => [
+        'classname'    => \local_ai_course_assistant\external\get_rubric::class,
+        'description'  => 'Get the active scoring rubric for a practice session type.',
+        'type'         => 'read',
+        'ajax'         => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+    ],
+    'local_ai_course_assistant_save_practice_score' => [
+        'classname'    => \local_ai_course_assistant\external\save_practice_score::class,
+        'description'  => 'Save a practice session score.',
+        'type'         => 'write',
+        'ajax'         => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+    ],
     'local_ai_course_assistant_generate_insights' => [
         'classname'    => \local_ai_course_assistant\external\generate_insights::class,
         'description'  => 'Generate AI-powered insights from feedback and usability testing data.',

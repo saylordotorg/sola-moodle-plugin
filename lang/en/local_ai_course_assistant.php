@@ -306,6 +306,17 @@ $string['update:download_failed'] = 'Failed to download the update. Please try a
 $string['update:github_token'] = 'GitHub Token (optional)';
 $string['update:github_token_desc'] = 'Personal access token for accessing private GitHub repositories. Leave blank for public repos.';
 
+// Practice Scoring.
+$string['rubric:score_title_conversation'] = 'Conversation Practice Score';
+$string['rubric:score_title_pronunciation'] = 'Pronunciation Practice Score';
+$string['rubric:overall'] = 'Overall';
+$string['rubric:practice_again'] = 'Practice Again';
+$string['rubric:done'] = 'Done';
+$string['rubric:scoring'] = 'Evaluating your practice session...';
+$string['rubric:encourage_high'] = 'Excellent work! Keep it up!';
+$string['rubric:encourage_mid'] = 'Good effort! Keep practicing to improve.';
+$string['rubric:encourage_low'] = 'Nice start! Regular practice will help you improve.';
+
 // Analytics Export (Redash).
 $string['redash_heading'] = 'Analytics Export';
 $string['redash_heading_desc'] = 'Configure API key access for external analytics platforms like Redash. The export endpoint provides read-only JSON access to usage data, feedback, and cost analytics.';

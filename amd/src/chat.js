@@ -94,10 +94,20 @@ define([
     let voiceSessionActive = false;
     /** @type {number} Monotonic token used to ignore stale async voice startup work */
     let voiceSessionRequestId = 0;
+    /** @type {string|null} Active practice session type (conversation|pronunciation|null) */
+    let practiceSessionType = null;
+    /** @type {number} Timestamp when practice session started */
+    let practiceSessionStart = 0;
+    /** @type {number|null} Rubric ID for current practice session */
+    let practiceRubricId = null;
+    /** @type {Array|null} Rubric criteria for current practice session */
+    let practiceRubricCriteria = null;
     /** @type {RegExp} SOLA follow-up marker parser */
     const NEXT_BLOCK_RE = /\n*\[SOLA_NEXT\]([\s\S]*?)\[\/SOLA_NEXT\]/;
     /** @type {RegExp} Source attribution tag parser — matches [SOURCE:page], [SOURCE:course], [SOURCE:general], [SOURCE:activity:123] */
     const SOURCE_TAG_RE = /\n*\[SOURCE:(page|course|general|activity)(?::(\d+))?\]/;
+    /** @type {RegExp} Practice score block parser */
+    const SCORE_BLOCK_RE = /\n*\[SOLA_SCORE\]([\s\S]*?)\[\/SOLA_SCORE\]/;
     /** @type {Object<string, string>} */
     const SOURCE_LABELS = {
         page: 'From: Current Page',
@@ -139,11 +149,23 @@ define([
             cleanText = cleanText.replace(SOURCE_TAG_RE, '').trimEnd();
         }
 
+        let scoreData = null;
+        const scoreMatch = cleanText.match(SCORE_BLOCK_RE);
+        if (scoreMatch) {
+            try {
+                scoreData = JSON.parse(scoreMatch[1]);
+            } catch (e) {
+                scoreData = null;
+            }
+            cleanText = cleanText.replace(SCORE_BLOCK_RE, '').trimEnd();
+        }
+
         return {
             text: cleanText,
             suggestions: suggestions,
             sourceType: sourceType,
             sourceCmid: sourceCmid,
+            scoreData: scoreData,
         };
     };
 
@@ -1630,14 +1652,16 @@ define([
             return;
         }
 
-        // Practice Speaking â€” Option B (SSE + TTS + Web Speech API).
+        // Practice Speaking — Option B (SSE + TTS + Web Speech API).
         if (starterType === 'voice' || starterKey === 'ell-practice') {
+            startPracticeSession('conversation');
             handlePracticeSpeaking();
             return;
         }
 
-        // ELL Pronunciation â€” Option C (Realtime), phoneme-level feedback.
+        // ELL Pronunciation — Option C (Realtime), phoneme-level feedback.
         if (starterType === 'pronunciation' || starterKey === 'ell-pronunciation') {
+            startPracticeSession('pronunciation');
             handleELLPronunciation();
             return;
         }
@@ -2055,9 +2079,140 @@ define([
     };
 
     /**
+     * Start tracking a practice session for scoring.
+     * @param {string} type 'conversation' or 'pronunciation'
+     */
+    const startPracticeSession = function(type) {
+        var scoringEnabled = els.root && els.root.dataset.practiceScoring !== '0';
+        if (!scoringEnabled) {
+            return;
+        }
+        practiceSessionType = type;
+        practiceSessionStart = Date.now();
+        practiceRubricId = null;
+        practiceRubricCriteria = null;
+        // Fetch rubric in background.
+        Repo.getRubric(courseId, type).then(function(result) {
+            if (result && result.has_rubric) {
+                practiceRubricId = result.rubric_id;
+                try {
+                    practiceRubricCriteria = JSON.parse(result.criteria);
+                } catch (e) {
+                    practiceRubricCriteria = null;
+                }
+            }
+        }).catch(function() {
+            // Non-critical — scoring just won't be available.
+        });
+    };
+
+    /**
+     * Request scoring from the AI at end of a practice session.
+     */
+    const requestSessionScore = function() {
+        if (!practiceSessionType || !practiceRubricCriteria) {
+            practiceSessionType = null;
+            return;
+        }
+        var type = practiceSessionType;
+        var criteriaNames = practiceRubricCriteria.map(function(c) { return c.name; });
+        var prompt = 'Please score my ' + type + ' practice session. '
+            + 'Evaluate using these criteria: ' + criteriaNames.join(', ') + '. '
+            + 'For each criterion, give a score from 1-5 and brief feedback. '
+            + 'Then give an overall score (1-5) and a summary. '
+            + 'Format your response ONLY as: [SOLA_SCORE]{"criteria":[{"name":"...","score":N,"feedback":"..."},...],"overall":N,"summary":"..."}[/SOLA_SCORE]';
+
+        // Send as a system-initiated scoring request through SSE.
+        addAssistantMsg('Evaluating your practice session...', null, {skipHistory: true});
+
+        var rootEl = els.root;
+        var postData = {
+            courseid: courseId,
+            message: prompt,
+            sesskey: sessKey,
+        };
+        // Add provider/model.
+        var llm = getResolvedLlmSelection(rootEl);
+        if (llm && llm.enabled && llm.provider && llm.model) {
+            postData.provider = llm.provider;
+            postData.model = llm.model;
+        }
+
+        var scoreFullText = '';
+        SSE.startStream(sseUrl, postData, {
+            onToken: function(token) {
+                scoreFullText += token;
+            },
+            onDone: function() {
+                var parsed = parseAssistantDecorators(scoreFullText);
+                if (parsed.scoreData) {
+                    handleScoreData(parsed.scoreData, type);
+                }
+                // Remove the "Evaluating..." placeholder.
+                var msgs = document.querySelectorAll('.local-ai-course-assistant__message--assistant');
+                if (msgs.length) {
+                    var last = msgs[msgs.length - 1];
+                    if (last && last.textContent.indexOf('Evaluating your practice') !== -1) {
+                        last.remove();
+                    }
+                }
+                practiceSessionType = null;
+            },
+            onError: function() {
+                practiceSessionType = null;
+            }
+        });
+    };
+
+    /**
+     * Handle parsed score data — show card and save to server.
+     * @param {Object} scoreData
+     * @param {string} type
+     */
+    const handleScoreData = function(scoreData, type) {
+        if (!scoreData || !scoreData.criteria) {
+            return;
+        }
+        // Show score card in chat.
+        var title = type === 'pronunciation' ? 'Pronunciation Practice Score' : 'Conversation Practice Score';
+        UI.showScoreCard(title, scoreData, function() {
+            // "Practice Again" callback.
+            if (type === 'pronunciation') {
+                startPracticeSession('pronunciation');
+                handleELLPronunciation();
+            } else {
+                startPracticeSession('conversation');
+                handlePracticeSpeaking();
+            }
+        });
+
+        // Save to server (best-effort).
+        if (practiceRubricId) {
+            var duration = Math.round((Date.now() - practiceSessionStart) / 1000);
+            Repo.savePracticeScore(
+                courseId,
+                practiceRubricId,
+                type,
+                JSON.stringify(scoreData.criteria),
+                scoreData.overall || 0,
+                scoreData.summary || '',
+                duration
+            ).catch(function() {
+                // Non-critical.
+            });
+        }
+    };
+
+    /**
      * Reset overlay state once a voice session ends or fails.
      */
     const teardownVoiceSessionUi = function() {
+        // Request scoring if a practice session was active.
+        if (practiceSessionType && practiceRubricCriteria) {
+            requestSessionScore();
+        } else {
+            practiceSessionType = null;
+        }
         clearVoiceSession();
         UI.clearSuggestions();
         UI.hideVoiceOverlay();
@@ -4143,11 +4298,12 @@ define([
                     UI.startStreaming(null);
                 }
                 fullText += token;
-                // Strip SOLA_NEXT / SOURCE tags so they never appear in the typewriter.
-                var displayText = fullText.replace(NEXT_BLOCK_RE, '').replace(SOURCE_TAG_RE, '');
+                // Strip SOLA_NEXT / SOURCE / SOLA_SCORE tags so they never appear in the typewriter.
+                var displayText = fullText.replace(NEXT_BLOCK_RE, '').replace(SOURCE_TAG_RE, '').replace(SCORE_BLOCK_RE, '');
                 // Also strip an incomplete opening tag at the very end (still streaming in).
                 displayText = displayText.replace(/\n*\[SOLA_NEXT\][^\[]*$/, '');
                 displayText = displayText.replace(/\n*\[SOURCE[^\]]*$/, '');
+                displayText = displayText.replace(/\n*\[SOLA_SCORE\][^\[]*$/, '');
                 UI.updateStreamContent(displayText);
             },
             onDone: function() {
@@ -4168,6 +4324,10 @@ define([
                         }
                     }
                     recordConversationMessage('assistant', parsed.text, Date.now());
+                    // Handle inline score data if present.
+                    if (parsed.scoreData && practiceSessionType) {
+                        handleScoreData(parsed.scoreData, practiceSessionType);
+                    }
                     if (parsed.suggestions.length) {
                         UI.showSuggestions(parsed.suggestions, handleSuggestionClick);
                     } else if (parsed.text.trim().length > 0) {

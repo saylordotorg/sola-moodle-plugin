@@ -4725,6 +4725,134 @@ define([
         drawer.appendChild(panel);
     };
 
+    /**
+     * Show a practice session score card in the messages area.
+     *
+     * @param {string} title       Card title (e.g. 'Conversation Practice Score')
+     * @param {Object} scoreData   {criteria:[{name,score,feedback},...], overall:N, summary:'...'}
+     * @param {Function=} onRetry  Called when "Practice Again" is clicked
+     */
+    const showScoreCard = function(title, scoreData, onRetry) {
+        if (!messagesContainer || !scoreData || !scoreData.criteria) {
+            return;
+        }
+        var card = document.createElement('div');
+        card.className = 'aica-score-card';
+
+        // Title.
+        var h = document.createElement('div');
+        h.className = 'aica-score-card__title';
+        h.textContent = title || 'Practice Score';
+        card.appendChild(h);
+
+        // Overall score.
+        var overall = scoreData.overall || 0;
+        var overallRow = document.createElement('div');
+        overallRow.className = 'aica-score-card__overall';
+        var overallNum = document.createElement('span');
+        overallNum.className = 'aica-score-card__overall-num';
+        overallNum.textContent = overall;
+        overallRow.appendChild(overallNum);
+        var overallMax = document.createElement('span');
+        overallMax.className = 'aica-score-card__overall-max';
+        overallMax.textContent = ' / 5';
+        overallRow.appendChild(overallMax);
+        card.appendChild(overallRow);
+
+        // Criteria rows.
+        var criteriaWrap = document.createElement('div');
+        criteriaWrap.className = 'aica-score-card__criteria';
+        scoreData.criteria.forEach(function(c) {
+            var row = document.createElement('div');
+            row.className = 'aica-score-card__criterion';
+
+            var nameEl = document.createElement('div');
+            nameEl.className = 'aica-score-card__criterion-name';
+            nameEl.textContent = c.name || '';
+            row.appendChild(nameEl);
+
+            var barWrap = document.createElement('div');
+            barWrap.className = 'aica-score-card__bar-wrap';
+            var bar = document.createElement('div');
+            bar.className = 'aica-score-card__bar';
+            var pct = Math.min(100, Math.max(0, ((c.score || 0) / 5) * 100));
+            bar.style.width = pct + '%';
+            if (pct >= 80) {
+                bar.classList.add('aica-score-card__bar--high');
+            } else if (pct >= 50) {
+                bar.classList.add('aica-score-card__bar--mid');
+            } else {
+                bar.classList.add('aica-score-card__bar--low');
+            }
+            barWrap.appendChild(bar);
+            row.appendChild(barWrap);
+
+            var scoreEl = document.createElement('span');
+            scoreEl.className = 'aica-score-card__criterion-score';
+            scoreEl.textContent = (c.score || 0) + '/5';
+            row.appendChild(scoreEl);
+
+            if (c.feedback) {
+                var fb = document.createElement('div');
+                fb.className = 'aica-score-card__criterion-feedback';
+                fb.textContent = c.feedback;
+                row.appendChild(fb);
+            }
+            criteriaWrap.appendChild(row);
+        });
+        card.appendChild(criteriaWrap);
+
+        // Summary feedback.
+        if (scoreData.summary) {
+            var summary = document.createElement('div');
+            summary.className = 'aica-score-card__summary';
+            summary.textContent = scoreData.summary;
+            card.appendChild(summary);
+        }
+
+        // Encouragement.
+        var encourageEl = document.createElement('div');
+        encourageEl.className = 'aica-score-card__encourage';
+        if (overall >= 4) {
+            encourageEl.textContent = 'Excellent work! Keep it up!';
+        } else if (overall >= 3) {
+            encourageEl.textContent = 'Good progress! Keep practicing to improve.';
+        } else {
+            encourageEl.textContent = 'Every practice session helps you improve. Keep going!';
+        }
+        card.appendChild(encourageEl);
+
+        // Action buttons.
+        var actions = document.createElement('div');
+        actions.className = 'aica-score-card__actions';
+
+        if (onRetry) {
+            var retryBtn = document.createElement('button');
+            retryBtn.type = 'button';
+            retryBtn.className = 'aica-score-card__btn aica-score-card__btn--retry';
+            retryBtn.textContent = 'Practice Again';
+            retryBtn.addEventListener('click', function() {
+                card.remove();
+                onRetry();
+            });
+            actions.appendChild(retryBtn);
+        }
+
+        var doneBtn = document.createElement('button');
+        doneBtn.type = 'button';
+        doneBtn.className = 'aica-score-card__btn aica-score-card__btn--done';
+        doneBtn.textContent = 'Done';
+        doneBtn.addEventListener('click', function() {
+            card.remove();
+        });
+        actions.appendChild(doneBtn);
+
+        card.appendChild(actions);
+
+        appendMessageNode(card);
+        scrollToBottom();
+    };
+
     return {
         initUI: initUI,
         isOpen: isOpen,
@@ -4794,5 +4922,6 @@ define([
         stopMouthSync: stopMouthSync,
         isStartersVisible: isStartersVisible,
         showUserTestingPanel: showUserTestingPanel,
+        showScoreCard: showScoreCard,
     };
 });

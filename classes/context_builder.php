@@ -177,6 +177,9 @@ class context_builder {
         // Append next-steps suggestion instructions.
         $prompt .= self::get_next_steps_instructions();
 
+        // Append practice scoring instructions.
+        $prompt .= self::get_scoring_instructions();
+
         // Append multilingual instructions (with explicit language if set).
         $prompt .= self::get_multilingual_instructions($lang);
 
@@ -668,6 +671,31 @@ class context_builder {
             . "Vary suggestions based on context. Always include exactly 4, separated by ||. "
             . "The [SOLA_NEXT]...[/SOLA_NEXT] block is hidden from the student and must appear "
             . "at the very end of your response with no text after it.";
+    }
+
+    /**
+     * Get practice session scoring instructions.
+     *
+     * When the frontend requests a score at the end of a practice session, it sends
+     * a prompt asking the AI to evaluate using rubric criteria. This instruction block
+     * tells the AI how to format the response using [SOLA_SCORE] tags.
+     *
+     * @return string
+     */
+    private static function get_scoring_instructions(): string {
+        if (!get_config('local_ai_course_assistant', 'practice_scoring_enabled')) {
+            return '';
+        }
+        return "\n\n## Practice Session Scoring\n"
+            . "When asked to score a practice session, evaluate the student's performance using the provided criteria. "
+            . "For each criterion, give a score from 1-5 and brief constructive feedback. "
+            . "Then give an overall score (1-5) and a short encouraging summary. "
+            . "Format your ENTIRE response as:\n"
+            . "[SOLA_SCORE]{\"criteria\":[{\"name\":\"Criterion Name\",\"score\":N,\"feedback\":\"Brief feedback\"},...],"
+            . "\"overall\":N,\"summary\":\"Encouraging summary\"}[/SOLA_SCORE]\n\n"
+            . "The [SOLA_SCORE] block is parsed by the frontend to display a visual score card. "
+            . "Do NOT include any text outside the [SOLA_SCORE]...[/SOLA_SCORE] tags when scoring. "
+            . "Be encouraging and constructive — focus on what the student did well and specific improvements.";
     }
 
     /**
