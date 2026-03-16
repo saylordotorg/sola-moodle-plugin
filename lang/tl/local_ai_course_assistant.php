@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Ang iyong sagot';
 $string['chat:quiz_correct_answer'] = 'Tamang sagot';
 
 $string['chat:starters_label'] = 'Mga panimula ng pakikipag-usap';
-$string['chat:starter_quiz'] = 'I-Quiz Ako';
+$string['chat:starter_quiz'] = 'I-Quiz Ako Dito';
 $string['chat:starter_explain'] = 'Ipaliwanag Ito';
 $string['chat:starter_key_concepts'] = 'Mga Pangunahing Konsepto';
 $string['chat:starter_study_plan'] = 'Plano sa Pag-aaral';
 $string['chat:starter_help_me'] = 'Tulong ng AI';
-$string['chat:starter_ell_practice'] = 'Magsanay ng Pagsasalita';
+$string['chat:starter_ai_project_coach'] = 'AI Project Coach';
+$string['chat:starter_ell_practice'] = 'Pagsasanay sa Pag-uusap';
 $string['chat:starter_ell_pronunciation'] = 'Pagbigkas ng ELL';
 $string['chat:starter_ai_coach'] = 'AI Coach';
 $string['chat:starter_speak'] = 'Sabihin ang isang panimula';

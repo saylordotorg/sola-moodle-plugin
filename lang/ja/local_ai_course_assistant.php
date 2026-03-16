@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = '正解';
 
 // Conversation starters.
 $string['chat:starters_label'] = '会話のきっかけ';
-$string['chat:starter_quiz'] = 'テストする';
+$string['chat:starter_quiz'] = 'これについてテスト';
 $string['chat:starter_explain'] = 'これを説明して';
 $string['chat:starter_key_concepts'] = '重要な概念';
 $string['chat:starter_study_plan'] = '学習計画';
 $string['chat:starter_help_me'] = 'AIヘルプ';
-$string['chat:starter_ell_practice'] = 'スピーキング練習';
+$string['chat:starter_ai_project_coach'] = 'AIプロジェクトコーチ';
+$string['chat:starter_ell_practice'] = '会話練習';
 $string['chat:starter_ell_pronunciation'] = 'ELL発音';
 $string['chat:starter_ai_coach'] = 'AIコーチ';
 $string['chat:starter_speak'] = 'スターターを話す';

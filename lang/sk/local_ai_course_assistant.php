@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = 'Správna odpoveď';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Začiatky konverzácie';
-$string['chat:starter_quiz'] = 'Otestuj ma';
+$string['chat:starter_quiz'] = 'Otestuj ma z tohto';
 $string['chat:starter_explain'] = 'Vysvetli toto';
 $string['chat:starter_key_concepts'] = 'Kľúčové koncepty';
 $string['chat:starter_study_plan'] = 'Študijný plán';
 $string['chat:starter_help_me'] = 'AI pomoc';
-$string['chat:starter_ell_practice'] = 'Cvičte rozprávanie';
+$string['chat:starter_ai_project_coach'] = 'AI projektový kouč';
+$string['chat:starter_ell_practice'] = 'Konverzačné cvičenie';
 $string['chat:starter_ell_pronunciation'] = 'ELL výslovnosť';
 $string['chat:starter_ai_coach'] = 'AI kouč';
 $string['chat:starter_speak'] = 'Povedzte začiatok';

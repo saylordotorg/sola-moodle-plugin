@@ -296,12 +296,13 @@ $string['chat:quiz_your_answer'] = 'Deebii kee';
 $string['chat:quiz_correct_answer'] = 'Deebii sirrii';
 
 $string['chat:starters_label'] = 'Jalqaba haasawaa';
-$string['chat:starter_quiz'] = 'Na Qori';
+$string['chat:starter_quiz'] = 'Kana Na Qori';
 $string['chat:starter_explain'] = 'Kana Ibsi';
 $string['chat:starter_key_concepts'] = 'Yaadota Ijoo';
 $string['chat:starter_study_plan'] = 'Karoora Barumsa';
 $string['chat:starter_help_me'] = 'Gargaarsa AI';
-$string['chat:starter_ell_practice'] = 'Dubbachuu Shaakalee';
+$string['chat:starter_ai_project_coach'] = 'Leenjisaa Pirojektii AI';
+$string['chat:starter_ell_practice'] = 'Shaakala Haasawaa';
 $string['chat:starter_ell_pronunciation'] = 'Dubbifama ELL';
 $string['chat:starter_ai_coach'] = 'Leenjisaa AI';
 $string['chat:starter_speak'] = 'Jalqaba dubbadhu';

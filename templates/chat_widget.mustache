@@ -291,59 +291,52 @@
             {{^hasstarterdata}}
             <button class="local-ai-course-assistant__starter" data-starter="help-page">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Lightbulb ? Help With This Page }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_help_page, local_ai_course_assistant{{/str}}</span>
             </button>
             <button class="local-ai-course-assistant__starter" data-starter="quiz">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Lightning bolt ? Quiz Me }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_quiz, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-starter="study-plan">
-                <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Calendar ? Study Plan }}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 3h-1V1h-2v2H7V1H5v2H4C2.9 5 2 5.9 2 7v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H4V10h16v11zm0-13H4V7h16v1z"/></svg>
-                </span>
-                <span>{{#str}}chat:starter_study_plan, local_ai_course_assistant{{/str}}</span>
-            </button>
             <button class="local-ai-course-assistant__starter" data-starter="ask-anything">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Robot/AI icon ? Ask Anything }}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H4a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M4 15h16v1a7 7 0 0 1-7 7H11a7 7 0 0 1-7-7v-1m3 2v1a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4v-1H7z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ask_anything, local_ai_course_assistant{{/str}}</span>
             </button>
             <button class="local-ai-course-assistant__starter" data-starter="review-practice">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Timer icon ? Review & Practice }}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.73 7.73 0 0 0 12 4a8 8 0 1 0 8 8c0-2.21-.9-4.21-2.03-5.39zm-1.97 9.61A6 6 0 1 1 12 6a6 6 0 0 1 5.06 9.61z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_review_practice, local_ai_course_assistant{{/str}}</span>
             </button>
-            {{#ttsurl}}
-            <button class="local-ai-course-assistant__starter"
-                    data-starter="ell-practice">
+            <button class="local-ai-course-assistant__starter" data-starter="study-plan">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Mic icon ? Practice Speaking }}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-                        <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 3h-1V1h-2v2H7V1H5v2H4C2.9 5 2 5.9 2 7v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H4V10h16v11zm0-13H4V7h16v1z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_study_plan, local_ai_course_assistant{{/str}}</span>
+            </button>
+            <button class="local-ai-course-assistant__starter" data-starter="ai-project-coach">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5c0 0-5 4-5 11.5 0 2.5.5 4 1.5 5.5L10 21l2-3 2 3 1.5-1.5C16.5 18 17 16.5 17 14c0-7.5-5-11.5-5-11.5zm0 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM5 17.5c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4H5zm12 0c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4h-2z"/></svg>
+                </span>
+                <span>{{#str}}chat:starter_ai_project_coach, local_ai_course_assistant{{/str}}</span>
+            </button>
+            {{#ttsurl}}
+            <button class="local-ai-course-assistant__starter" data-starter="ell-practice">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ell_practice, local_ai_course_assistant{{/str}}</span>
             </button>
             {{/ttsurl}}
             {{#ellpronunciationenabled}}
-            <button class="local-ai-course-assistant__starter"
-                    data-starter="ell-pronunciation">
+            <button class="local-ai-course-assistant__starter" data-starter="ell-pronunciation">
                 <span class="aica-starter-icon" aria-hidden="true">
-                    {{! Sound waves icon ? ELL Pronunciation }}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ell_pronunciation, local_ai_course_assistant{{/str}}</span>
             </button>

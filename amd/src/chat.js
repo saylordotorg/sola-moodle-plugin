@@ -1282,6 +1282,7 @@ define([
             'study-plan':   labels ? labels.studyPlan    : null,
             'ask-anything': labels ? labels.askAnything  : null,
             'review-practice': labels ? labels.reviewPractice : null,
+            'ai-project-coach':   labels ? labels.aiProjectCoach   : null,
             'ell-practice':       labels ? labels.ellPractice       : null,
             'ell-pronunciation':  labels ? labels.ellPronunciation  : null,
             // Legacy starter keys.
@@ -1577,6 +1578,11 @@ define([
                 'the key points?';
         }
 
+        if (starterKey === 'ai-project-coach') {
+            return 'I\'d like help with a project or assignment for this course. Can you coach me ' +
+                'through planning, structuring, and completing it? Ask me what I\'m working on first.';
+        }
+
         return '';
     };
 
@@ -1649,6 +1655,9 @@ define([
             'study-plan': 'studyPlan',
             'ask-anything': 'askAnything',
             'review-practice': 'reviewPractice',
+            'ai-project-coach': 'aiProjectCoach',
+            'ell-practice': 'ellPractice',
+            'ell-pronunciation': 'ellPronunciation',
             'help-lesson': 'helpPage',
             'explain': 'helpPage',
             'key-concepts': 'reviewPractice',
@@ -3230,7 +3239,12 @@ define([
                 return;
             }
 
-            const daysSince = Math.max(0, Date.now() - lastSessionTs) / 86400000;
+            const msSince = Math.max(0, Date.now() - lastSessionTs);
+            const hoursSince = msSince / 3600000;
+            if (hoursSince < 1) {
+                return; // Less than 1 hour — skip welcome back
+            }
+            const daysSince = msSince / 86400000;
             if (daysSince > 14) {
                 return; // Too long ago
             }
@@ -4140,7 +4154,12 @@ define([
                     if (parsed.sourceType) {
                         var lastMsgEl = getLastAssistantMessageEl();
                         if (lastMsgEl) {
-                            lastMsgEl.appendChild(createSourcePill(parsed.sourceType, streamMeta, parsed.sourceCmid));
+                            var slot = lastMsgEl.querySelector('.local-ai-course-assistant__msg-source-slot');
+                            if (slot) {
+                                slot.appendChild(createSourcePill(parsed.sourceType, streamMeta, parsed.sourceCmid));
+                            } else {
+                                lastMsgEl.appendChild(createSourcePill(parsed.sourceType, streamMeta, parsed.sourceCmid));
+                            }
                         }
                     }
                     recordConversationMessage('assistant', parsed.text, Date.now());

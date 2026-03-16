@@ -183,12 +183,13 @@ $string['chat:quiz_correct_answer'] = 'תשובה נכונה';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'פתיחות שיחה';
-$string['chat:starter_help_page'] = 'עזרה עם דף זה';
-$string['chat:starter_quiz'] = 'בחן אותי';
+$string['chat:starter_help_page'] = 'עזרה עם זה';
+$string['chat:starter_quiz'] = 'בחן אותי בזה';
 $string['chat:starter_study_plan'] = 'תוכנית לימודים';
 $string['chat:starter_ask_anything'] = 'שאל כל דבר';
 $string['chat:starter_review_practice'] = 'חזרה ותרגול';
-$string['chat:starter_ell_practice'] = 'תרגול דיבור';
+$string['chat:starter_ai_project_coach'] = 'מאמן פרויקט AI';
+$string['chat:starter_ell_practice'] = 'תרגול שיחה';
 $string['chat:starter_ell_pronunciation'] = 'תרגול הגייה';
 $string['chat:starter_speak'] = 'אמור פתיחת שיחה';
 $string['chat:starter_explain'] = 'הסבר את זה';

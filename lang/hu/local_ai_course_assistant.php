@@ -183,12 +183,13 @@ $string['chat:quiz_correct_answer'] = 'Helyes válasz';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Beszélgetésindítók';
-$string['chat:starter_help_page'] = 'Segítség ehhez az oldalhoz';
-$string['chat:starter_quiz'] = 'Tesztelj engem';
+$string['chat:starter_help_page'] = 'Segítség ezzel';
+$string['chat:starter_quiz'] = 'Kérdezz ebből';
 $string['chat:starter_study_plan'] = 'Tanulmányi terv';
 $string['chat:starter_ask_anything'] = 'Kérdezz bármit';
 $string['chat:starter_review_practice'] = 'Ismétlés és gyakorlás';
-$string['chat:starter_ell_practice'] = 'Beszédgyakorlás';
+$string['chat:starter_ai_project_coach'] = 'AI projektvezető';
+$string['chat:starter_ell_practice'] = 'Társalgási gyakorlat';
 $string['chat:starter_ell_pronunciation'] = 'Kiejtés gyakorlás';
 $string['chat:starter_speak'] = 'Mondjon egy indítót';
 $string['chat:starter_explain'] = 'Magyarázd el';

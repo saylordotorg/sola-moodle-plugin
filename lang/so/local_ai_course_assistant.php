@@ -310,12 +310,13 @@ $string['chat:quiz_your_answer'] = 'Jawaabkaaga';
 $string['chat:quiz_correct_answer'] = 'Jawaabta saxda ah';
 
 $string['chat:starters_label'] = 'Biloowga wada-hadalka';
-$string['chat:starter_quiz'] = 'I Imtixaami';
+$string['chat:starter_quiz'] = 'Iga Imtixaami Tan';
 $string['chat:starter_explain'] = 'Kaa Sharax';
 $string['chat:starter_key_concepts'] = 'Fikradaha Muhiimka ah';
 $string['chat:starter_study_plan'] = 'Qorshaha Barashada';
 $string['chat:starter_help_me'] = 'Caawinada AI';
-$string['chat:starter_ell_practice'] = 'Ku Tababar Hadlidda';
+$string['chat:starter_ai_project_coach'] = 'Tababare Mashruuc AI';
+$string['chat:starter_ell_practice'] = 'Tababarka Wada Hadalka';
 $string['chat:starter_ell_pronunciation'] = 'Ku Dhawaaqa ELL';
 $string['chat:starter_ai_coach'] = 'Tababaraha AI';
 $string['chat:starter_speak'] = 'Hadal bilow wada-hadal';

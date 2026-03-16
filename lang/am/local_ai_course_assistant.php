@@ -315,12 +315,13 @@ $string['chat:quiz_correct_answer'] = 'ትክክለኛ መልስ';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'ውይይት ጀማሪዎች';
-$string['chat:starter_quiz'] = 'ፈትናኝ';
+$string['chat:starter_quiz'] = 'በዚህ ፈትናኝ';
 $string['chat:starter_explain'] = 'ይህን አብራሩ';
 $string['chat:starter_key_concepts'] = 'ቁልፍ ፅንሰ-ሐሳቦች';
 $string['chat:starter_study_plan'] = 'የጥናት እቅድ';
 $string['chat:starter_help_me'] = 'AI እርዳታ';
-$string['chat:starter_ell_practice'] = 'ተናገር ለማዘጋጀት';
+$string['chat:starter_ai_project_coach'] = 'የ AI ፕሮጀክት አሰልጣኝ';
+$string['chat:starter_ell_practice'] = 'የውይይት ልምምድ';
 $string['chat:starter_ell_pronunciation'] = 'ELL አጠራር';
 $string['chat:starter_ai_coach'] = 'AI አሰልጣኝ';
 $string['chat:starter_speak'] = 'ጀማሪ ተናገር';

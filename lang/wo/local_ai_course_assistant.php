@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Sa réponse';
 $string['chat:quiz_correct_answer'] = 'Réponse bu dëgëer bi';
 
 $string['chat:starters_label'] = 'Jëge wax-ak-wax';
-$string['chat:starter_quiz'] = 'Ëntërviy Ma';
+$string['chat:starter_quiz'] = 'Ëntërviy Ma ci Bii';
 $string['chat:starter_explain'] = 'Fëkk Li';
 $string['chat:starter_key_concepts'] = 'Xelam Yu Xorom';
 $string['chat:starter_study_plan'] = 'Plan Jàng';
 $string['chat:starter_help_me'] = 'Ndimmal AI';
-$string['chat:starter_ell_practice'] = 'Jéef Wax';
+$string['chat:starter_ai_project_coach'] = 'AI Projet Njiit';
+$string['chat:starter_ell_practice'] = 'Jéef Waxtaan';
 $string['chat:starter_ell_pronunciation'] = 'Liggéey Yégël ELL';
 $string['chat:starter_ai_coach'] = 'Coach AI';
 $string['chat:starter_speak'] = 'Wax jëge bi';

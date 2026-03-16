@@ -303,12 +303,13 @@ $string['chat:quiz_correct_answer'] = 'Azịza ziri ezi';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Ndị na-amalite mkparịta ụka';
-$string['chat:starter_quiz'] = 'Nwaa M Ule';
+$string['chat:starter_quiz'] = 'Nwaa M Ule na Nke A';
 $string['chat:starter_explain'] = 'Kọwa Nke a';
 $string['chat:starter_key_concepts'] = 'Echiche Isi';
 $string['chat:starter_study_plan'] = 'Atụmatụ Mmụta';
 $string['chat:starter_help_me'] = 'Enyemaka AI';
-$string['chat:starter_ell_practice'] = 'Mụọ Ịkwu Okwu';
+$string['chat:starter_ai_project_coach'] = 'Onye Nkuzi Ọrụ AI';
+$string['chat:starter_ell_practice'] = 'Mmụta Mkparịta Ụka';
 $string['chat:starter_ell_pronunciation'] = 'Mkpọ Okwu ELL';
 $string['chat:starter_ai_coach'] = 'Onye Nkuzi AI';
 $string['chat:starter_speak'] = 'Kwuo ihe mmụ ọrụ';

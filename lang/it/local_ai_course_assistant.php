@@ -183,12 +183,13 @@ $string['chat:quiz_correct_answer'] = 'Risposta corretta';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Avvii di conversazione';
-$string['chat:starter_help_page'] = 'Aiuto con questa pagina';
-$string['chat:starter_quiz'] = 'Mettimi alla prova';
+$string['chat:starter_help_page'] = 'Aiuto con questo';
+$string['chat:starter_quiz'] = 'Testami su questo';
 $string['chat:starter_study_plan'] = 'Piano di studio';
 $string['chat:starter_ask_anything'] = 'Chiedi qualsiasi cosa';
 $string['chat:starter_review_practice'] = 'Ripasso e pratica';
-$string['chat:starter_ell_practice'] = 'Pratica del parlato';
+$string['chat:starter_ai_project_coach'] = 'Coach progetto AI';
+$string['chat:starter_ell_practice'] = 'Pratica di conversazione';
 $string['chat:starter_ell_pronunciation'] = 'Pratica pronuncia';
 $string['chat:starter_speak'] = 'Pronuncia un avvio';
 $string['chat:starter_explain'] = 'Spiega questo';

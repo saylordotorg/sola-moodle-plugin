@@ -1475,9 +1475,15 @@ define([
 
         el.appendChild(content);
 
-        // Add action buttons (copy + bookmark + optional speak) to assistant messages.
+        // Add footer row (source pill slot + action buttons) to assistant messages.
         if (role === 'assistant') {
-            el.appendChild(createMsgActions(content, el, onSpeak, text));
+            var footer = document.createElement('div');
+            footer.className = 'local-ai-course-assistant__msg-footer';
+            var sourceSlot = document.createElement('div');
+            sourceSlot.className = 'local-ai-course-assistant__msg-source-slot';
+            footer.appendChild(sourceSlot);
+            footer.appendChild(createMsgActions(content, el, onSpeak, text));
+            el.appendChild(footer);
         }
 
         // Edit button on user messages — only visible on the most-recent one.
@@ -1730,24 +1736,34 @@ define([
             const content = streamingEl.querySelector('.local-ai-course-assistant__message-content');
             content.innerHTML = Markdown.render(fullText);
 
-            // Find existing msg-actions (created by addMessage('assistant',''))
-            // or create fresh if somehow absent.
-            let actions = streamingEl.querySelector('.local-ai-course-assistant__msg-actions');
-            if (!actions) {
-                actions = createMsgActions(content, streamingEl, onSpeak, fullText);
-                streamingEl.appendChild(actions);
-            } else if (onSpeak && !actions.querySelector('.local-ai-course-assistant__btn-speak')) {
-                // Actions div exists but has no speak button yet — add one.
-                const capturedEl = streamingEl;
-                const speakBtn = document.createElement('button');
-                speakBtn.className = 'local-ai-course-assistant__btn-speak';
-                speakBtn.setAttribute('aria-label', 'Read aloud');
-                speakBtn.setAttribute('title', 'Read aloud');
-                speakBtn.innerHTML = SPEAK_SVG;
-                speakBtn.addEventListener('click', function() {
-                    onSpeak(content.textContent || '', capturedEl, speakBtn);
-                });
-                actions.appendChild(speakBtn);
+            // Ensure footer wrapper exists (source slot + action buttons).
+            let footer = streamingEl.querySelector('.local-ai-course-assistant__msg-footer');
+            if (!footer) {
+                footer = document.createElement('div');
+                footer.className = 'local-ai-course-assistant__msg-footer';
+                var sourceSlot = document.createElement('div');
+                sourceSlot.className = 'local-ai-course-assistant__msg-source-slot';
+                footer.appendChild(sourceSlot);
+                footer.appendChild(createMsgActions(content, streamingEl, onSpeak, fullText));
+                streamingEl.appendChild(footer);
+            } else {
+                // Footer exists — ensure speak button is present.
+                let actions = footer.querySelector('.local-ai-course-assistant__msg-actions');
+                if (!actions) {
+                    actions = createMsgActions(content, streamingEl, onSpeak, fullText);
+                    footer.appendChild(actions);
+                } else if (onSpeak && !actions.querySelector('.local-ai-course-assistant__btn-speak')) {
+                    const capturedEl = streamingEl;
+                    const speakBtn = document.createElement('button');
+                    speakBtn.className = 'local-ai-course-assistant__btn-speak';
+                    speakBtn.setAttribute('aria-label', 'Read aloud');
+                    speakBtn.setAttribute('title', 'Read aloud');
+                    speakBtn.innerHTML = SPEAK_SVG;
+                    speakBtn.addEventListener('click', function() {
+                        onSpeak(content.textContent || '', capturedEl, speakBtn);
+                    });
+                    actions.appendChild(speakBtn);
+                }
             }
 
             streamingEl = null;
@@ -2528,7 +2544,10 @@ define([
 
                 entry.appendChild(meta);
                 entry.appendChild(text);
-                // Show source link if bookmark has one.
+
+                // Footer row: source link left, action buttons right.
+                var entryFooter = document.createElement('div');
+                entryFooter.className = 'aica-history-panel__footer';
                 if (item.source) {
                     var srcEl;
                     if (item.sourceHref) {
@@ -2541,9 +2560,14 @@ define([
                     }
                     srcEl.className = 'aica-history-panel__source';
                     srcEl.textContent = item.source;
-                    entry.appendChild(srcEl);
+                    entryFooter.appendChild(srcEl);
+                } else {
+                    // Empty spacer for alignment.
+                    var spacer = document.createElement('div');
+                    entryFooter.appendChild(spacer);
                 }
-                entry.appendChild(actions);
+                entryFooter.appendChild(actions);
+                entry.appendChild(entryFooter);
                 list.appendChild(entry);
             });
             return;

@@ -183,12 +183,13 @@ $string['chat:quiz_correct_answer'] = 'Σωστή απάντηση';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Αρχικές ερωτήσεις';
-$string['chat:starter_help_page'] = 'Βοήθεια με αυτή τη σελίδα';
-$string['chat:starter_quiz'] = 'Δοκίμασέ με';
+$string['chat:starter_help_page'] = 'Βοήθεια με αυτό';
+$string['chat:starter_quiz'] = 'Εξέτασέ με σε αυτό';
 $string['chat:starter_study_plan'] = 'Σχέδιο Μελέτης';
 $string['chat:starter_ask_anything'] = 'Ρωτήστε ό,τι θέλετε';
 $string['chat:starter_review_practice'] = 'Επανάληψη και Εξάσκηση';
-$string['chat:starter_ell_practice'] = 'Εξάσκηση Ομιλίας';
+$string['chat:starter_ai_project_coach'] = 'AI Project Coach';
+$string['chat:starter_ell_practice'] = 'Εξάσκηση Συνομιλίας';
 $string['chat:starter_ell_pronunciation'] = 'Εξάσκηση Προφοράς';
 $string['chat:starter_speak'] = 'Πείτε μια εισαγωγική φράση';
 $string['chat:starter_explain'] = 'Εξήγησε αυτό';

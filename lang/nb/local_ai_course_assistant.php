@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = 'Riktig svar';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Samtalestartere';
-$string['chat:starter_quiz'] = 'Test meg';
+$string['chat:starter_quiz'] = 'Test meg på dette';
 $string['chat:starter_explain'] = 'Forklar dette';
 $string['chat:starter_key_concepts'] = 'Nøkkelkonsepter';
 $string['chat:starter_study_plan'] = 'Studieplan';
 $string['chat:starter_help_me'] = 'AI-hjelp';
-$string['chat:starter_ell_practice'] = 'Øve på å snakke';
+$string['chat:starter_ai_project_coach'] = 'AI-prosjektveileder';
+$string['chat:starter_ell_practice'] = 'Samtaleøvelse';
 $string['chat:starter_ell_pronunciation'] = 'ELL-uttale';
 $string['chat:starter_ai_coach'] = 'AI-coach';
 $string['chat:starter_speak'] = 'Si en starter';

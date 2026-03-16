@@ -288,11 +288,12 @@ $string['chat:quiz_correct_answer'] = 'Doğru yanıt';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Konuşma başlatıcılar';
-$string['chat:starter_quiz'] = 'Beni test et';
+$string['chat:starter_quiz'] = 'Bunu bana sor';
 $string['chat:starter_explain'] = 'Bunu açıkla';
 $string['chat:starter_key_concepts'] = 'Temel kavramlar';
 $string['chat:starter_study_plan'] = 'Çalışma planı';
 $string['chat:starter_help_me'] = 'AI yardım';
+$string['chat:starter_ai_project_coach'] = 'AI Proje Koçu';
 $string['chat:starter_ell_practice'] = 'Konuşma pratiği';
 $string['chat:starter_ell_pronunciation'] = 'ELL telaffuz';
 $string['chat:starter_ai_coach'] = 'AI koç';

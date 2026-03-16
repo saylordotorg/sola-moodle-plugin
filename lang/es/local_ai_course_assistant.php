@@ -315,12 +315,13 @@ $string['chat:quiz_correct_answer'] = 'Respuesta correcta';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Iniciadores de conversación';
-$string['chat:starter_quiz'] = 'Ponme a prueba';
+$string['chat:starter_quiz'] = 'Examíname sobre esto';
 $string['chat:starter_explain'] = 'Explícame esto';
 $string['chat:starter_key_concepts'] = 'Conceptos clave';
 $string['chat:starter_study_plan'] = 'Plan de estudio';
 $string['chat:starter_help_me'] = 'Ayuda con IA';
-$string['chat:starter_ell_practice'] = 'Practicar conversación';
+$string['chat:starter_ai_project_coach'] = 'Coach de proyecto IA';
+$string['chat:starter_ell_practice'] = 'Práctica de conversación';
 $string['chat:starter_ell_pronunciation'] = 'Pronunciación ELL';
 $string['chat:starter_ai_coach'] = 'Entrenador IA';
 $string['chat:starter_speak'] = 'Hablar un iniciador';

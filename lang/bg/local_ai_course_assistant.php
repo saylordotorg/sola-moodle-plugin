@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = 'Правилен отговор';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Начала на разговор';
-$string['chat:starter_quiz'] = 'Тествайте ме';
+$string['chat:starter_quiz'] = 'Тествай ме по това';
 $string['chat:starter_explain'] = 'Обяснете това';
 $string['chat:starter_key_concepts'] = 'Ключови концепции';
 $string['chat:starter_study_plan'] = 'Учебен план';
 $string['chat:starter_help_me'] = 'AI помощ';
-$string['chat:starter_ell_practice'] = 'Практикуване на говорене';
+$string['chat:starter_ai_project_coach'] = 'AI проектен треньор';
+$string['chat:starter_ell_practice'] = 'Практика на разговор';
 $string['chat:starter_ell_pronunciation'] = 'Произношение ELL';
 $string['chat:starter_ai_coach'] = 'AI треньор';
 $string['chat:starter_speak'] = 'Кажете начало';

@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Sua resposta';
 $string['chat:quiz_correct_answer'] = 'Resposta correta';
 
 $string['chat:starters_label'] = 'Iniciadores de conversa';
-$string['chat:starter_quiz'] = 'Me Teste';
+$string['chat:starter_quiz'] = 'Teste-me Sobre Isto';
 $string['chat:starter_explain'] = 'Explique Isso';
 $string['chat:starter_key_concepts'] = 'Conceitos-Chave';
 $string['chat:starter_study_plan'] = 'Plano de Estudos';
 $string['chat:starter_help_me'] = 'Ajuda com IA';
-$string['chat:starter_ell_practice'] = 'Praticar Fala';
+$string['chat:starter_ai_project_coach'] = 'Coach de Projeto IA';
+$string['chat:starter_ell_practice'] = 'Prática de Conversação';
 $string['chat:starter_ell_pronunciation'] = 'Pronúncia ELL';
 $string['chat:starter_ai_coach'] = 'Coach de IA';
 $string['chat:starter_speak'] = 'Falar um iniciador';

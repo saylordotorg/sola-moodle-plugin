@@ -183,12 +183,13 @@ $string['chat:quiz_correct_answer'] = 'Правильна відповідь';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Початки розмови';
-$string['chat:starter_help_page'] = 'Допомога з цією сторінкою';
-$string['chat:starter_quiz'] = 'Перевір мене';
+$string['chat:starter_help_page'] = 'Допомога з цим';
+$string['chat:starter_quiz'] = 'Перевір мене з цього';
 $string['chat:starter_study_plan'] = 'Навчальний план';
 $string['chat:starter_ask_anything'] = 'Запитайте будь-що';
 $string['chat:starter_review_practice'] = 'Повторення та практика';
-$string['chat:starter_ell_practice'] = 'Практика мовлення';
+$string['chat:starter_ai_project_coach'] = 'Тренер AI-проєкту';
+$string['chat:starter_ell_practice'] = 'Практика розмови';
 $string['chat:starter_ell_pronunciation'] = 'Практика вимови';
 $string['chat:starter_speak'] = 'Скажіть стартове повідомлення';
 $string['chat:starter_explain'] = 'Поясни це';

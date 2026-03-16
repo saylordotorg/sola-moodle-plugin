@@ -286,12 +286,13 @@ $string['chat:quiz_correct_answer'] = 'সঠিক উত্তর';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'কথোপকথনের সূচনা';
-$string['chat:starter_quiz'] = 'আমাকে পরীক্ষা করুন';
+$string['chat:starter_quiz'] = 'এটা নিয়ে পরীক্ষা করুন';
 $string['chat:starter_explain'] = 'এটি ব্যাখ্যা করুন';
 $string['chat:starter_key_concepts'] = 'মূল ধারণাসমূহ';
 $string['chat:starter_study_plan'] = 'অধ্যয়ন পরিকল্পনা';
 $string['chat:starter_help_me'] = 'AI সাহায্য';
-$string['chat:starter_ell_practice'] = 'কথা বলার অনুশীলন';
+$string['chat:starter_ai_project_coach'] = 'AI প্রকল্প প্রশিক্ষক';
+$string['chat:starter_ell_practice'] = 'কথোপকথন অনুশীলন';
 $string['chat:starter_ell_pronunciation'] = 'ELL উচ্চারণ';
 $string['chat:starter_ai_coach'] = 'AI কোচ';
 $string['chat:starter_speak'] = 'সূচনা বলুন';

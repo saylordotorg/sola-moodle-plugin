@@ -316,12 +316,13 @@ $string['chat:quiz_correct_answer'] = 'Jaabi tiɲɛ';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Kumakan daminɛ';
-$string['chat:starter_quiz'] = 'N Ɲɛti';
+$string['chat:starter_quiz'] = 'N Ɲɛti Nin Na';
 $string['chat:starter_explain'] = 'Nin Yɛlɛn';
 $string['chat:starter_key_concepts'] = 'Kunnafoni Gɛlɛnw';
 $string['chat:starter_study_plan'] = 'Kalan Jɛkulu';
 $string['chat:starter_help_me'] = 'AI Dɛmɛ';
-$string['chat:starter_ell_practice'] = 'Kuma Jɛkuluya';
+$string['chat:starter_ai_project_coach'] = 'AI Porozɛ Karamɔgɔ';
+$string['chat:starter_ell_practice'] = 'Kuma Lakodɔnni';
 $string['chat:starter_ell_pronunciation'] = 'ELL Lafɔli';
 $string['chat:starter_ai_coach'] = 'AI Karamɔgɔ';
 $string['chat:starter_speak'] = 'Daminɛ fɔ';

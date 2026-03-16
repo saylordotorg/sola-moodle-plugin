@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = '정답';
 
 // Conversation starters.
 $string['chat:starters_label'] = '대화 시작하기';
-$string['chat:starter_quiz'] = '테스트하기';
+$string['chat:starter_quiz'] = '이것에 대해 테스트';
 $string['chat:starter_explain'] = '이것을 설명해 줘';
 $string['chat:starter_key_concepts'] = '핵심 개념';
 $string['chat:starter_study_plan'] = '학습 계획';
 $string['chat:starter_help_me'] = 'AI 도움';
-$string['chat:starter_ell_practice'] = '말하기 연습';
+$string['chat:starter_ai_project_coach'] = 'AI 프로젝트 코치';
+$string['chat:starter_ell_practice'] = '대화 연습';
 $string['chat:starter_ell_pronunciation'] = 'ELL 발음';
 $string['chat:starter_ai_coach'] = 'AI 코치';
 $string['chat:starter_speak'] = '시작 문구 말하기';

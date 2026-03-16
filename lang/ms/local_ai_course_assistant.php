@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Jawapan anda';
 $string['chat:quiz_correct_answer'] = 'Jawapan betul';
 
 $string['chat:starters_label'] = 'Pemula perbualan';
-$string['chat:starter_quiz'] = 'Uji Saya';
+$string['chat:starter_quiz'] = 'Uji Saya Tentang Ini';
 $string['chat:starter_explain'] = 'Terangkan Ini';
 $string['chat:starter_key_concepts'] = 'Konsep Utama';
 $string['chat:starter_study_plan'] = 'Pelan Pembelajaran';
 $string['chat:starter_help_me'] = 'Bantuan AI';
-$string['chat:starter_ell_practice'] = 'Latihan Bertutur';
+$string['chat:starter_ai_project_coach'] = 'Jurulatih Projek AI';
+$string['chat:starter_ell_practice'] = 'Latihan Perbualan';
 $string['chat:starter_ell_pronunciation'] = 'Sebutan ELL';
 $string['chat:starter_ai_coach'] = 'Jurulatih AI';
 $string['chat:starter_speak'] = 'Sebut pemula';

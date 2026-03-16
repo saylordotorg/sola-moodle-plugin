@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Jibu lako';
 $string['chat:quiz_correct_answer'] = 'Jibu sahihi';
 
 $string['chat:starters_label'] = 'Vianzio vya mazungumzo';
-$string['chat:starter_quiz'] = 'Nifanye Mtihani';
+$string['chat:starter_quiz'] = 'Nifanye Mtihani wa Hii';
 $string['chat:starter_explain'] = 'Eleza Hili';
 $string['chat:starter_key_concepts'] = 'Dhana Muhimu';
 $string['chat:starter_study_plan'] = 'Mpango wa Masomo';
 $string['chat:starter_help_me'] = 'Msaada wa AI';
-$string['chat:starter_ell_practice'] = 'Fanya Mazoezi ya Kuzungumza';
+$string['chat:starter_ai_project_coach'] = 'Mkufunzi wa Mradi wa AI';
+$string['chat:starter_ell_practice'] = 'Mazoezi ya Mazungumzo';
 $string['chat:starter_ell_pronunciation'] = 'Matamshi ya ELL';
 $string['chat:starter_ai_coach'] = 'Kocha wa AI';
 $string['chat:starter_speak'] = 'Sema kianzio';

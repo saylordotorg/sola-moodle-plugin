@@ -317,12 +317,13 @@ $string['chat:quiz_correct_answer'] = 'Jawaban yang benar';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Pembuka percakapan';
-$string['chat:starter_quiz'] = 'Uji Saya';
+$string['chat:starter_quiz'] = 'Uji Saya Tentang Ini';
 $string['chat:starter_explain'] = 'Jelaskan Ini';
 $string['chat:starter_key_concepts'] = 'Konsep Utama';
 $string['chat:starter_study_plan'] = 'Rencana Belajar';
 $string['chat:starter_help_me'] = 'Bantuan AI';
-$string['chat:starter_ell_practice'] = 'Latihan Berbicara';
+$string['chat:starter_ai_project_coach'] = 'Pelatih Proyek AI';
+$string['chat:starter_ell_practice'] = 'Latihan Percakapan';
 $string['chat:starter_ell_pronunciation'] = 'Pengucapan ELL';
 $string['chat:starter_ai_coach'] = 'Pelatih AI';
 $string['chat:starter_speak'] = 'Ucapkan pembuka';

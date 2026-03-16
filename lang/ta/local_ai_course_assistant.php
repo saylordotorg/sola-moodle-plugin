@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'உங்கள் பதில்';
 $string['chat:quiz_correct_answer'] = 'சரியான பதில்';
 
 $string['chat:starters_label'] = 'உரையாடல் தொடக்கங்கள்';
-$string['chat:starter_quiz'] = 'என்னை சோதி';
+$string['chat:starter_quiz'] = 'இதில் என்னை சோதி';
 $string['chat:starter_explain'] = 'இதை விளக்கு';
 $string['chat:starter_key_concepts'] = 'முக்கிய கருத்துகள்';
 $string['chat:starter_study_plan'] = 'படிப்பு திட்டம்';
 $string['chat:starter_help_me'] = 'AI உதவி';
-$string['chat:starter_ell_practice'] = 'பேசும் பயிற்சி';
+$string['chat:starter_ai_project_coach'] = 'AI திட்ட பயிற்சியாளர்';
+$string['chat:starter_ell_practice'] = 'உரையாடல் பயிற்சி';
 $string['chat:starter_ell_pronunciation'] = 'ELL உச்சரிப்பு';
 $string['chat:starter_ai_coach'] = 'AI பயிற்சியாளர்';
 $string['chat:starter_speak'] = 'தொடக்கத்தை பேசுங்கள்';

@@ -542,9 +542,21 @@ a.aica-source-pill svg {
 a.aica-source-pill:hover svg {
     opacity: 1;
 }
-/* Source pill sits above the action buttons in normal flow */
-.local-ai-course-assistant__message--assistant .aica-source-pill {
-    margin-bottom: 2px;
+/* Footer row: source pill left, action buttons right */
+.local-ai-course-assistant__msg-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    min-height: 24px;
+}
+.local-ai-course-assistant__msg-source-slot {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.local-ai-course-assistant__msg-source-slot .aica-source-pill {
+    margin-top: 0;
+    margin-left: 0;
 }
 
 
@@ -861,7 +873,7 @@ a.aica-source-pill:hover svg {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 10px;
+    flex-shrink: 0;
 }
 
 .aica-history-panel__action {
@@ -885,13 +897,19 @@ a.aica-source-pill:hover svg {
     text-align: center;
 }
 
+.aica-history-panel__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    gap: 8px;
+}
 .aica-history-panel__source {
     display: inline-block;
     font-size: 11px;
     font-weight: 500;
     padding: 2px 6px;
     border-radius: 3px;
-    margin-bottom: 4px;
     background: #e3f2fd;
     color: #1565c0;
     text-decoration: none;
@@ -2460,7 +2478,7 @@ a.aica-history-panel__source:hover {
     display: flex;
     gap: 3px;
     justify-content: flex-end;
-    margin-top: 4px;
+    flex-shrink: 0;
     opacity: 0;
     transition: opacity 0.15s;
 }

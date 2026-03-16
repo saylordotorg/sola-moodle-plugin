@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = 'Ìdáhùn rẹ';
 $string['chat:quiz_correct_answer'] = 'Ìdáhùn tó tọ̀';
 
 $string['chat:starters_label'] = 'Àwọn ìpilẹ̀ṣẹ̀ ìjíròrò';
-$string['chat:starter_quiz'] = 'Dánwò Mi';
+$string['chat:starter_quiz'] = 'Dánwò Mi Lórí Èyí';
 $string['chat:starter_explain'] = 'Ṣàlàyé Èyí';
 $string['chat:starter_key_concepts'] = 'Àwọn Èrò Pàtàkì';
 $string['chat:starter_study_plan'] = 'Ètò Ìkẹ́kọ̀ọ́';
 $string['chat:starter_help_me'] = 'Àrànmọ́ AI';
-$string['chat:starter_ell_practice'] = 'Ìdárayá Ìsọ̀rọ̀';
+$string['chat:starter_ai_project_coach'] = 'Olùkọ́ Iṣẹ́ Àkànṣe AI';
+$string['chat:starter_ell_practice'] = 'Ìdánilẹ́kọ̀ọ́ Ìfọ̀rọ̀wánilẹ́nuwò';
 $string['chat:starter_ell_pronunciation'] = 'Ìdárayá Pípè ELL';
 $string['chat:starter_ai_coach'] = 'Olùkọ́ AI';
 $string['chat:starter_speak'] = 'Sọ ìpilẹ̀ṣẹ̀ kan';

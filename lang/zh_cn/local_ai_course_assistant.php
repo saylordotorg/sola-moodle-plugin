@@ -314,12 +314,13 @@ $string['chat:quiz_your_answer'] = '你的答案';
 $string['chat:quiz_correct_answer'] = '正确答案';
 
 $string['chat:starters_label'] = '对话开始建议';
-$string['chat:starter_quiz'] = '测验我';
+$string['chat:starter_quiz'] = '测验我这个';
 $string['chat:starter_explain'] = '解释这个';
 $string['chat:starter_key_concepts'] = '关键概念';
 $string['chat:starter_study_plan'] = '学习计划';
 $string['chat:starter_help_me'] = 'AI 帮助';
-$string['chat:starter_ell_practice'] = '口语练习';
+$string['chat:starter_ai_project_coach'] = 'AI项目教练';
+$string['chat:starter_ell_practice'] = '对话练习';
 $string['chat:starter_ell_pronunciation'] = 'ELL 发音练习';
 $string['chat:starter_ai_coach'] = 'AI 辅导';
 $string['chat:starter_speak'] = '朗读开始语';

@@ -288,12 +288,13 @@ $string['chat:quiz_correct_answer'] = 'Oikea vastaus';
 
 // Conversation starters.
 $string['chat:starters_label'] = 'Keskustelun aloitukset';
-$string['chat:starter_quiz'] = 'Testaa minua';
+$string['chat:starter_quiz'] = 'Testaa minua tästä';
 $string['chat:starter_explain'] = 'Selitä tämä';
 $string['chat:starter_key_concepts'] = 'Avainkäsitteet';
 $string['chat:starter_study_plan'] = 'Opiskelusuunnitelma';
 $string['chat:starter_help_me'] = 'AI-apu';
-$string['chat:starter_ell_practice'] = 'Harjoittele puhumista';
+$string['chat:starter_ai_project_coach'] = 'AI-projektivalmentaja';
+$string['chat:starter_ell_practice'] = 'Keskusteluharjoitus';
 $string['chat:starter_ell_pronunciation'] = 'ELL-ääntäminen';
 $string['chat:starter_ai_coach'] = 'AI-valmentaja';
 $string['chat:starter_speak'] = 'Sano aloitus';
