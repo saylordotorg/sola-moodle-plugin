@@ -1117,6 +1117,11 @@ define([
 
         activeBottomMode = normalized;
         UI.setBottomMode(normalized);
+
+        // Re-clicking Chat tab (force=true) shows conversation starters.
+        if (normalized === 'chat' && options.force) {
+            UI.showStarters();
+        }
         if (normalized === 'voice') {
             syncVoicePanel();
         } else if (normalized === 'history') {
