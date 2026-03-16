@@ -1886,7 +1886,7 @@ define([
         return true;
     };
 
-    const toggleBookmark = function(text, btn) {
+    const toggleBookmark = function(text, btn, sourceInfo) {
         if (!text) {
             return;
         }
@@ -1897,7 +1897,14 @@ define([
             setBookmarkButtonState(btn, false);
             showNotification('Removed from saved responses');
         } else {
-            bmarks.push({text: text, saved_at: Date.now()});
+            var entry = {text: text, saved_at: Date.now()};
+            if (sourceInfo && sourceInfo.label) {
+                entry.source = sourceInfo.label;
+                if (sourceInfo.href) {
+                    entry.sourceHref = sourceInfo.href;
+                }
+            }
+            bmarks.push(entry);
             saveBookmarks();
             syncBookmarkButtonsForText(text, true);
             setBookmarkButtonState(btn, true);
@@ -1985,16 +1992,15 @@ define([
         bookmarkBtn.innerHTML = BOOKMARK_SVG;
         bookmarkBtn.addEventListener('click', function() {
             // Extract source link info from the message's source pill if present.
+            var sourceInfo = null;
             var msgEl = el || content.closest('.local-ai-course-assistant__message');
             if (msgEl) {
                 var pill = msgEl.querySelector('.aica-source-pill');
                 if (pill) {
-                    // Source info is available but toggleBookmark doesn't use it in the
-                    // new history-panel approach; kept for future use if needed.
-                    void (pill.textContent);
+                    sourceInfo = {label: pill.textContent, href: pill.href || ''};
                 }
             }
-            toggleBookmark(content.textContent || '', bookmarkBtn);
+            toggleBookmark(content.textContent || '', bookmarkBtn, sourceInfo);
         });
         actions.appendChild(bookmarkBtn);
 
@@ -2522,6 +2528,21 @@ define([
 
                 entry.appendChild(meta);
                 entry.appendChild(text);
+                // Show source link if bookmark has one.
+                if (item.source) {
+                    var srcEl;
+                    if (item.sourceHref) {
+                        srcEl = document.createElement('a');
+                        srcEl.href = item.sourceHref;
+                        srcEl.target = '_blank';
+                        srcEl.rel = 'noopener';
+                    } else {
+                        srcEl = document.createElement('span');
+                    }
+                    srcEl.className = 'aica-history-panel__source';
+                    srcEl.textContent = item.source;
+                    entry.appendChild(srcEl);
+                }
                 entry.appendChild(actions);
                 list.appendChild(entry);
             });

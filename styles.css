@@ -419,7 +419,7 @@
 
 .local-ai-course-assistant__message--assistant {
     align-self: flex-start;
-    position: relative; /* anchor for the absolute speak button */
+    position: relative;
 }
 
 .local-ai-course-assistant__message-content {
@@ -542,10 +542,9 @@ a.aica-source-pill svg {
 a.aica-source-pill:hover svg {
     opacity: 1;
 }
-/* Extra bottom padding when source pill is present so msg-actions buttons
-   (copy/bookmark/TTS) don't overlap with the pill. */
+/* Source pill sits above the action buttons in normal flow */
 .local-ai-course-assistant__message--assistant .aica-source-pill {
-    margin-bottom: 22px;
+    margin-bottom: 2px;
 }
 
 
@@ -884,6 +883,22 @@ a.aica-source-pill:hover svg {
 .aica-history-panel__empty {
     padding: 18px 6px;
     text-align: center;
+}
+
+.aica-history-panel__source {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    background: #e3f2fd;
+    color: #1565c0;
+    text-decoration: none;
+}
+a.aica-history-panel__source:hover {
+    text-decoration: underline;
+    opacity: 0.85;
 }
 
 /* Footer feedback link */
@@ -2437,16 +2452,15 @@ a.aica-source-pill:hover svg {
 }
 
 /* =========================================================
-   Message action buttons (copy + speak)
-   Absolutely positioned at bottom-right of assistant message
+   Message action buttons (copy + bookmark + speak)
+   Inline at bottom-right of assistant message
    ========================================================= */
 
 .local-ai-course-assistant__msg-actions {
-    position: absolute;
-    bottom: 5px;
-    right: 6px;
     display: flex;
     gap: 3px;
+    justify-content: flex-end;
+    margin-top: 4px;
     opacity: 0;
     transition: opacity 0.15s;
 }

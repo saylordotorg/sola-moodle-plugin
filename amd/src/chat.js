@@ -3734,7 +3734,6 @@ define([
         }
         UI.showIntroModal(function() {
             markIntroDismissed(root);
-            UI.hideStarters();
         });
     };
 
@@ -4125,7 +4124,12 @@ define([
                     UI.startStreaming(null);
                 }
                 fullText += token;
-                UI.updateStreamContent(fullText);
+                // Strip SOLA_NEXT / SOURCE tags so they never appear in the typewriter.
+                var displayText = fullText.replace(NEXT_BLOCK_RE, '').replace(SOURCE_TAG_RE, '');
+                // Also strip an incomplete opening tag at the very end (still streaming in).
+                displayText = displayText.replace(/\n*\[SOLA_NEXT\][^\[]*$/, '');
+                displayText = displayText.replace(/\n*\[SOURCE[^\]]*$/, '');
+                UI.updateStreamContent(displayText);
             },
             onDone: function() {
                 UI.showTyping(false);
