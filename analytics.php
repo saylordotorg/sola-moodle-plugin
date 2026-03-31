@@ -447,6 +447,6 @@ foreach ($all_courses as $c) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('local_ai_course_assistant/analytics_dashboard', $templatedata);
 echo $OUTPUT->render_from_template('local_ai_course_assistant/analytics_tabs', ['courses' => $tabscourses]);
+echo $OUTPUT->render_from_template('local_ai_course_assistant/analytics_dashboard', $templatedata);
 echo $OUTPUT->footer();
