@@ -4517,7 +4517,7 @@ a.aica-history-panel__source:hover {
     text-align: center;
     min-width: 120px;
 }
-.sola-stat-value { font-size: 1.5rem; font-weight: 700; color: #173140; line-height: 1.2; }
+.sola-stat-value { font-size: 1.5rem; font-weight: 700; color: #023e8a; line-height: 1.2; }
 .sola-stat-label { font-size: .75rem; color: #868e96; margin-top: .2rem; text-transform: uppercase; letter-spacing: .03em; }
 .sola-analytics-table th { font-size: .8rem; text-transform: uppercase; color: #868e96; letter-spacing: .03em; }
 .sola-analytics-panes canvas { max-width: 100%; }

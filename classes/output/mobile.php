@@ -129,7 +129,7 @@ class mobile {
         <div *ngFor="let msg of messages" style="display:flex;margin-bottom:8px;"
              [style.justify-content]="msg.role === 'user' ? 'flex-end' : 'flex-start'">
             <div style="max-width:80%;padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.4;"
-                 [style.background]="msg.role === 'user' ? 'var(--core-color, #4a6cf7)' : 'var(--gray-100, #f0f0f0)'"
+                 [style.background]="msg.role === 'user' ? 'var(--core-color, #023e8a)' : 'var(--gray-100, #f0f0f0)'"
                  [style.color]="msg.role === 'user' ? '#fff' : 'var(--text-color, #333)'"
                  [style.border-bottom-right-radius]="msg.role === 'user' ? '4px' : '16px'"
                  [style.border-bottom-left-radius]="msg.role === 'assistant' ? '4px' : '16px'">
