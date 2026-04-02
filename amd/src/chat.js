@@ -4005,17 +4005,23 @@ define([
             return;
         }
         var rootEl = document.getElementById('local-ai-course-assistant');
-        var displayName = (rootEl && rootEl.dataset.shortname) || (rootEl && rootEl.dataset.displayname) || 'SOLA';
+        var shortName = (rootEl && rootEl.dataset.shortname) || 'SOLA';
+        var displayName = (rootEl && rootEl.dataset.displayname) || 'Saylor Online Learning Assistant';
         var institutionName = (rootEl && rootEl.dataset.institution) || 'Saylor University';
+        // Build identity string: "SOLA (Saylor Online Learning Assistant)" or just the short name if they match.
+        var identity = shortName;
+        if (displayName && displayName !== shortName) {
+            identity = shortName + ' (' + displayName + ')';
+        }
         Str.get_string('chat:greeting', 'local_ai_course_assistant').then(function(greeting) {
             // Replace placeholders with configured values.
             var msg = greeting.replace('{$a}', firstName || 'there');
             msg = msg.replace('{INSTITUTION}', institutionName);
-            msg = msg.replace(/SOLA/g, displayName);
+            msg = msg.replace(/SOLA/g, identity);
             addAssistantMsg(msg, null, {skipHistory: true});
             return;
         }).catch(function() {
-            addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m ' + displayName +
+            addAssistantMsg('Hi, ' + (firstName || 'there') + '! I\'m ' + identity +
                 ', your ' + institutionName + ' online learning assistant.', null, {skipHistory: true});
         });
     };
