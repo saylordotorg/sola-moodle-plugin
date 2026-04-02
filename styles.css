@@ -168,8 +168,9 @@
     flex-direction: column;
     overflow: hidden;
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
 }
 
 /* Bottom positions: drawer opens upward */
@@ -204,8 +205,10 @@
 
 .local-ai-course-assistant__drawer[aria-hidden="false"] {
     opacity: 1;
+    visibility: visible;
     transform: translateY(0) scale(1);
     pointer-events: auto;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0s;
 }
 
 /* Header */
@@ -1943,6 +1946,7 @@ a.aica-history-panel__source:hover {
     transform: translateX(0);
     pointer-events: auto;
     opacity: 1;
+    visibility: visible;
 }
 
 .local-ai-course-assistant--drawer-mode .local-ai-course-assistant__toggle--close {
