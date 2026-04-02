@@ -39,7 +39,7 @@ class token_cost_manager {
      * Prices sourced from provider pricing pages (March 2026).
      */
     private static array $rate_cards = [
-        // ── OpenAI ────────────────────────────────────────────────────────────
+        // ── OpenAI Chat ───────────────────────────────────────────────────────
         'gpt-4o-mini'       => ['input' =>  0.15, 'output' =>  0.60],
         'gpt-4o'            => ['input' =>  2.50, 'output' => 10.00],
         'gpt-4-turbo'       => ['input' => 10.00, 'output' => 30.00],
@@ -51,6 +51,24 @@ class token_cost_manager {
         'o3-mini'           => ['input' =>  1.10, 'output' =>  4.40],
         'o3'                => ['input' => 10.00, 'output' => 40.00],
 
+        // ── OpenAI Realtime (voice) ─────────────────────────────────────────
+        'gpt-4o-realtime'   => ['input' =>  5.00, 'output' => 20.00],
+
+        // ── OpenAI TTS ──────────────────────────────────────────────────────
+        // TTS-1 charges per character (~$15/M chars). Approximated as per-token
+        // at ~4 chars/token for consistency with the token-based rate card.
+        'tts-1'             => ['input' =>  60.00, 'output' =>  0.00],
+        'tts-1-hd'          => ['input' => 120.00, 'output' =>  0.00],
+
+        // ── OpenAI Embeddings ───────────────────────────────────────────────
+        'text-embedding-3-small' => ['input' => 0.02, 'output' => 0.00],
+        'text-embedding-3-large' => ['input' => 0.13, 'output' => 0.00],
+        'text-embedding-ada'     => ['input' => 0.10, 'output' => 0.00],
+
+        // ── OpenAI Whisper (transcription) ──────────────────────────────────
+        // Whisper charges ~$0.006/min. Approximated per token for the rate card.
+        'whisper'           => ['input' =>  0.36, 'output' =>  0.00],
+
         // ── Anthropic Claude ──────────────────────────────────────────────────
         'claude-haiku'      => ['input' =>  0.80, 'output' =>  4.00],
         'claude-sonnet'     => ['input' =>  3.00, 'output' => 15.00],
@@ -59,6 +77,39 @@ class token_cost_manager {
         // ── DeepSeek ──────────────────────────────────────────────────────────
         'deepseek-chat'     => ['input' =>  0.14, 'output' =>  0.28],
         'deepseek-reasoner' => ['input' =>  0.55, 'output' =>  2.19],
+
+        // ── Google Gemini ─────────────────────────────────────────────────────
+        'gemini-2.0-flash'  => ['input' =>  0.10, 'output' =>  0.40],
+        'gemini-1.5-flash'  => ['input' =>  0.075, 'output' => 0.30],
+        'gemini-1.5-pro'    => ['input' =>  1.25, 'output' =>  5.00],
+        'gemini-pro'        => ['input' =>  0.50, 'output' =>  1.50],
+
+        // ── Mistral AI ────────────────────────────────────────────────────────
+        'mistral-large'     => ['input' =>  2.00, 'output' =>  6.00],
+        'mistral-medium'    => ['input' =>  2.70, 'output' =>  8.10],
+        'mistral-small'     => ['input' =>  0.20, 'output' =>  0.60],
+        'open-mistral'      => ['input' =>  0.25, 'output' =>  0.25],
+        'open-mixtral'      => ['input' =>  0.65, 'output' =>  0.65],
+        'codestral'         => ['input' =>  0.30, 'output' =>  0.90],
+
+        // ── Groq (open-source models) ─────────────────────────────────────────
+        // Groq charges vary by model; these are approximate hosted rates.
+        'llama-3.3-70b'     => ['input' =>  0.59, 'output' =>  0.79],
+        'llama-3.1-70b'     => ['input' =>  0.59, 'output' =>  0.79],
+        'llama-3.1-8b'      => ['input' =>  0.05, 'output' =>  0.08],
+        'llama-3-70b'       => ['input' =>  0.59, 'output' =>  0.79],
+        'llama-3-8b'        => ['input' =>  0.05, 'output' =>  0.08],
+        'mixtral-8x7b'      => ['input' =>  0.24, 'output' =>  0.24],
+        'gemma2-9b'         => ['input' =>  0.20, 'output' =>  0.20],
+
+        // ── xAI (Grok) ───────────────────────────────────────────────────────
+        'grok-3'            => ['input' =>  3.00, 'output' => 15.00],
+        'grok-3-mini'       => ['input' =>  0.30, 'output' =>  0.50],
+        'grok-2'            => ['input' =>  2.00, 'output' => 10.00],
+
+        // ── MiniMax ───────────────────────────────────────────────────────────
+        'abab5.5'           => ['input' =>  0.50, 'output' =>  0.50],
+        'abab6.5'           => ['input' =>  1.00, 'output' =>  1.00],
     ];
 
     /**
