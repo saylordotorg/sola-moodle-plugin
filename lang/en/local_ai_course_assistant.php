@@ -70,6 +70,7 @@ $string['settings:apikey'] = 'API Key';
 $string['settings:apikey_desc'] = 'API key for the selected provider. Not required for Ollama.';
 $string['settings:model'] = 'Model Name';
 $string['settings:model_desc'] = 'The model to use. Default depends on provider (e.g. claude-sonnet-4-5-20250929, gpt-4o, llama3, MiniMax-Text-01).';
+$string['settings:model_desc_dynamic'] = 'Leave blank to use the provider\'s default model automatically. Each provider has a built-in default that stays current (e.g. gpt-4o for OpenAI, claude-sonnet-4 for Claude, mistral-large-latest for Mistral). Only enter a model name if you want to override the default. If a model is misspelled or deprecated, SOLA will automatically fall back to the provider\'s default.';
 $string['settings:apibaseurl'] = 'API Base URL';
 $string['settings:apibaseurl_desc'] = 'Base URL for the API. Auto-filled per provider but can be overridden. Leave blank for provider default.';
 $string['settings:systemprompt'] = 'System Prompt Template';

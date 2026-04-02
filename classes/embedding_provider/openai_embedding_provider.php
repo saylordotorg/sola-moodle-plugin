@@ -86,6 +86,12 @@ class openai_embedding_provider extends base_embedding_provider {
             foreach ($data['data'] as $item) {
                 $embeddings[] = $item['embedding'];
             }
+
+            // Log embedding token usage for cost tracking.
+            $usage_tokens = (int) ($data['usage']['total_tokens'] ?? 0);
+            if ($usage_tokens > 0) {
+                $this->log_embedding_cost($usage_tokens);
+            }
         }
 
         return $embeddings;

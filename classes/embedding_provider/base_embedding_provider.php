@@ -109,6 +109,38 @@ abstract class base_embedding_provider {
     }
 
     /**
+     * Log embedding token usage to the msgs table for cost tracking.
+     *
+     * Uses a system-level conversation record so the cost appears in analytics
+     * alongside chat token costs.
+     *
+     * @param int $tokens Total tokens used in this embedding call.
+     */
+    protected function log_embedding_cost(int $tokens): void {
+        global $DB;
+        try {
+            // Use site-level (courseid=1) system record for embedding costs.
+            // These are background indexing costs, not per-student.
+            $record = new \stdClass();
+            $record->conversationid = 0;
+            $record->userid = 0;
+            $record->courseid = SITEID;
+            $record->role = 'system';
+            $record->message = '[Embedding]';
+            $record->tokens_used = $tokens;
+            $record->prompt_tokens = $tokens;
+            $record->completion_tokens = 0;
+            $record->model_name = $this->model;
+            $record->provider = 'embedding';
+            $record->interaction_type = 'embedding';
+            $record->timecreated = time();
+            $DB->insert_record('local_ai_course_assistant_msgs', $record);
+        } catch (\Throwable $e) {
+            // Non-critical — don't break indexing if cost logging fails.
+        }
+    }
+
+    /**
      * Make a POST request using Moodle's curl class.
      *
      * @param string $url

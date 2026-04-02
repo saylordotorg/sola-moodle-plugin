@@ -100,12 +100,12 @@ if ($hassiteconfig) {
         ''
     ));
 
-    // Model name.
+    // Model name — leave blank to use the provider's built-in default.
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/model',
         get_string('settings:model', 'local_ai_course_assistant'),
-        get_string('settings:model_desc', 'local_ai_course_assistant'),
-        'gpt-4o'
+        get_string('settings:model_desc_dynamic', 'local_ai_course_assistant'),
+        ''
     ));
 
     // API Base URL.

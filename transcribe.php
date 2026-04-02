@@ -117,4 +117,24 @@ if (!isset($data['text'])) {
     exit;
 }
 
+// Log Whisper transcription cost: approximate tokens from audio file size.
+// Whisper charges per minute (~$0.006/min). Rough estimate: 1MB ≈ 1 min audio.
+$filesizebytes = filesize($tmpfile) ?: 0;
+$approxminutes = max(0.1, $filesizebytes / 1_000_000);
+$approxtokens = (int) ceil($approxminutes * 1000); // Arbitrary unit for rate card matching.
+try {
+    $conv = $DB->get_record('local_ai_course_assistant_convs', [
+        'userid' => $USER->id, 'courseid' => $courseid > 0 ? $courseid : SITEID,
+    ]);
+    if ($conv) {
+        \local_ai_course_assistant\conversation_manager::add_message(
+            $conv->id, $USER->id, $courseid > 0 ? $courseid : SITEID,
+            'system', '[Whisper Transcription]',
+            0, 'openai_whisper', $approxtokens, 0, 'whisper-1'
+        );
+    }
+} catch (\Throwable $e) {
+    // Non-critical.
+}
+
 echo json_encode(['text' => $data['text']]);

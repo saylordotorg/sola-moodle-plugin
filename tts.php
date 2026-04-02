@@ -96,6 +96,24 @@ if ($httpcode !== 200) {
     exit;
 }
 
+// Log TTS cost: approximate tokens from character count (~4 chars/token).
+$charcount = mb_strlen($text);
+$approxtokens = (int) ceil($charcount / 4);
+try {
+    $conv = $DB->get_record('local_ai_course_assistant_convs', [
+        'userid' => $USER->id, 'courseid' => $courseid > 0 ? $courseid : SITEID,
+    ]);
+    if ($conv) {
+        \local_ai_course_assistant\conversation_manager::add_message(
+            $conv->id, $USER->id, $courseid > 0 ? $courseid : SITEID,
+            'system', '[TTS]',
+            0, 'openai_tts', $approxtokens, 0, 'tts-1'
+        );
+    }
+} catch (\Throwable $e) {
+    // Non-critical — don't block audio delivery.
+}
+
 echo json_encode([
     'audio' => base64_encode($response),
     'type'  => 'audio/mpeg',
