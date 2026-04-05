@@ -30,7 +30,7 @@ namespace local_ai_course_assistant;
 class remote_config_manager {
 
     /** Default remote config URL (overridable in plugin settings). */
-    const DEFAULT_URL = 'https://raw.githubusercontent.com/saylordotorg/sola-moodle-plugin/main/sola-config.json';
+    const DEFAULT_URL = 'https://raw.githubusercontent.com/saylordotorg/moodle-local_ai_course_assistant/main/sola-config.json';
 
     /** Cache TTL in seconds (1 hour). */
     const CACHE_TTL = 3600;

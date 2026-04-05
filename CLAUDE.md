@@ -15,7 +15,7 @@ SOLA (Saylor Online Learning Assistant) is a Moodle local plugin that provides a
 - **Current version:** `2026033101`, release `3.4.1`
 - **Source folder:** `~/Library/CloudStorage/Dropbox/!Saylor/aicoursetutor/ai_course_assistant/`
 - **Zip for upload:** `~/Library/CloudStorage/Dropbox/!Saylor/aicoursetutor/ai_course_assistant.zip`
-- **GitHub:** `https://github.com/tom4cam/sola-moodle-plugin` (private)
+- **GitHub:** `https://github.com/saylordotorg/moodle-local_ai_course_assistant` (public)
 
 ---
 

@@ -143,7 +143,7 @@ echo $OUTPUT->header();
         <?php else: ?>
             <div class="alert alert-info">
                 Update available but no download link found. Please update manually from
-                <a href="https://github.com/saylordotorg/sola-moodle-plugin/releases" target="_blank">GitHub Releases</a>.
+                <a href="https://github.com/saylordotorg/moodle-local_ai_course_assistant/releases" target="_blank">GitHub Releases</a>.
             </div>
         <?php endif; ?>
     <?php elseif ($latest && !$latest->update_available): ?>
