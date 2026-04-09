@@ -157,15 +157,79 @@ class hook_callbacks {
             }
         }
 
-        // Build learning objectives from course summary (parse bullet/numbered list lines).
+        // Build learning objectives by scanning "Unit X Learning Outcomes" pages.
+        // Supports two Saylor formats:
+        //   1. GENERICO tags: {GENERICO:type="unit_learning_objectives",unit_objectives="[1]..."}
+        //   2. HTML bullet lists: "Upon successful completion..." followed by <li> items
         $learningobjectives = [];
-        $course = get_course($courseid);
-        if (!empty($course->summary)) {
-            $plaintext = strip_tags($course->summary);
-            foreach (preg_split('/[\r\n]+/', $plaintext) as $line) {
-                $line = trim(ltrim(trim($line), '-•*0123456789.)'));
-                if (strlen($line) > 10) {
-                    $learningobjectives[] = ['name' => $line];
+        foreach ($modinfo->get_cms() as $cm) {
+            if (!$cm->uservisible || empty($cm->name)) {
+                continue;
+            }
+            $lower = strtolower($cm->name);
+            if (strpos($lower, 'learning outcome') === false
+                && strpos($lower, 'learning objective') === false) {
+                continue;
+            }
+            if ($cm->modname !== 'page') {
+                continue;
+            }
+            try {
+                $page = $DB->get_record('page', ['id' => $cm->instance, 'course' => $courseid]);
+                if (!$page || empty($page->content)) {
+                    continue;
+                }
+                $content = $page->content;
+                // Extract unit label from page name (e.g. "Unit 3 Learning Outcomes" -> "Unit 3").
+                $unitlabel = '';
+                if (preg_match('/^(Unit\s+\d+)/i', $cm->name, $um)) {
+                    $unitlabel = $um[1] . ': ';
+                }
+                // Format 1: GENERICO tag with numbered objectives.
+                if (preg_match('/unit_objectives="([^"]+)"/', $content, $gm)) {
+                    $raw = $gm[1];
+                    // Split on [N] markers.
+                    $parts = preg_split('/\[\d+\]\s*/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+                    foreach ($parts as $part) {
+                        $obj = trim(strip_tags($part), " ;\t\n\r\0\x0B");
+                        if (strlen($obj) > 10) {
+                            $learningobjectives[] = ['name' => $unitlabel . $obj];
+                        }
+                    }
+                    continue;
+                }
+                // Format 2: HTML list items.
+                if (preg_match_all('/<li[^>]*>(.*?)<\/li>/si', $content, $lm)) {
+                    foreach ($lm[1] as $li) {
+                        $obj = trim(strip_tags($li), " ;\t\n\r\0\x0B.");
+                        if (strlen($obj) > 10) {
+                            $learningobjectives[] = ['name' => $unitlabel . $obj];
+                        }
+                    }
+                    continue;
+                }
+                // Format 3: Plain text bullet/numbered lines (fallback).
+                $plaintext = strip_tags($content);
+                foreach (preg_split('/[\r\n]+/', $plaintext) as $line) {
+                    $line = trim(ltrim(trim($line), '-•*0123456789.)'));
+                    if (strlen($line) > 10 && stripos($line, 'upon successful') === false) {
+                        $learningobjectives[] = ['name' => $unitlabel . $line];
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Skip pages that can't be read.
+            }
+        }
+        // Fallback: if no learning outcome pages found, parse course summary.
+        if (empty($learningobjectives)) {
+            $course = get_course($courseid);
+            if (!empty($course->summary)) {
+                $plaintext = strip_tags($course->summary);
+                foreach (preg_split('/[\r\n]+/', $plaintext) as $line) {
+                    $line = trim(ltrim(trim($line), '-•*0123456789.)'));
+                    if (strlen($line) > 10) {
+                        $learningobjectives[] = ['name' => $line];
+                    }
                 }
             }
         }
