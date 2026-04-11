@@ -246,6 +246,9 @@ class plugin_updater {
     /**
      * Find the plugin root directory inside an extracted zip.
      * Handles both direct extraction and GitHub's nested directory structure.
+     *
+     * @param string $dir Extracted zip directory to inspect.
+     * @return string|null Plugin root directory, or null when not found.
      */
     private static function find_plugin_root(string $dir): ?string {
         // Direct: dir contains version.php.
@@ -285,6 +288,9 @@ class plugin_updater {
 
     /**
      * Recursively remove a directory.
+     *
+     * @param string $dir Directory path to remove.
+     * @return void
      */
     private static function rmdir_recursive(string $dir): void {
         if (!is_dir($dir)) {

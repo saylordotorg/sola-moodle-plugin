@@ -519,6 +519,10 @@ class integrity_checker {
 
     /**
      * Recursively glob for files matching a pattern.
+     *
+     * @param string $dir Directory to search.
+     * @param string $pattern Glob pattern to match.
+     * @return array Matching file paths.
      */
     private static function glob_recursive(string $dir, string $pattern): array {
         $files = glob($dir . '/' . $pattern) ?: [];

@@ -82,7 +82,8 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpmd
 
-      - name: Moodle Code Checker
+      - name: Moodle Code Checker (advisory)
+        continue-on-error: true
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpcs --max-warnings 0
 

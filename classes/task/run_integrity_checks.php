@@ -57,6 +57,9 @@ class run_integrity_checks extends \core\task\scheduled_task {
 
     /**
      * Send failure report via email.
+     *
+     * @param array $results Integrity check results.
+     * @return void
      */
     private function send_report(array $results): void {
         global $CFG;

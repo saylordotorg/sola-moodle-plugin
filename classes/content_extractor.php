@@ -182,6 +182,11 @@ class content_extractor {
 
     /**
      * Extract text from mod_page.
+     *
+     * @param int $instance Activity instance ID.
+     * @param int $courseid Course ID.
+     * @param \moodle_database $DB Moodle database handle.
+     * @return string Extracted page text.
      */
     private static function extract_page(int $instance, int $courseid, \moodle_database $DB): string {
         $record = $DB->get_record('page', ['id' => $instance, 'course' => $courseid], 'content, contentformat');
@@ -193,6 +198,11 @@ class content_extractor {
 
     /**
      * Extract text from mod_book (all chapters concatenated).
+     *
+     * @param int $instance Activity instance ID.
+     * @param int $courseid Course ID.
+     * @param \moodle_database $DB Moodle database handle.
+     * @return string Extracted book text.
      */
     private static function extract_book(int $instance, int $courseid, \moodle_database $DB): string {
         $chapters = $DB->get_records(
@@ -220,6 +230,11 @@ class content_extractor {
 
     /**
      * Extract text from mod_glossary (all entries: concept + definition).
+     *
+     * @param int $instance Activity instance ID.
+     * @param int $courseid Course ID.
+     * @param \moodle_database $DB Moodle database handle.
+     * @return string Extracted glossary text.
      */
     private static function extract_glossary(int $instance, int $courseid, \moodle_database $DB): string {
         $entries = $DB->get_records(

@@ -79,6 +79,11 @@ class conversation_manager {
      * @param string $message
      * @param int $tokensused
      * @param string $provider AI provider name (for assistant messages, used in analytics)
+     * @param int|null $prompttokens Prompt token count.
+     * @param int|null $completiontokens Completion token count.
+     * @param string|null $modelname Model name used to generate the response.
+     * @param string $interactiontype Interaction type for analytics.
+     * @param int|null $cmid Course module ID when available.
      * @return int The message ID.
      */
     public static function add_message(

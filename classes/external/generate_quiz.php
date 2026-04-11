@@ -199,6 +199,9 @@ class generate_quiz extends external_api {
 
     /**
      * Return the strict JSON output instructions for the AI.
+     *
+     * @param int $count Number of quiz questions to request.
+     * @return string Prompt instructions for quiz generation.
      */
     private static function get_quiz_format_instructions(int $count): string {
         return <<<INSTRUCTIONS
@@ -228,6 +231,10 @@ INSTRUCTIONS;
 
     /**
      * Build a grade summary string for the student.
+     *
+     * @param int $courseid Course ID.
+     * @param int $userid User ID.
+     * @return string Grade summary for the student.
      */
     private static function build_grade_summary(int $courseid, int $userid): string {
         try {
@@ -253,6 +260,10 @@ INSTRUCTIONS;
 
     /**
      * Build a summary of the student's recent chat messages.
+     *
+     * @param int $courseid Course ID.
+     * @param int $userid User ID.
+     * @return string Recent chat summary.
      */
     private static function build_recent_chat_context(int $courseid, int $userid): string {
         global $DB;

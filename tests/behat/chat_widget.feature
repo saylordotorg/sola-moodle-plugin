@@ -25,6 +25,7 @@ Feature: AI Course Assistant widget
     When I am on "Test Course" course homepage
     Then "#local-ai-course-assistant-toggle" "css_element" should exist
 
+  @javascript
   Scenario: Student can open and close chat drawer
     Given I log in as "student1"
     And I am on "Test Course" course homepage
