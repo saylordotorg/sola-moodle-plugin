@@ -84,9 +84,11 @@
     {{! Floating avatar button }}
     <button id="local-ai-course-assistant-toggle"
             class="local-ai-course-assistant__toggle"
+            type="button"
             aria-expanded="false"
             aria-controls="local-ai-course-assistant-drawer"
-            title="{{#str}}chat:open, local_ai_course_assistant{{/str}}">
+            title="{{#str}}chat:open, local_ai_course_assistant{{/str}}"
+            aria-label="{{#str}}chat:open, local_ai_course_assistant{{/str}}">
         <div class="aica-avatar-svg aica-avatar-svg--toggle" aria-hidden="true"
              data-fallback-avatar="{{avatarurl}}">
             <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__avatar-img" aria-hidden="true" />

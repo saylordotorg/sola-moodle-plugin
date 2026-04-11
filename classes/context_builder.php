@@ -47,6 +47,8 @@ class context_builder {
      * @param string $lang            ISO 639-1 language preference (e.g. 'fr', 'es').
      *                                Empty string means auto-detect from student's writing.
      * @param array  $retrieved_chunks Optional RAG chunks: [['content'=>string, 'score'=>float], ...]
+     * @param int    $pageid          Current Moodle page id when available.
+     * @param string $pagetitle       Current Moodle page title when available.
      * @return string The complete system prompt.
      */
     public static function build_system_prompt(

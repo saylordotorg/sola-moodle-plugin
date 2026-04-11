@@ -24,8 +24,7 @@ namespace local_ai_course_assistant;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_ai_course_assistant\context_builder
  */
-class context_builder_test extends \advanced_testcase {
-
+final class context_builder_test extends \advanced_testcase {
     public function test_build_system_prompt_contains_course_name(): void {
         $this->resetAfterTest();
 

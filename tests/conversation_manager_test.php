@@ -24,8 +24,7 @@ namespace local_ai_course_assistant;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_ai_course_assistant\conversation_manager
  */
-class conversation_manager_test extends \advanced_testcase {
-
+final class conversation_manager_test extends \advanced_testcase {
     public function test_get_or_create_conversation_creates_new(): void {
         $this->resetAfterTest();
 

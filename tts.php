@@ -31,8 +31,8 @@ require_sesskey();
 
 header('Content-Type: application/json');
 
-$text     = required_param('text',     PARAM_TEXT);
-$courseid = optional_param('courseid', 0,          PARAM_INT);
+$text = required_param('text', PARAM_TEXT);
+$courseid = optional_param('courseid', 0, PARAM_INT);
 
 // Verify capability.
 if ($courseid > 0) {
@@ -46,7 +46,7 @@ require_capability('local/ai_course_assistant:use', $context);
 // Does NOT require realtime to be enabled or OpenAI to be the chat provider.
 $apikey = get_config('local_ai_course_assistant', 'realtime_apikey');
 if (empty($apikey)) {
-    $provider   = get_config('local_ai_course_assistant', 'provider');
+    $provider = get_config('local_ai_course_assistant', 'provider');
     $mainapikey = get_config('local_ai_course_assistant', 'apikey');
     if ($provider === 'openai' && !empty($mainapikey)) {
         $apikey = $mainapikey;
@@ -59,8 +59,8 @@ if (empty($apikey)) {
 }
 
 // Student's saved voice preference takes priority over the site default.
-$voice_param = optional_param('voice', '', PARAM_ALPHA);
-$voice = $voice_param ?: (get_config('local_ai_course_assistant', 'realtime_voice') ?: 'shimmer');
+$voiceparam = optional_param('voice', '', PARAM_ALPHA);
+$voice = $voiceparam ?: (get_config('local_ai_course_assistant', 'realtime_voice') ?: 'shimmer');
 
 // Truncate text to avoid excessive API costs.
 $text = mb_substr(trim($text), 0, 4096);
@@ -101,16 +101,25 @@ $charcount = mb_strlen($text);
 $approxtokens = (int) ceil($charcount / 4);
 try {
     $conv = $DB->get_record('local_ai_course_assistant_convs', [
-        'userid' => $USER->id, 'courseid' => $courseid > 0 ? $courseid : SITEID,
+        'userid' => $USER->id,
+        'courseid' => $courseid > 0 ? $courseid : SITEID,
     ]);
     if ($conv) {
         \local_ai_course_assistant\conversation_manager::add_message(
-            $conv->id, $USER->id, $courseid > 0 ? $courseid : SITEID,
-            'system', '[TTS]',
-            0, 'openai_tts', $approxtokens, 0, 'tts-1'
+            $conv->id,
+            $USER->id,
+            $courseid > 0 ? $courseid : SITEID,
+            'system',
+            '[TTS]',
+            0,
+            'openai_tts',
+            $approxtokens,
+            0,
+            'tts-1'
         );
     }
 } catch (\Throwable $e) {
+    unset($e);
     // Non-critical — don't block audio delivery.
 }
 
