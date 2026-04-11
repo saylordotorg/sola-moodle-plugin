@@ -871,4 +871,18 @@ if ($hassiteconfig) {
         new moodle_url('/local/ai_course_assistant/integrity_admin.php'),
         'moodle/site:config'
     ));
+
+    // Catalyst's fork carries a whatsapp_test.php admin tool that calls
+    // admin_externalpage_setup('local_ai_course_assistant_whatsapptest').
+    // Register it defensively only when the file is present so upstream
+    // installs without that file still build a valid admin menu.
+    if (file_exists(__DIR__ . '/whatsapp_test.php')) {
+        $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
+            'local_ai_course_assistant_whatsapptest',
+            'SOLA: WhatsApp Integration Test',
+            new moodle_url('/local/ai_course_assistant/whatsapp_test.php'),
+            'moodle/site:config',
+            true
+        ));
+    }
 }

@@ -28,8 +28,9 @@ define([
     'local_ai_course_assistant/speech',
     'local_ai_course_assistant/realtime',
     'local_ai_course_assistant/voice',
+    'local_ai_course_assistant/i18n_strings',
     'core/str',
-], function(UI, SSE, Repo, Speech, Realtime, Voice, Str) {
+], function(UI, SSE, Repo, Speech, Realtime, Voice, I18nStrings, Str) {
 
     /** @type {Array} Quiz topics parsed from data attribute */
     let quizTopics = [];
@@ -1227,6 +1228,14 @@ define([
                 btn.dataset.labelEn = span.textContent.trim();
             }
         });
+        // Tag widget DOM with data-i18n-* attributes, then apply the current
+        // language. Ships via CDN so production on an older plugin version
+        // still gets runtime UI translation without a plugin reinstall.
+        tagI18nElements(root);
+        var initialLang = Speech.getLang ? Speech.getLang() : '';
+        if (initialLang && initialLang !== 'en') {
+            applyI18n(initialLang);
+        }
         initLanguage();
         if (root.dataset.introDismissed === '1') {
             try {
@@ -1344,42 +1353,238 @@ define([
     };
 
     /**
-     * Update UI text elements when language changes.
-     * Translates placeholder text and shows a brief notification.
+     * Walk known widget elements and attach data-i18n-* attributes so
+     * applyI18n() can retranslate them later. Runs once on init.
+     *
+     * Why this exists in JS instead of the mustache template: the CDN bundle
+     * ships JS only. Tagging in JS means production on an older plugin
+     * version still gets runtime retranslation via a CDN update.
+     *
+     * @param {HTMLElement} root Widget root element
+     */
+    const tagI18nElements = function(root) {
+        if (!root) {
+            return;
+        }
+
+        const $ = function(sel) { return root.querySelector(sel); };
+        const $$ = function(sel) { return root.querySelectorAll(sel); };
+
+        const setText = function(el, key) {
+            if (el) { el.setAttribute('data-i18n-key', key); }
+        };
+        const setTextNode = function(el, key) {
+            if (el) { el.setAttribute('data-i18n-text-node', key); }
+        };
+        const setTitle = function(el, key) {
+            if (el) { el.setAttribute('data-i18n-title', key); }
+        };
+        const setAria = function(el, key) {
+            if (el) { el.setAttribute('data-i18n-aria', key); }
+        };
+        const setPh = function(el, key) {
+            if (el) { el.setAttribute('data-i18n-ph', key); }
+        };
+        const setDataAttr = function(el, attrName, key) {
+            if (el) { el.setAttribute('data-i18n-attr-' + attrName, key); }
+        };
+        const setShortname = function(el, key) {
+            if (el) {
+                el.setAttribute('data-i18n-key', key);
+                el.setAttribute('data-i18n-param', 'shortname');
+            }
+        };
+
+        // Toggle button (floating avatar).
+        setTitle(document.getElementById('local-ai-course-assistant-toggle'), 'open');
+
+        // Close-toggle button (inside drawer).
+        const closeToggle = document.getElementById('local-ai-course-assistant-close-toggle');
+        setTitle(closeToggle, 'close');
+        setAria(closeToggle, 'close');
+
+        // Header action buttons.
+        $$('.local-ai-course-assistant__btn-close').forEach(function(el) {
+            setTitle(el, 'close');
+            setAria(el, 'close');
+        });
+        $$('.local-ai-course-assistant__btn-avatar').forEach(function(el) {
+            setTitle(el, 'change_avatar');
+            setAria(el, 'change_avatar');
+        });
+        $$('.local-ai-course-assistant__btn-settings-panel').forEach(function(el) {
+            setTitle(el, 'settings_panel');
+            setAria(el, 'settings_panel');
+        });
+        $$('.local-ai-course-assistant__btn-clear').forEach(function(el) {
+            setTitle(el, 'clear');
+            setAria(el, 'clear');
+        });
+        $$('.local-ai-course-assistant__btn-reset').forEach(function(el) {
+            setTitle(el, 'reset');
+            setAria(el, 'reset');
+        });
+
+        // Language banner.
+        const langAccept = $('.local-ai-course-assistant__lang-accept');
+        setAria(langAccept, 'language_switch');
+        setText(langAccept, 'lang_switch');
+        const langDismiss = $('.local-ai-course-assistant__lang-dismiss');
+        setAria(langDismiss, 'language_dismiss');
+        setText(langDismiss, 'lang_dismiss');
+
+        // Starters overlay container (individual starter labels handled by updateStarterTexts).
+        setAria($('.local-ai-course-assistant__starters'), 'starters_label');
+
+        // Voice mode card.
+        setText($('.aica-mode-card--voice .aica-mode-card__eyebrow'), 'mode_voice');
+        setShortname($('.aica-mode-card--voice .aica-mode-card__title'), 'voice_panel_title');
+        setText($('.aica-mode-card--voice .aica-mode-card__text'), 'voice_copy');
+        setText($('.aica-mode-card--voice .aica-mode-card__status'), 'voice_ready');
+        const voiceStart = $('.aica-voice-panel__start');
+        if (voiceStart) {
+            setText(voiceStart, 'voice_start');
+            setDataAttr(voiceStart, 'start-label', 'voice_start');
+            setDataAttr(voiceStart, 'stop-label', 'voice_end');
+        }
+
+        // History / Notes panel.
+        setText($('.aica-history-panel__eyebrow'), 'mode_history');
+        setText($('.aica-history-panel__title'), 'history_title');
+        setText($('.aica-history-panel__refresh'), 'history_refresh');
+        setText($('.aica-history-panel__subtitle'), 'history_subtitle');
+        setAria($('.aica-history-panel__views'), 'history_views_label');
+        setText($('.aica-history-panel__view[data-history-view="saved"]'), 'history_view_saved');
+        setText($('.aica-history-panel__view[data-history-view="recent"]'), 'history_view_recent');
+        const historyPanel = $('.local-ai-course-assistant__history-panel');
+        if (historyPanel) {
+            setDataAttr(historyPanel, 'empty-label', 'history_empty');
+            setDataAttr(historyPanel, 'recent-subtitle', 'history_subtitle');
+            setDataAttr(historyPanel, 'saved-subtitle', 'history_saved_subtitle');
+            setDataAttr(historyPanel, 'saved-empty-label', 'history_saved_empty');
+            setDataAttr(historyPanel, 'you-label', 'you');
+        }
+
+        // Input composer.
+        const input = $('.local-ai-course-assistant__input');
+        setPh(input, 'placeholder');
+        setAria(input, 'placeholder');
+        $$('.local-ai-course-assistant__composer-select-wrap').forEach(function(wrap) {
+            const label = wrap.querySelector('.local-ai-course-assistant__composer-select-label');
+            const select = wrap.querySelector('select');
+            const isProvider = !!wrap.querySelector('.local-ai-course-assistant__composer-select--provider');
+            if (label) { setText(label, isProvider ? 'llm_label' : 'llm_model_label'); }
+            if (select) { setAria(select, isProvider ? 'llm_provider_select' : 'llm_model_select'); }
+        });
+        $$('.local-ai-course-assistant__btn-mic').forEach(function(el) {
+            setTitle(el, 'mic');
+            setAria(el, 'mic');
+        });
+        $$('.local-ai-course-assistant__btn-send').forEach(function(el) {
+            setTitle(el, 'send');
+            setAria(el, 'send');
+        });
+
+        // Footer feedback buttons (SVG + text siblings; use text-node to preserve SVG).
+        setTextNode($('.local-ai-course-assistant__footer-usertesting-link'), 'footer_usertesting');
+        setTextNode($('.local-ai-course-assistant__footer-feedback-link'), 'footer_feedback');
+
+        // Bottom nav tabs.
+        setAria($('.local-ai-course-assistant__bottom-nav'), 'mode_nav');
+        setText($('.local-ai-course-assistant__mode-btn[data-mode="chat"] .local-ai-course-assistant__mode-label'), 'mode_chat');
+        setText($('.local-ai-course-assistant__mode-btn[data-mode="voice"] .local-ai-course-assistant__mode-label'), 'mode_voice');
+        setText($('.local-ai-course-assistant__mode-btn[data-mode="history"] .local-ai-course-assistant__mode-label'), 'mode_history');
+    };
+
+    /**
+     * Retranslate every tagged widget element into the given language.
+     * Reads translations from the I18nStrings bundle and falls back to
+     * English when a key is missing for the target language.
+     *
+     * @param {string|null} langCode ISO 639-1 code, or null for English
+     */
+    const applyI18n = function(langCode) {
+        const root = document.getElementById('local-ai-course-assistant');
+        if (!root) {
+            return;
+        }
+        const lang = (langCode || 'en').substring(0, 2).toLowerCase();
+        const shortname = root.dataset.shortname || 'SOLA';
+
+        const resolve = function(key) {
+            let str = I18nStrings.get(lang, key);
+            if (str && str.indexOf('{$a}') !== -1) {
+                str = str.replace('{$a}', shortname);
+            }
+            return str;
+        };
+
+        root.querySelectorAll('[data-i18n-key]').forEach(function(el) {
+            const str = resolve(el.getAttribute('data-i18n-key'));
+            if (str) { el.textContent = str; }
+        });
+
+        root.querySelectorAll('[data-i18n-text-node]').forEach(function(el) {
+            const str = resolve(el.getAttribute('data-i18n-text-node'));
+            if (!str) { return; }
+            let replaced = false;
+            for (let i = 0; i < el.childNodes.length; i++) {
+                const node = el.childNodes[i];
+                if (node.nodeType === 3) {
+                    const trimmed = node.nodeValue.replace(/^\s+|\s+$/g, '');
+                    if (trimmed.length > 0) {
+                        node.nodeValue = ' ' + str;
+                        replaced = true;
+                        break;
+                    }
+                }
+            }
+            if (!replaced) {
+                el.appendChild(document.createTextNode(' ' + str));
+            }
+        });
+
+        root.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+            const str = resolve(el.getAttribute('data-i18n-title'));
+            if (str) { el.title = str; }
+        });
+
+        root.querySelectorAll('[data-i18n-aria]').forEach(function(el) {
+            const str = resolve(el.getAttribute('data-i18n-aria'));
+            if (str) { el.setAttribute('aria-label', str); }
+        });
+
+        root.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+            const str = resolve(el.getAttribute('data-i18n-ph'));
+            if (str) { el.placeholder = str; }
+        });
+
+        // Arbitrary data-* attribute targets (history panel + voice start button).
+        [
+            root.querySelector('.local-ai-course-assistant__history-panel'),
+            root.querySelector('.aica-voice-panel__start'),
+        ].forEach(function(el) {
+            if (!el) { return; }
+            for (let i = 0; i < el.attributes.length; i++) {
+                const attr = el.attributes[i];
+                if (attr.name.indexOf('data-i18n-attr-') === 0) {
+                    const targetAttr = 'data-' + attr.name.substring(15);
+                    const str = resolve(attr.value);
+                    if (str) { el.setAttribute(targetAttr, str); }
+                }
+            }
+        });
+    };
+
+    /**
+     * Update UI text elements when language changes. Retranslates every
+     * tagged widget element and shows a brief notification.
      *
      * @param {string|null} langCode ISO 639-1 code, or null for English
      */
     const updateUiTextsForLang = function(langCode) {
-        var rootEl = document.getElementById('local-ai-course-assistant');
-        if (!rootEl) {
-            return;
-        }
+        applyI18n(langCode);
 
-        // Update input placeholder.
-        var input = rootEl.querySelector('.local-ai-course-assistant__input');
-        if (input) {
-            var placeholders = {
-                'es': 'Escribe tu pregunta...',
-                'fr': 'Tapez votre question...',
-                'de': 'Schreiben Sie Ihre Frage...',
-                'pt': 'Digite sua pergunta...',
-                'it': 'Scrivi la tua domanda...',
-                'ja': '\u8CEA\u554F\u3092\u5165\u529B...',
-                'ko': '\uC9C8\uBB38\uC744 \uC785\uB825\uD558\uC138\uC694...',
-                'zh': '\u8F93\u5165\u4F60\u7684\u95EE\u9898...',
-                'ar': '...\u0627\u0643\u062A\u0628 \u0633\u0624\u0627\u0644\u0643',
-                'hi': '\u0905\u092A\u0928\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u0932\u093F\u0916\u0947\u0902...',
-                'ru': '\u041D\u0430\u043F\u0438\u0448\u0438\u0442\u0435 \u0441\u0432\u043E\u0439 \u0432\u043E\u043F\u0440\u043E\u0441...',
-                'tr': 'Sorunuzu yaz\u0131n...',
-                'nl': 'Typ je vraag...',
-                'sv': 'Skriv din fr\u00E5ga...',
-                'pl': 'Wpisz swoje pytanie...',
-            };
-            var code2 = (langCode || 'en').substring(0, 2);
-            input.placeholder = placeholders[code2] || 'Type your question...';
-        }
-
-        // Show a brief notification about language change.
         if (langCode && langCode !== 'en') {
             var langInfo = Speech.getLangInfo(langCode);
             var langName = langInfo ? langInfo.name : langCode;

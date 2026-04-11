@@ -53,10 +53,10 @@ function buildBundle() {
     const ajaxShim = readFileSync(resolve(__dirname, 'shims', 'ajax.js'), 'utf8');
     const strShim = readFileSync(resolve(__dirname, 'shims', 'str.js'), 'utf8');
 
-    // Read all AMD source modules.
+    // Read all AMD source modules. Dependency order: deps first.
     const modules = [
         'markdown', 'audio_player', 'sse_client', 'speech', 'realtime',
-        'voice', 'repository', 'quiz', 'ui', 'chat',
+        'voice', 'repository', 'quiz', 'i18n_strings', 'ui', 'chat',
     ];
 
     const amdSources = modules.map(name => {
