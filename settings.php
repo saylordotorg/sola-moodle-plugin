@@ -42,16 +42,16 @@ if ($hassiteconfig) {
         . '<strong>' . $shortname . '</strong>&nbsp;v' . $release . '&nbsp;<span style="color:#868e96;">(' . $versionnum . ')</span>'
         . '</div>';
 
-    // ── Create the SOLA admin category ──────────────────────────────────────
-    // All SOLA admin settings pages and admin tools live under this category,
-    // reachable at: Site admin > Plugins > Local plugins > SOLA
+    // ── Create the plugin admin category ────────────────────────────────────
+    // All settings pages and admin tools live under this category,
+    // reachable at: Site admin > Plugins > Local plugins > AI Course Assistant
     $ADMIN->add('localplugins', new admin_category(
         'local_ai_course_assistant',
-        $shortname . ' (' . get_string('pluginname', 'local_ai_course_assistant') . ')'
+        get_string('pluginname', 'local_ai_course_assistant')
     ));
 
     // ── Page 1: General ─────────────────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_general', 'SOLA: General');
+    $settings = new admin_settingpage('local_ai_course_assistant_general', 'General');
 
     $settings->add(new admin_setting_description(
         'local_ai_course_assistant/version_banner',
@@ -77,7 +77,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 2: AI Provider & Models ────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_ai', 'SOLA: AI Provider & Models');
+    $settings = new admin_settingpage('local_ai_course_assistant_ai', 'AI Provider & Models');
 
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/provider_heading',
@@ -184,7 +184,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 3: Content & RAG ───────────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_content', 'SOLA: Content & RAG');
+    $settings = new admin_settingpage('local_ai_course_assistant_content', 'Content & RAG');
 
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/rag_heading',
@@ -294,7 +294,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 4: Safety & Moderation ─────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_safety', 'SOLA: Safety & Moderation');
+    $settings = new admin_settingpage('local_ai_course_assistant_safety', 'Safety & Moderation');
 
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/quiz_hide_heading',
@@ -402,7 +402,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 5: Engagement ──────────────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_engagement', 'SOLA: Engagement');
+    $settings = new admin_settingpage('local_ai_course_assistant_engagement', 'Engagement');
 
     // Study plans and reminders.
     $settings->add(new admin_setting_heading(
@@ -608,7 +608,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 6: Branding & UI ───────────────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_branding', 'SOLA: Branding & UI');
+    $settings = new admin_settingpage('local_ai_course_assistant_branding', 'Branding & UI');
 
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/branding_heading',
@@ -717,7 +717,7 @@ if ($hassiteconfig) {
     $ADMIN->add('local_ai_course_assistant', $settings);
 
     // ── Page 7: Integrations & Delivery ─────────────────────────────────────
-    $settings = new admin_settingpage('local_ai_course_assistant_integrations', 'SOLA: Integrations & Delivery');
+    $settings = new admin_settingpage('local_ai_course_assistant_integrations', 'Integrations & Delivery');
 
     // FAQ & Zendesk.
     $settings->add(new admin_setting_heading(
@@ -832,21 +832,21 @@ if ($hassiteconfig) {
 
     $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
         'local_ai_course_assistant_survey',
-        'SOLA: Survey Editor',
+        'Survey Editor',
         new moodle_url('/local/ai_course_assistant/survey_admin.php'),
         'moodle/site:config'
     ));
 
     $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
         'local_ai_course_assistant_usertesting',
-        'SOLA: Usability Testing Editor',
+        'Usability Testing Editor',
         new moodle_url('/local/ai_course_assistant/usertesting_admin.php'),
         'moodle/site:config'
     ));
 
     $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
         'local_ai_course_assistant_rubric',
-        'SOLA: Rubric Editor',
+        'Rubric Editor',
         new moodle_url('/local/ai_course_assistant/rubric_admin.php'),
         'moodle/site:config'
     ));
@@ -879,7 +879,7 @@ if ($hassiteconfig) {
     if (file_exists(__DIR__ . '/whatsapp_test.php')) {
         $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
             'local_ai_course_assistant_whatsapptest',
-            'SOLA: WhatsApp Integration Test',
+            'WhatsApp Integration Test',
             new moodle_url('/local/ai_course_assistant/whatsapp_test.php'),
             'moodle/site:config',
             true
