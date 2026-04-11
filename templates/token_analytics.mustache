@@ -2,53 +2,66 @@
     Token usage and cost analytics page — admin only.
 
     @template local_ai_course_assistant/token_analytics
+
+    Example context (json):
+    {
+        "analytics_url": "#",
+        "url_7": "#",
+        "url_30": "#",
+        "url_90": "#",
+        "url_all": "#",
+        "range": "30",
+        "range_7_active": false,
+        "range_30_active": true,
+        "range_90_active": false,
+        "range_all_active": false,
+        "courses": [
+            {
+                "id": 2,
+                "name": "Test Course 101",
+                "selected": true
+            }
+        ],
+        "grand_responses": "128",
+        "grand_prompt": "15420",
+        "grand_completion": "9280",
+        "grand_total_tokens": "24700",
+        "grand_cost": "$1.82",
+        "has_by_model": true,
+        "by_model": [
+            {
+                "model": "gpt-4.1-mini",
+                "provider": "OpenAI",
+                "response_count": 128,
+                "prompt_tokens": 15420,
+                "completion_tokens": 9280,
+                "total_tokens": 24700,
+                "cost_unknown": false,
+                "estimated_cost": "$1.82"
+            }
+        ],
+        "has_missing": true,
+        "missing_count": 3,
+        "has_by_student": true,
+        "by_student": [
+            {
+                "name": "Alex Student",
+                "response_count": 24,
+                "prompt_tokens": 2980,
+                "completion_tokens": 1820,
+                "total_tokens": 4800,
+                "estimated_cost": "$0.36"
+            }
+        ],
+        "rate_cards": [
+            {
+                "model": "gpt-4.1-mini",
+                "input_per_1m": "$0.40",
+                "output_per_1m": "$1.60"
+            }
+        ]
+    }
 }}
-
-<style>
-.aica-cost-page { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; }
-.aica-cost-nav  { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-.aica-cost-nav a { color: #023e8a; text-decoration: none; font-size: 13px; }
-.aica-cost-nav a:hover { text-decoration: underline; }
-
-.aica-cost-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
-.aica-cost-card  { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px 20px; }
-.aica-cost-card__label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
-.aica-cost-card__value { font-size: 26px; font-weight: 700; color: #111827; line-height: 1; }
-.aica-cost-card--highlight .aica-cost-card__value { color: #059669; }
-
-.aica-cost-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-.aica-cost-filters label { font-size: 13px; color: #374151; font-weight: 500; }
-.aica-cost-range-btn { padding: 5px 14px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff;
-    font-size: 13px; color: #374151; text-decoration: none; cursor: pointer; }
-.aica-cost-range-btn.active,
-.aica-cost-range-btn:hover { background: #023e8a; border-color: #023e8a; color: #fff; }
-.aica-cost-filters select { padding: 5px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; }
-
-.aica-cost-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 28px; overflow: hidden; }
-.aica-cost-section__header { padding: 14px 20px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-.aica-cost-section__title  { font-size: 15px; font-weight: 600; color: #111827; margin: 0; }
-.aica-cost-section__sub    { font-size: 12px; color: #6b7280; margin: 2px 0 0; }
-
-.aica-cost-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.aica-cost-table th { padding: 10px 16px; text-align: left; font-weight: 600; color: #374151;
-    background: #f9fafb; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
-.aica-cost-table td { padding: 10px 16px; border-bottom: 1px solid #f3f4f6; color: #111827; }
-.aica-cost-table tbody tr:last-child td { border-bottom: none; }
-.aica-cost-table tbody tr:hover td { background: #f9fafb; }
-.aica-cost-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
-.aica-cost-table td.cost { text-align: right; font-weight: 600; color: #059669; font-variant-numeric: tabular-nums; }
-.aica-cost-table td.unknown { color: #9ca3af; }
-
-.aica-cost-alert { margin: 16px 20px; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a;
-    border-radius: 6px; font-size: 13px; color: #92400e; }
-.aica-cost-empty { padding: 24px 20px; text-align: center; color: #6b7280; font-size: 14px; }
-
-.aica-rate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; padding: 16px 20px; }
-.aica-rate-item { display: flex; justify-content: space-between; padding: 6px 10px;
-    background: #f9fafb; border-radius: 6px; font-size: 12px; gap: 12px; }
-.aica-rate-item__model { color: #374151; font-family: monospace; }
-.aica-rate-item__price { color: #6b7280; white-space: nowrap; }
-</style>
 
 <div class="aica-cost-page">
 
@@ -60,11 +73,11 @@
 
     {{! ── Filters ─────────────────────────────────────────────────────────── }}
     <div class="aica-cost-filters">
-        <label>Period:</label>
+        <span class="aica-cost-filter-label">Period:</span>
         <a href="{{url_7}}"  class="aica-cost-range-btn {{#range_7_active}}active{{/range_7_active}}">7 days</a>
         <a href="{{url_30}}" class="aica-cost-range-btn {{#range_30_active}}active{{/range_30_active}}">30 days</a>
         <a href="{{url_90}}" class="aica-cost-range-btn {{#range_90_active}}active{{/range_90_active}}">90 days</a>
-        <a href="{{url_all}}"class="aica-cost-range-btn {{#range_all_active}}active{{/range_all_active}}">All time</a>
+        <a href="{{url_all}}" class="aica-cost-range-btn {{#range_all_active}}active{{/range_all_active}}">All time</a>
         &nbsp;
         <label for="aica-course-select">Course:</label>
         <select id="aica-course-select" onchange="window.location=this.value">

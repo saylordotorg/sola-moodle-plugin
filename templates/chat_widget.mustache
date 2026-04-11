@@ -26,10 +26,70 @@
     * positionclass - CSS position class (bottom-right or bottom-left)
     * userrole - User role (student or teacher)
     * sseurl - URL for the SSE streaming endpoint
+
+    Example context (json):
+    {
+        "courseid": 2,
+        "userid": 5,
+        "sesskey": "abc123",
+        "avatarurl": "https://example.invalid/avatar.svg",
+        "positionclass": "bottom-right",
+        "startericoncolor": "#023e8a",
+        "userrole": "student",
+        "sseurl": "https://example.invalid/local/ai_course_assistant/sse.php",
+        "availableavatars": "[\"default\"]",
+        "quiztopics": "[]",
+        "learningobjectives": "[]",
+        "moduletitles": "[]",
+        "offsetx": "24",
+        "offsety": "24",
+        "firstname": "Alex",
+        "currentpageid": 17,
+        "currentpagetitle": "Introduction",
+        "modname": "page",
+        "pagetype": "course-view",
+        "realtimeenabled": "1",
+        "ttsurl": "https://example.invalid/local/ai_course_assistant/tts.php",
+        "avatarcolor": "#023e8a",
+        "avatarfill": "#ffffff",
+        "coursesettingsurl": "https://example.invalid/course/settings.php?id=2",
+        "analyticsurl": "https://example.invalid/local/ai_course_assistant/analytics.php",
+        "displaymode": "drawer",
+        "displayname": "SOLA",
+        "shortname_label": "SOLA",
+        "institution": "Saylor Academy",
+        "welcomemessage": "Welcome back.",
+        "chatgreeting": "How can I help you today?",
+        "coursename": "Test Course 101",
+        "useremail": "alex@example.invalid",
+        "userphone": "+15555550123",
+        "surveyenabled": "1",
+        "surveytrigger": "3",
+        "completionpct": "42",
+        "defaultvoice": "alloy",
+        "contextlevelname": "module",
+        "serverpageurl": "https://example.invalid/course/view.php?id=2",
+        "serverpagetitle": "Introduction",
+        "serverpageheading": "Introduction",
+        "llmoptionsjson": "{}",
+        "startersjson": "[{\"key\":\"help-page\",\"name\":\"Help with this page\"}]",
+        "hasstarterdata": true,
+        "starters": [
+            {
+                "key": "help-page",
+                "type": "prompt",
+                "prompt": "Help me understand this page.",
+                "builtin": true,
+                "description": "Review the current page.",
+                "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M12 2 2 7l10 5 10-5-10-5Zm0 7L2 4v13l10 5 10-5V4l-10 5Z\"/></svg>",
+                "name": "Help with this page"
+            }
+        ]
+    }
 }}
 <div id="local-ai-course-assistant"
      class="local-ai-course-assistant local-ai-course-assistant--{{positionclass}}"
-     style="--aica-starter-icon-color: {{startericoncolor}};"
+     style="--aica-starter-icon-color: {{startericoncolor}}{{^startericoncolor}}#023e8a{{/startericoncolor}};"
      data-courseid="{{courseid}}"
      data-userid="{{userid}}"
      data-sesskey="{{sesskey}}"
@@ -89,10 +149,10 @@
             aria-controls="local-ai-course-assistant-drawer"
             title="{{#str}}chat:open, local_ai_course_assistant{{/str}}"
             aria-label="{{#str}}chat:open, local_ai_course_assistant{{/str}}">
-        <div class="aica-avatar-svg aica-avatar-svg--toggle" aria-hidden="true"
-             data-fallback-avatar="{{avatarurl}}">
+        <span class="aica-avatar-svg aica-avatar-svg--toggle" aria-hidden="true"
+              data-fallback-avatar="{{avatarurl}}">
             <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__avatar-img" aria-hidden="true" />
-        </div>
+        </span>
     </button>
 
     {{! Chat drawer }}
@@ -125,10 +185,10 @@
                         title="{{#str}}chat:change_avatar, local_ai_course_assistant{{/str}}"
                         aria-label="{{#str}}chat:change_avatar, local_ai_course_assistant{{/str}}"
                         type="button">
-                    <div class="aica-avatar-svg aica-avatar-svg--header" aria-hidden="true"
-                         data-fallback-avatar="{{avatarurl}}">
+                    <span class="aica-avatar-svg aica-avatar-svg--header" aria-hidden="true"
+                          data-fallback-avatar="{{avatarurl}}">
                         <img src="{{avatarurl}}" alt="" class="local-ai-course-assistant__header-avatar" aria-hidden="true" />
-                    </div>
+                    </span>
                 </button>
                 <span>{{shortname_label}}</span>
             </div>
@@ -187,16 +247,18 @@
                 </button>
                 <button class="local-ai-course-assistant__btn-reset"
                         title="{{#str}}chat:reset, local_ai_course_assistant{{/str}}"
-                        aria-label="{{#str}}chat:reset, local_ai_course_assistant{{/str}}">
+                        aria-label="{{#str}}chat:reset, local_ai_course_assistant{{/str}}"
+                        type="button">
                     {{! Home icon — return to conversation starters }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                          width="16" height="16" fill="currentColor" aria-hidden="true">
                         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                     </svg>
                 </button>
-<button class="local-ai-course-assistant__btn-close"
+                <button class="local-ai-course-assistant__btn-close"
                         title="{{#str}}chat:close, local_ai_course_assistant{{/str}}"
-                        aria-label="{{#str}}chat:close, local_ai_course_assistant{{/str}}">
+                        aria-label="{{#str}}chat:close, local_ai_course_assistant{{/str}}"
+                        type="button">
                     {{! Close: standard X }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -213,11 +275,13 @@
             <span class="local-ai-course-assistant__lang-banner-text"></span>
             <div class="local-ai-course-assistant__lang-banner-actions">
                 <button class="local-ai-course-assistant__lang-accept"
-                        aria-label="{{#str}}chat:language_switch, local_ai_course_assistant{{/str}}">
+                        aria-label="{{#str}}chat:language_switch, local_ai_course_assistant{{/str}}"
+                        type="button">
                     {{#str}}lang:switch, local_ai_course_assistant{{/str}}
                 </button>
                 <button class="local-ai-course-assistant__lang-dismiss"
-                        aria-label="{{#str}}chat:language_dismiss, local_ai_course_assistant{{/str}}">
+                        aria-label="{{#str}}chat:language_dismiss, local_ai_course_assistant{{/str}}"
+                        type="button">
                     {{#str}}lang:dismiss, local_ai_course_assistant{{/str}}
                 </button>
             </div>
@@ -264,6 +328,7 @@
 
         {{! Conversation starters — hidden once a message is sent }}
         <div class="local-ai-course-assistant__starters"
+             role="group"
              aria-label="{{#str}}chat:starters_label, local_ai_course_assistant{{/str}}"
              data-starters="{{startersjson}}">
             {{#starters}}
@@ -281,44 +346,44 @@
             </button>
             {{/starters}}
             {{^hasstarterdata}}
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="help-page">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="help-page">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_help_page, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="quiz">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="quiz">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_quiz, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="ask-anything">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="ask-anything">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ask_anything, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="review-practice">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="review-practice">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_review_practice, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="study-plan">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="study-plan">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 3h-1V1h-2v2H7V1H5v2H4C2.9 5 2 5.9 2 7v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H4V10h16v11zm0-13H4V7h16v1z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_study_plan, local_ai_course_assistant{{/str}}</span>
             </button>
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="ai-project-coach">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="ai-project-coach">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5c0 0-5 4-5 11.5 0 2.5.5 4 1.5 5.5L10 21l2-3 2 3 1.5-1.5C16.5 18 17 16.5 17 14c0-7.5-5-11.5-5-11.5zm0 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM5 17.5c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4H5zm12 0c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4h-2z"/></svg>
                 </span>
                 <span>{{#str}}chat:starter_ai_project_coach, local_ai_course_assistant{{/str}}</span>
             </button>
             {{#ttsurl}}
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="ell-practice">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="ell-practice">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>
                 </span>
@@ -326,7 +391,7 @@
             </button>
             {{/ttsurl}}
             {{#ellpronunciationenabled}}
-            <button class="local-ai-course-assistant__starter" data-builtin="1" data-starter="ell-pronunciation">
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="ell-pronunciation">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                 </span>
@@ -453,6 +518,7 @@
                         <button class="local-ai-course-assistant__btn-send"
                                 title="{{#str}}chat:send, local_ai_course_assistant{{/str}}"
                                 aria-label="{{#str}}chat:send, local_ai_course_assistant{{/str}}"
+                                type="button"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
                                 <path d="M12 18V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

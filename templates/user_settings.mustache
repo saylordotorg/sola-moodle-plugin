@@ -24,6 +24,21 @@
     * totalconversations - Total number of conversations
     * coursedata - Array of per-course data
     * deleteallurl - URL to delete all data
+
+    Example context (json):
+    {
+        "totalmessages": 42,
+        "totalconversations": 8,
+        "coursedata": [
+            {
+                "coursename": "Test Course 101",
+                "messagecount": 12,
+                "lastactivity": "April 11, 2026",
+                "deleteurl": "#"
+            }
+        ],
+        "deleteallurl": "#"
+    }
 }}
 
 <div class="local-ai-course-assistant-settings">
@@ -87,25 +102,3 @@
         </div>
     </div>
 </div>
-
-<style>
-.local-ai-course-assistant-settings .stat-box {
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.local-ai-course-assistant-settings .stat-label {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 8px;
-}
-
-.local-ai-course-assistant-settings .stat-value {
-    font-size: 32px;
-    font-weight: bold;
-    color: #023e8a;
-}
-</style>

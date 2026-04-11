@@ -1,6 +1,17 @@
 {{!
-    Analytics dashboard tabs — 7 tabbed sections with Chart.js visualizations.
-    Data is loaded via AJAX when each tab is activated.
+    @template local_ai_course_assistant/analytics_tabs
+
+    Analytics dashboard tabs for the SOLA reporting UI.
+
+    Example context (json):
+    {
+        "courses": [
+            {
+                "id": 2,
+                "shortname": "TEST101"
+            }
+        ]
+    }
 }}
 <div class="sola-analytics-dashboard mt-4">
     <div class="sola-analytics-filters d-flex align-items-center gap-3 mb-3 flex-wrap">

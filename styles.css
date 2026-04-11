@@ -4579,3 +4579,239 @@ a.aica-history-panel__source:hover {
         border: 2px solid #333;
     }
 }
+
+/* User settings page */
+.local-ai-course-assistant-settings .stat-box {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.local-ai-course-assistant-settings .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.local-ai-course-assistant-settings .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #023e8a;
+}
+
+/* Token analytics page */
+.aica-cost-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+}
+
+.aica-cost-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.aica-cost-nav a {
+    color: #023e8a;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.aica-cost-nav a:hover {
+    text-decoration: underline;
+}
+
+.aica-cost-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.aica-cost-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.aica-cost-card__label {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 6px;
+}
+
+.aica-cost-card__value {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+.aica-cost-card--highlight .aica-cost-card__value {
+    color: #059669;
+}
+
+.aica-cost-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+
+.aica-cost-filters label,
+.aica-cost-filters .aica-cost-filter-label {
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.aica-cost-range-btn {
+    padding: 5px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 13px;
+    color: #374151;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.aica-cost-range-btn.active,
+.aica-cost-range-btn:hover {
+    background: #023e8a;
+    border-color: #023e8a;
+    color: #fff;
+}
+
+.aica-cost-filters select {
+    padding: 5px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.aica-cost-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 28px;
+    overflow: hidden;
+}
+
+.aica-cost-section__header {
+    padding: 14px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.aica-cost-section__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.aica-cost-section__sub {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 2px 0 0;
+}
+
+.aica-cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.aica-cost-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.aica-cost-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #111827;
+}
+
+.aica-cost-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.aica-cost-table tbody tr:hover td {
+    background: #f9fafb;
+}
+
+.aica-cost-table td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.aica-cost-table td.cost {
+    text-align: right;
+    font-weight: 600;
+    color: #059669;
+    font-variant-numeric: tabular-nums;
+}
+
+.aica-cost-table td.unknown {
+    color: #9ca3af;
+}
+
+.aica-cost-alert {
+    margin: 16px 20px;
+    padding: 10px 14px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #92400e;
+}
+
+.aica-cost-empty {
+    padding: 24px 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.aica-rate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+    padding: 16px 20px;
+}
+
+.aica-rate-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 12px;
+    gap: 12px;
+}
+
+.aica-rate-item__model {
+    color: #374151;
+    font-family: monospace;
+}
+
+.aica-rate-item__price {
+    color: #6b7280;
+    white-space: nowrap;
+}

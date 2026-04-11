@@ -22,6 +22,12 @@
     Context variables required for this template:
     * role - Message role (user or assistant)
     * message - The message HTML content
+
+    Example context (json):
+    {
+        "role": "assistant",
+        "message": "<p>Here is a sample response.</p>"
+    }
 }}
 <div class="local-ai-course-assistant__message local-ai-course-assistant__message--{{role}}" data-role="{{role}}">
     <div class="local-ai-course-assistant__message-content">
