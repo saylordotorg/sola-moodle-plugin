@@ -207,6 +207,9 @@ class generate_quiz extends external_api {
 
     /**
      * Return the JSON schema for structured quiz output.
+     *
+     * @param int $count Number of quiz questions.
+     * @return array Schema definition with name, description, and JSON Schema.
      */
     private static function get_quiz_json_schema(int $count): array {
         return [
