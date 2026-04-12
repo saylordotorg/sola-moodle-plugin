@@ -160,6 +160,15 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/enable_thinking',
+        'Extended Thinking (Claude only)',
+        'Enable adaptive thinking for Claude models. Claude decides when and how much to reason '
+        . 'through a problem before answering. Improves accuracy for complex questions but increases '
+        . 'token usage and latency. Thinking content is not shown to students. Other providers ignore this setting.',
+        '0'
+    ));
+
     // Quick link to the Starter Editor for convenience.
     $startersurl = new moodle_url('/local/ai_course_assistant/starter_settings.php');
     $settings->add(new admin_setting_description(

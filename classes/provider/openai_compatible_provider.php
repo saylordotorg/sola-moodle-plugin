@@ -118,9 +118,20 @@ abstract class openai_compatible_provider extends base_provider {
             $body[$tokenfield] = $options['max_tokens'];
         }
 
+        if (!empty($options['response_schema'])) {
+            $schema = $options['response_schema'];
+            $body['response_format'] = [
+                'type' => 'json_schema',
+                'json_schema' => [
+                    'name' => $schema['name'] ?? 'structured_output',
+                    'schema' => $schema['schema'],
+                    'strict' => true,
+                ],
+            ];
+        }
+
         if ($stream) {
             $body['stream'] = true;
-            // Request usage data in the final streaming chunk.
             $body['stream_options'] = ['include_usage' => true];
         }
 

@@ -19,7 +19,7 @@ namespace local_ai_course_assistant\provider;
 /**
  * Ollama provider (local LLM).
  *
- * Extends OpenAI-compatible with Ollama defaults. Uses /api/chat endpoint.
+ * Extends OpenAI-compatible with Ollama defaults. Uses /v1/chat/completions (OpenAI compat layer).
  *
  * @package    local_ai_course_assistant
  * @copyright  2025 AI Course Assistant
@@ -36,7 +36,7 @@ class ollama_provider extends openai_compatible_provider {
     }
 
     protected function get_endpoint(): string {
-        return '/api/chat';
+        return '/v1/chat/completions';
     }
 
     protected function get_headers(): array {

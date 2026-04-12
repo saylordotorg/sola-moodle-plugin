@@ -312,6 +312,14 @@ try {
         $streamoptions['max_tokens'] = $maxtokens;
     }
 
+    // Enable adaptive thinking for Claude when the admin toggle is on.
+    if ((bool) get_config('local_ai_course_assistant', 'enable_thinking')) {
+        $streamoptions['thinking'] = true;
+        if ($maxtokens > 0 && $maxtokens < 8192) {
+            $streamoptions['max_tokens'] = 8192;
+        }
+    }
+
     // Emit source attribution metadata before streaming begins.
     $pageurl = '';
     $courseurl = (new \moodle_url('/course/view.php', ['id' => $courseid]))->out(false);

@@ -122,22 +122,30 @@ class generate_quiz extends external_api {
             }
         }
 
+        $quizschema = self::get_quiz_json_schema($count);
         try {
             $provider = base_provider::create_from_config($courseid);
             $response = $provider->chat_completion(
                 $systemprompt,
-                [['role' => 'user', 'content' => 'Generate the quiz now.']]
+                [['role' => 'user', 'content' => 'Generate the quiz now.']],
+                ['response_schema' => $quizschema]
             );
         } catch (\Throwable $e) {
             return ['success' => false, 'error' => $e->getMessage(), 'topic' => '', 'questions' => []];
         }
 
-        // Extract JSON from <quiz>…</quiz> delimiters.
-        if (!preg_match('/<quiz>(.*?)<\/quiz>/s', $response, $matches)) {
-            return ['success' => false, 'error' => 'Invalid response format from AI.', 'topic' => '', 'questions' => []];
+        // Try structured output first (provider returned raw JSON).
+        $decoded = json_decode($response, true);
+        if (!$decoded || !isset($decoded['questions']) || !is_array($decoded['questions'])) {
+            // Fallback: extract JSON from <quiz>...</quiz> delimiters.
+            if (preg_match('/<quiz>(.*?)<\/quiz>/s', $response, $matches)) {
+                $decoded = json_decode(trim($matches[1]), true);
+            }
         }
-
-        $decoded = json_decode(trim($matches[1]), true);
+        if (!$decoded || !isset($decoded['questions']) || !is_array($decoded['questions'])) {
+            // Last resort: try the entire response as JSON.
+            $decoded = json_decode($response, true);
+        }
         if (!$decoded || !isset($decoded['questions']) || !is_array($decoded['questions'])) {
             return ['success' => false, 'error' => 'Could not parse quiz JSON.', 'topic' => '', 'questions' => []];
         }
@@ -196,6 +204,42 @@ class generate_quiz extends external_api {
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Return the JSON schema for structured quiz output.
+     */
+    private static function get_quiz_json_schema(int $count): array {
+        return [
+            'name' => 'generate_quiz',
+            'description' => "Generate a {$count}-question multiple-choice quiz",
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'topic' => ['type' => 'string', 'description' => 'Quiz topic name'],
+                    'questions' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'id' => ['type' => 'integer'],
+                                'question' => ['type' => 'string'],
+                                'choices' => [
+                                    'type' => 'array',
+                                    'items' => ['type' => 'string'],
+                                ],
+                                'correct' => ['type' => 'string', 'enum' => ['A', 'B', 'C', 'D']],
+                                'explanation' => ['type' => 'string'],
+                            ],
+                            'required' => ['id', 'question', 'choices', 'correct', 'explanation'],
+                            'additionalProperties' => false,
+                        ],
+                    ],
+                ],
+                'required' => ['topic', 'questions'],
+                'additionalProperties' => false,
+            ],
+        ];
+    }
 
     /**
      * Return the strict JSON output instructions for the AI.
