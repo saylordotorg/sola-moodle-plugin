@@ -28,9 +28,29 @@ class hook_callbacks {
     /**
      * Inject the chat widget into course pages via the before_footer hook.
      *
+     * Wraps the real implementation in a try/catch so that any unexpected
+     * throwable inside SOLA's widget injection cannot break page rendering.
+     * The widget is non-essential; if injection fails for one request, the
+     * rest of the page (navigation, content) must still render.
+     *
      * @param \core\hook\output\before_footer_html_generation $hook
      */
     public static function inject_chat_widget(\core\hook\output\before_footer_html_generation $hook): void {
+        try {
+            self::do_inject_chat_widget($hook);
+        } catch (\Throwable $e) {
+            debugging('SOLA widget injection skipped: ' . $e->getMessage(),
+                DEBUG_DEVELOPER, $e->getTrace());
+        }
+    }
+
+    /**
+     * Internal implementation of the widget injection. Wrapped by inject_chat_widget()
+     * so any throwable is caught and logged rather than breaking page rendering.
+     *
+     * @param \core\hook\output\before_footer_html_generation $hook
+     */
+    protected static function do_inject_chat_widget(\core\hook\output\before_footer_html_generation $hook): void {
         global $PAGE, $USER, $OUTPUT, $DB;
 
         // Check if plugin is enabled.
