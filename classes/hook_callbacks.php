@@ -82,9 +82,10 @@ class hook_callbacks {
             return;
         }
 
-        // Per-course SOLA disable check (default: enabled).
-        $course_enabled = get_config('local_ai_course_assistant', 'sola_enabled_course_' . $courseid);
-        if ($course_enabled === '0') {
+        // Per-course SOLA enable check. Honours the site-wide
+        // default_course_mode setting: new installs default to 'per_course'
+        // (opt-in), upgraded installs default to 'all' (legacy behaviour).
+        if (!course_config_manager::is_enabled_for_course($courseid)) {
             return;
         }
 
@@ -386,6 +387,7 @@ class hook_callbacks {
             'avatarcolor'        => get_config('local_ai_course_assistant', 'avatar_color') ?: '#152233',
             'avatarfill'         => get_config('local_ai_course_assistant', 'avatar_fill') ?: '#ffffff',
             'displaymode'        => $displaymode,
+            'drawermode'         => ($displaymode === 'drawer'),
             'displayname'        => get_config('local_ai_course_assistant', 'display_name') ?: 'Saylor Online Learning Assistant',
             'institution'        => get_config('local_ai_course_assistant', 'institution_name') ?: 'Saylor University',
             'institutionshort'   => get_config('local_ai_course_assistant', 'institution_short_name') ?: 'Saylor U',

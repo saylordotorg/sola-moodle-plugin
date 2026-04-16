@@ -261,6 +261,8 @@ abstract class base_provider implements provider_interface {
                 return new openrouter_provider($overrides);
             case 'xai':
                 return new xai_provider($overrides);
+            case 'coreai':
+                return new coreai_provider($overrides);
             case 'custom':
                 return new custom_provider($overrides);
             default:

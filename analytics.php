@@ -131,8 +131,7 @@ $all_courses = $DB->get_records_sql(
 $course_list = [];
 foreach ($all_courses as $c) {
     $has_data = isset($courses_with_data[$c->id]);
-    $enabled_val = get_config('local_ai_course_assistant', 'sola_enabled_course_' . $c->id);
-    $is_enabled = ($enabled_val !== '0'); // Default: enabled.
+    $is_enabled = \local_ai_course_assistant\course_config_manager::is_enabled_for_course((int) $c->id);
     $ut_val = get_config('local_ai_course_assistant', 'sola_usertesting_course_' . $c->id);
     // User testing state: '' = inherit, '1' = on, '0' = off.
     $ut_state = ($ut_val === '1') ? 'on' : (($ut_val === '0') ? 'off' : 'inherit');

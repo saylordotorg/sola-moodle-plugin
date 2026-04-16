@@ -107,6 +107,18 @@ if ($hassiteconfig) {
         0
     ));
 
+    $coursemodes = [
+        'per_course' => get_string('settings:default_course_mode_per_course', 'local_ai_course_assistant'),
+        'all'        => get_string('settings:default_course_mode_all', 'local_ai_course_assistant'),
+    ];
+    $settings->add(new admin_setting_configselect(
+        'local_ai_course_assistant/default_course_mode',
+        get_string('settings:default_course_mode', 'local_ai_course_assistant'),
+        get_string('settings:default_course_mode_desc', 'local_ai_course_assistant'),
+        'per_course',
+        $coursemodes
+    ));
+
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/remoteconfigurl',
         get_string('remoteconfigurl', 'local_ai_course_assistant'),
@@ -139,6 +151,7 @@ if ($hassiteconfig) {
         'groq' => get_string('settings:provider_groq', 'local_ai_course_assistant'),
         'openrouter' => get_string('settings:provider_openrouter', 'local_ai_course_assistant'),
         'xai' => get_string('settings:provider_xai', 'local_ai_course_assistant'),
+        'coreai' => get_string('settings:provider_coreai', 'local_ai_course_assistant'),
         'custom' => get_string('settings:provider_custom', 'local_ai_course_assistant'),
     ];
     $settings->add(new admin_setting_configselect(

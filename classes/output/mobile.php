@@ -53,8 +53,7 @@ class mobile {
 
         // Check if plugin is enabled globally and for this course.
         $enabled = (bool) get_config('local_ai_course_assistant', 'enabled');
-        $courseenabled = get_config('local_ai_course_assistant', 'sola_enabled_course_' . $courseid);
-        if (!$enabled || $courseenabled === '0') {
+        if (!$enabled || !\local_ai_course_assistant\course_config_manager::is_enabled_for_course($courseid)) {
             return [
                 'templates' => [
                     [

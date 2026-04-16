@@ -84,6 +84,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     course_config_manager::save($courseid, $data);
 
+    // Per-course SOLA enable toggle. Writes an explicit '1' or '0' so the
+    // setting no longer inherits the site-wide default_course_mode. This is
+    // the same key used by the Analytics page per-course toggle list.
+    $solacourse = optional_param('sola_course_enabled', 0, PARAM_INT);
+    set_config('sola_enabled_course_' . $courseid, $solacourse ? '1' : '0', 'local_ai_course_assistant');
+
     // RAG toggle — stored separately as plugin config keyed by course.
     $ragcourse = optional_param('rag_course_enabled', 0, PARAM_INT);
     set_config('rag_enabled_course_' . $courseid, $ragcourse, 'local_ai_course_assistant');
@@ -116,6 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Load current course overrides.
 $current = course_config_manager::get($courseid);
 
+// Per-course SOLA enable state (effective, honours default_course_mode).
+$solacourseenabled = course_config_manager::is_enabled_for_course($courseid);
+
 // RAG setting — defaults to enabled if global RAG is on and not explicitly disabled.
 $ragenabled = (bool)get_config('local_ai_course_assistant', 'rag_enabled');
 $ragcourseraw = get_config('local_ai_course_assistant', 'rag_enabled_course_' . $courseid);
@@ -137,6 +146,7 @@ $providers = [
     'deepseek' => get_string('settings:provider_deepseek', 'local_ai_course_assistant'),
     'ollama'   => get_string('settings:provider_ollama', 'local_ai_course_assistant'),
     'minimax'  => get_string('settings:provider_minimax', 'local_ai_course_assistant'),
+    'coreai'   => get_string('settings:provider_coreai', 'local_ai_course_assistant'),
     'custom'   => get_string('settings:provider_custom', 'local_ai_course_assistant'),
 ];
 
@@ -170,6 +180,29 @@ echo html_writer::div(
         Settings configured here override the global defaults for this course only.
         Leave a field blank to use the global setting.
         Changes here do not affect other courses.
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5 class="mb-0"><?php echo get_string('coursesettings:sola_enabled', 'local_ai_course_assistant'); ?></h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted"><?php echo get_string('coursesettings:sola_enabled_desc', 'local_ai_course_assistant'); ?></p>
+            <div class="form-group row mb-0">
+                <label class="col-sm-3 col-form-label">
+                    <?php echo get_string('coursesettings:sola_enabled', 'local_ai_course_assistant'); ?>
+                </label>
+                <div class="col-sm-9">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="sola_course_enabled" name="sola_course_enabled" value="1"
+                            <?php if ($solacourseenabled) { echo 'checked'; } ?>>
+                        <label class="custom-control-label" for="sola_course_enabled">
+                            <?php echo get_string('coursesettings:sola_enabled_toggle', 'local_ai_course_assistant'); ?>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card mb-3">

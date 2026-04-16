@@ -564,5 +564,18 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026033001, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026041600) {
+        // 3.5.0 introduces a new setting, default_course_mode, that controls
+        // whether SOLA shows on a course when no per-course override is set.
+        // New installs default to 'per_course' (opt-in) for a sane first-run
+        // experience. Existing sites are set to 'all' here to preserve their
+        // current behaviour — SOLA keeps appearing on every course unless it
+        // was explicitly disabled via the Analytics toggle.
+        if (get_config('local_ai_course_assistant', 'default_course_mode') === false) {
+            set_config('default_course_mode', 'all', 'local_ai_course_assistant');
+        }
+        upgrade_plugin_savepoint(true, 2026041600, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

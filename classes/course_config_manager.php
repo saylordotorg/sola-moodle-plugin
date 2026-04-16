@@ -123,4 +123,32 @@ class course_config_manager {
                 : $global['temperature'],
         ];
     }
+
+    /**
+     * Whether the SOLA widget should be shown on a given course, respecting
+     * the per-course override and the site-wide default-course-mode setting.
+     *
+     * Reads two config keys:
+     *   - local_ai_course_assistant/sola_enabled_course_{id}  ('1', '0', or unset)
+     *   - local_ai_course_assistant/default_course_mode       ('all' or 'per_course')
+     *
+     * When the per-course key is set it always wins. When it is unset, behaviour
+     * depends on default_course_mode: 'all' treats unset as enabled (legacy
+     * behaviour for sites that upgraded), 'per_course' treats unset as disabled
+     * (new-install default, so admins opt in course by course).
+     *
+     * @param int $courseid
+     * @return bool
+     */
+    public static function is_enabled_for_course(int $courseid): bool {
+        $raw = get_config('local_ai_course_assistant', 'sola_enabled_course_' . $courseid);
+        if ($raw === '1') {
+            return true;
+        }
+        if ($raw === '0') {
+            return false;
+        }
+        $mode = get_config('local_ai_course_assistant', 'default_course_mode') ?: 'per_course';
+        return $mode === 'all';
+    }
 }
