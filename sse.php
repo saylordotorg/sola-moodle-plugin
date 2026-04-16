@@ -59,6 +59,8 @@ $firstgen        = optional_param('firstgen', 0, PARAM_BOOL);      // First-gene
 $completion      = optional_param('completion', 0, PARAM_INT);      // Course completion percentage (0-100).
 $interactiontype = optional_param('interaction_type', 'chat', PARAM_ALPHA); // Interaction mode: chat, voice, quiz, etc.
 $logonly         = optional_param('log_only', 0, PARAM_BOOL);              // Log a system message without AI call.
+$clientprovider  = optional_param('provider', '', PARAM_ALPHA);            // Admin LLM picker override.
+$clientmodel     = optional_param('model', '', PARAM_RAW_TRIMMED);         // Admin LLM picker model override.
 
 // Log-only mode: record a cost/usage entry without calling the AI provider.
 if ($logonly) {
@@ -301,8 +303,16 @@ try {
 
     $history = conversation_manager::get_history_for_api($conv->id);
 
-    // Create provider and stream (uses per-course overrides if configured).
-    $provider = base_provider::create_from_config($courseid);
+    // Create provider. Admin LLM picker can override the provider/model for
+    // side-by-side comparison. Requires the manage capability; students always
+    // get the course/global default.
+    $isadmin = has_capability('local/ai_course_assistant:manage',
+        context_course::instance($courseid));
+    if ($isadmin && !empty($clientprovider)) {
+        $provider = base_provider::create_for_comparison($clientprovider, $clientmodel, $courseid);
+    } else {
+        $provider = base_provider::create_from_config($courseid);
+    }
     $fullresponse = '';
 
     // Pass max_tokens from config (0 = no limit / provider default).

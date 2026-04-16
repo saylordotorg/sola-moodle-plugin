@@ -240,6 +240,64 @@ abstract class base_provider implements provider_interface {
             ? $overrides['provider']
             : (get_config('local_ai_course_assistant', 'provider') ?: '');
 
+        return self::instantiate($provider, $overrides);
+    }
+
+    /**
+     * Factory for the admin LLM comparison picker. Looks up the API key from
+     * the comparison_providers admin setting, falling back to the primary key.
+     *
+     * @param string $providerid Provider ID selected by the admin.
+     * @param string $model Model name selected by the admin (may be blank).
+     * @param int $courseid Course context for base config inheritance.
+     * @return provider_interface
+     * @throws \moodle_exception If provider is unknown.
+     */
+    public static function create_for_comparison(string $providerid, string $model, int $courseid = 0): provider_interface {
+        $overrides = \local_ai_course_assistant\course_config_manager::get_effective_config($courseid);
+        $overrides['provider'] = $providerid;
+        if ($model !== '') {
+            $overrides['model'] = $model;
+        }
+
+        $apikey = self::lookup_comparison_key($providerid);
+        if (!empty($apikey)) {
+            $overrides['apikey'] = $apikey;
+        }
+
+        return self::instantiate($providerid, $overrides);
+    }
+
+    /**
+     * Look up an API key for a comparison provider from the admin textarea.
+     *
+     * @param string $providerid
+     * @return string API key if found, empty string otherwise.
+     */
+    private static function lookup_comparison_key(string $providerid): string {
+        $raw = get_config('local_ai_course_assistant', 'comparison_providers') ?: '';
+        foreach (explode("\n", $raw) as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+            $parts = array_map('trim', explode('|', $line));
+            if (count($parts) >= 2 && strtolower($parts[0]) === $providerid) {
+                return $parts[1];
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Instantiate a provider by ID with the given overrides.
+     *
+     * @param string $provider Provider ID.
+     * @param array $overrides Config overrides (apikey, model, etc.).
+     * @return provider_interface
+     * @throws \moodle_exception If provider is unknown.
+     */
+    private static function instantiate(string $provider, array $overrides): provider_interface {
         switch ($provider) {
             case 'claude':
                 return new claude_provider($overrides);

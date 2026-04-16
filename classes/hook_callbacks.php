@@ -337,19 +337,55 @@ class hook_callbacks {
         $serverpageheading = $PAGE->heading ?? '';
 
         // Build LLM options JSON for composer model switcher (admin-only feature).
+        // Primary provider is always first; comparison providers parsed from the
+        // comparison_providers admin setting (one line per provider, pipe-delimited).
         $llmoptions = [];
         if ($cansiteconfig) {
             $configprovider = get_config('local_ai_course_assistant', 'provider') ?: 'openai';
             $configmodel = get_config('local_ai_course_assistant', 'model') ?: '';
+            $providers = [
+                [
+                    'id' => $configprovider,
+                    'label' => ucfirst($configprovider) . ' (primary)',
+                    'models' => $configmodel
+                        ? [['id' => $configmodel, 'label' => $configmodel, 'status' => 'active']]
+                        : [],
+                ],
+            ];
+            $seen = [$configprovider => true];
+            $compraw = get_config('local_ai_course_assistant', 'comparison_providers') ?: '';
+            foreach (explode("\n", $compraw) as $line) {
+                $line = trim($line);
+                if ($line === '' || $line[0] === '#') {
+                    continue;
+                }
+                $parts = array_map('trim', explode('|', $line));
+                if (count($parts) < 2) {
+                    continue;
+                }
+                $pid = strtolower($parts[0]);
+                if (!empty($seen[$pid])) {
+                    continue;
+                }
+                $seen[$pid] = true;
+                $models = [];
+                if (!empty($parts[2])) {
+                    foreach (explode(',', $parts[2]) as $m) {
+                        $m = trim($m);
+                        if ($m !== '') {
+                            $models[] = ['id' => $m, 'label' => $m, 'status' => 'active'];
+                        }
+                    }
+                }
+                $providers[] = [
+                    'id' => $pid,
+                    'label' => ucfirst($pid),
+                    'models' => $models,
+                ];
+            }
             $llmoptions = [
                 'enabled' => true,
-                'providers' => [
-                    [
-                        'id' => $configprovider,
-                        'label' => ucfirst($configprovider),
-                        'models' => $configmodel ? [['id' => $configmodel, 'label' => $configmodel, 'status' => 'active']] : [],
-                    ],
-                ],
+                'providers' => $providers,
             ];
         }
 

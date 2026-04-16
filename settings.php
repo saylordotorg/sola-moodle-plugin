@@ -223,6 +223,13 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
+    $settings->add(new admin_setting_configtextarea(
+        'local_ai_course_assistant/comparison_providers',
+        get_string('settings:comparison_providers', 'local_ai_course_assistant'),
+        get_string('settings:comparison_providers_desc', 'local_ai_course_assistant'),
+        ''
+    ));
+
     $settings->add(new admin_setting_configcheckbox(
         'local_ai_course_assistant/enable_thinking',
         'Extended Thinking (Claude only)',
