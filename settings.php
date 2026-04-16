@@ -260,6 +260,16 @@ if ($hassiteconfig) {
         . '<p class="text-muted mt-1" style="font-size:13px;">Monitor token usage and costs across courses and providers.</p>'
     ));
 
+    // Quick link to analytics dashboard.
+    $analyticsurl = new moodle_url('/local/ai_course_assistant/analytics.php');
+    $settings->add(new admin_setting_description(
+        'local_ai_course_assistant/analytics_link',
+        'Analytics Dashboard',
+        '<a href="' . $analyticsurl->out() . '" class="btn btn-sm btn-outline-secondary">'
+        . 'View Analytics Dashboard &rarr;</a>'
+        . '<p class="text-muted mt-1" style="font-size:13px;">Cross-course usage analytics, enable/disable AI per course, student feedback, and Meta-AI Chat.</p>'
+    ));
+
     // ── Section: Content & RAG ──────────────────────────────────────────────
     $settings->add(new admin_setting_description(
         'local_ai_course_assistant/sec_content_anchor',
@@ -847,6 +857,56 @@ if ($hassiteconfig) {
         'local_ai_course_assistant/zendesk_token',
         get_string('settings:zendesk_token', 'local_ai_course_assistant'),
         get_string('settings:zendesk_token_desc', 'local_ai_course_assistant'),
+        ''
+    ));
+
+    // Meta-AI Scheduled Reports.
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/metaai_cron_heading',
+        'Meta-AI Scheduled Reports',
+        'Configure automated AI analysis of anonymized student conversation data. Reports are emailed on the selected schedule.'
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/metaai_cron_enabled',
+        'Enable scheduled reports',
+        'Run a recurring Meta-AI query and email the anonymized results.',
+        0
+    ));
+
+    $settings->add(new admin_setting_configselect(
+        'local_ai_course_assistant/metaai_cron_frequency',
+        'Report frequency',
+        'How often to run the query. Daily runs every day, weekly runs on Mondays, monthly runs on the 1st.',
+        'weekly',
+        ['daily' => 'Daily', 'weekly' => 'Weekly', 'monthly' => 'Monthly']
+    ));
+
+    $settings->add(new admin_setting_configtextarea(
+        'local_ai_course_assistant/metaai_cron_query',
+        'Report query',
+        'The question to ask the AI about student conversations. Example: "Summarize the top themes, common questions, and engagement patterns from student conversations this period."',
+        ''
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/metaai_cron_provider',
+        'Report LLM provider',
+        'Provider ID for the report (e.g., openai, claude). Must match a provider configured in the comparison providers field or the primary provider. Leave blank for the primary provider.',
+        ''
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/metaai_cron_model',
+        'Report LLM model',
+        'Model name for the report. Leave blank for the provider default.',
+        ''
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/metaai_cron_email',
+        'Report recipient email',
+        'Email address to receive the report. Leave blank to send to the site admin.',
         ''
     ));
 

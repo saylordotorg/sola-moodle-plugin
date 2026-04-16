@@ -38,6 +38,18 @@ $courseid = optional_param('courseid', 0, PARAM_INT);
 $range    = optional_param('range', 30, PARAM_INT); // 7, 30, 0 = all.
 $action   = optional_param('action', '', PARAM_ALPHA);
 
+// ── Anonymization toggle (session-scoped) ──────────────────────────────────
+if ($action === 'togglenames' && confirm_sesskey()) {
+    if (!empty($_SESSION['sola_show_real_names'])) {
+        unset($_SESSION['sola_show_real_names']);
+    } else {
+        $_SESSION['sola_show_real_names'] = true;
+    }
+    redirect(new moodle_url('/local/ai_course_assistant/analytics.php',
+        ['courseid' => $courseid, 'range' => $range]));
+}
+$show_real_names = !empty($_SESSION['sola_show_real_names']);
+
 // ── Handle SOLA enable/disable toggle POST ──────────────────────────────────
 if ($action === 'toggle' && confirm_sesskey()) {
     $togglecourseid = required_param('togglecourseid', PARAM_INT);
@@ -218,7 +230,7 @@ if ($courseid > 0) {
             $ratingrows[] = ['stars' => $r, 'count' => $cnt];
         }
         $recentfeedback = $DB->get_records_sql(
-            "SELECT f.id, f.rating, f.comment, f.browser, f.os, f.device,
+            "SELECT f.id, f.userid, f.rating, f.comment, f.browser, f.os, f.device,
                     f.screen_size, f.timecreated, u.firstname, u.lastname
                FROM {local_ai_course_assistant_feedback} f
                JOIN {user} u ON u.id = f.userid
@@ -232,8 +244,10 @@ if ($courseid > 0) {
             for ($s = 0; $s < 5; $s++) {
                 $stars .= $s < (int) $fb->rating ? '&#9733;' : '&#9734;';
             }
+            $realname = htmlspecialchars($fb->firstname . ' ' . $fb->lastname);
+            $anonname = \local_ai_course_assistant\anonymizer::name((int) $fb->userid);
             $feedbackentries[] = [
-                'name'        => htmlspecialchars($fb->firstname . ' ' . $fb->lastname),
+                'name'        => $show_real_names ? $realname : $anonname,
                 'stars'       => $stars,
                 'rating'      => (int) $fb->rating,
                 'comment'     => htmlspecialchars($fb->comment ?: ''),
@@ -365,9 +379,11 @@ if ($courseid > 0) {
             'has_common_prompts' => !empty($commonprompts),
             'provider_comparison' => $providercomparison,
             'has_provider_comparison' => !empty($providercomparison),
-            'students' => array_values(array_map(function($s) {
+            'students' => array_values(array_map(function($s) use ($show_real_names) {
+                $realname = $s->firstname . ' ' . $s->lastname;
+                $anonname = \local_ai_course_assistant\anonymizer::name((int) $s->userid);
                 return [
-                    'name'          => $s->firstname . ' ' . $s->lastname,
+                    'name'          => $show_real_names ? $realname : $anonname,
                     'message_count' => $s->message_count,
                     'last_active'   => userdate($s->last_active),
                 ];
@@ -430,6 +446,50 @@ $templatedata = [
         ['category' => 'local_ai_course_assistant']))->out(false),
     'analytics_base_url' => (new moodle_url('/local/ai_course_assistant/analytics.php',
         ['range' => $range]))->out(false),
+
+    // Anonymization toggle.
+    'show_real_names' => $show_real_names,
+
+    // Meta-AI Chat.
+    'meta_ai_sse_url' => (new moodle_url('/local/ai_course_assistant/meta_ai_sse.php'))->out(false),
+    'meta_ai_providers' => (function () {
+        $providers = [];
+        $configprovider = get_config('local_ai_course_assistant', 'provider') ?: 'openai';
+        $configmodel = get_config('local_ai_course_assistant', 'model') ?: '';
+        $providers[] = [
+            'id' => $configprovider,
+            'label' => ucfirst($configprovider) . ' (primary)',
+            'models_json' => json_encode($configmodel ? [$configmodel] : []),
+        ];
+        $seen = [$configprovider => true];
+        $compraw = get_config('local_ai_course_assistant', 'comparison_providers') ?: '';
+        foreach (explode("\n", $compraw) as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+            $parts = array_map('trim', explode('|', $line));
+            if (count($parts) < 2) {
+                continue;
+            }
+            $pid = strtolower($parts[0]);
+            if (!empty($seen[$pid])) {
+                continue;
+            }
+            $seen[$pid] = true;
+            $models = [];
+            if (!empty($parts[2])) {
+                $models = array_filter(array_map('trim', explode(',', $parts[2])));
+            }
+            $providers[] = [
+                'id' => $pid,
+                'label' => ucfirst($pid),
+                'models_json' => json_encode(array_values($models)),
+            ];
+        }
+        return $providers;
+    })(),
+    'has_meta_ai_providers' => true,
 ];
 
 // Load Chart.js and analytics dashboard AMD module.

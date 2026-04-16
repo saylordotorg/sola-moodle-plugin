@@ -61,4 +61,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        'classname' => \local_ai_course_assistant\task\run_meta_ai_query::class,
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '6',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];

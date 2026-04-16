@@ -166,9 +166,14 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('coursesettings:title', 'local_ai_course_assistant'));
 
 // Link back to global settings.
+$courseanalyticsurl = new moodle_url('/local/ai_course_assistant/analytics.php', ['courseid' => $courseid]);
 echo html_writer::div(
     html_writer::link($globalsettingsurl,
         get_string('coursesettings:global_settings_link', 'local_ai_course_assistant'),
+        ['class' => 'btn btn-sm btn-outline-secondary mb-3'])
+    . ' '
+    . html_writer::link($courseanalyticsurl,
+        'View Course Analytics',
         ['class' => 'btn btn-sm btn-outline-secondary mb-3']),
     'mb-2'
 );

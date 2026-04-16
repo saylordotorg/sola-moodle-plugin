@@ -34,11 +34,25 @@
 }}
 <div class="local-ai-tutor-analytics">
 
-    {{! Navigation }}
-    <div class="mb-3 d-flex flex-wrap gap-2" style="gap:8px">
+    {{! Navigation + Anonymization toggle }}
+    <div class="mb-3 d-flex flex-wrap align-items-center" style="gap:8px">
         <a href="{{settings_url}}" class="btn btn-sm btn-outline-secondary">&larr; Plugin Settings</a>
         <a href="{{token_analytics_url}}" class="btn btn-sm btn-outline-secondary">&#36; Token Usage &amp; Cost</a>
+        <form method="post" action="{{form_action}}" style="display:inline;margin-left:auto">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="action" value="togglenames">
+            <input type="hidden" name="courseid" value="{{courseid_param}}">
+            <input type="hidden" name="range" value="{{range}}">
+            <button type="submit" class="btn btn-sm {{#show_real_names}}btn-warning{{/show_real_names}}{{^show_real_names}}btn-outline-secondary{{/show_real_names}}">
+                {{#show_real_names}}&#128275; Hide Real Names{{/show_real_names}}{{^show_real_names}}&#128274; Show Real Names{{/show_real_names}}
+            </button>
+        </form>
     </div>
+    {{#show_real_names}}
+    <div class="alert alert-warning py-2 mb-3" style="font-size:13px">
+        <strong>Real names are visible.</strong> Student data is not anonymized in this session. Toggle off before sharing your screen or leaving this page.
+    </div>
+    {{/show_real_names}}
 
     {{! ═══ Cross-Course Summary ═══ }}
     <h3>AI Course Assistant Overview</h3>
@@ -69,6 +83,47 @@
         </div>
     </div>
 
+    {{! ═══ Meta-AI Chat ═══ }}
+    {{#has_meta_ai_providers}}
+    <div class="card mb-4" id="meta-ai-chat-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Meta-AI Chat <small class="text-muted" style="font-size:12px">(query anonymized student data)</small></h5>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#meta-ai-body" aria-expanded="false" aria-controls="meta-ai-body">Expand</button>
+        </div>
+        <div class="collapse" id="meta-ai-body">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-end mb-2" style="gap:8px">
+                    <div>
+                        <label for="meta-ai-provider" class="small text-muted mb-0">Provider</label>
+                        <select id="meta-ai-provider" class="form-control form-control-sm" style="width:180px">
+                            {{#meta_ai_providers}}
+                            <option value="{{id}}" data-models="{{models_json}}">{{label}}</option>
+                            {{/meta_ai_providers}}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="meta-ai-model" class="small text-muted mb-0">Model</label>
+                        <select id="meta-ai-model" class="form-control form-control-sm" style="width:220px"></select>
+                    </div>
+                </div>
+                <div id="meta-ai-messages" style="max-height:400px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:12px;margin-bottom:12px;background:#f8f9fa;font-size:14px">
+                    <p class="text-muted mb-0" style="font-size:13px">Ask a question about student conversations. All data sent to the AI is anonymized. Examples: "What are the most common topics students ask about?" or "Summarize feedback themes from the last 30 days."</p>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="meta-ai-input" class="form-control" placeholder="Ask about student conversations...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" id="meta-ai-send" type="button">Send</button>
+                    </div>
+                </div>
+                <input type="hidden" id="meta-ai-sse-url" value="{{meta_ai_sse_url}}">
+                <input type="hidden" id="meta-ai-sesskey" value="{{sesskey}}">
+                <input type="hidden" id="meta-ai-courseid" value="{{courseid_param}}">
+                <input type="hidden" id="meta-ai-range" value="{{range}}">
+            </div>
+        </div>
+    </div>
+    {{/has_meta_ai_providers}}
+
     {{! ═══ Course List with Enable/Disable Toggles ═══ }}
     <h3>Courses</h3>
     <p class="text-muted">Enable or disable AI Assistant per course. Click a course name to view detailed analytics.</p>
@@ -77,7 +132,7 @@
     {{! Search + filter bar }}
     <div class="d-flex align-items-center mb-2 flex-wrap" style="gap:8px">
         <input type="text" id="sola-course-search" class="form-control form-control-sm" style="max-width:260px"
-               placeholder="Search courses..." aria-label="Filter course list">
+               placeholder="Search courses..." aria-label="Filter course list" autofocus>
         <select id="sola-filter-status" class="form-control form-control-sm" style="max-width:160px" aria-label="Filter by AI Assistant status">
             <option value="">All AI Assistant Status</option>
             <option value="enabled">AI Assistant Enabled</option>
@@ -90,6 +145,7 @@
             <option value="inherit">UT Inherit</option>
         </select>
     </div>
+    <p id="sola-default-limit-msg" class="text-muted mb-2" style="font-size:13px;display:none"></p>
 
     {{! Bulk action bar }}
     <div class="card mb-2 bg-light" id="sola-bulk-bar">
@@ -710,9 +766,47 @@
         return ids;
     }
 
+    // Default: limit visible courses to 25 when no search/filter is active.
+    var MAX_DEFAULT_ROWS = 25;
+    var defaultLimitMsg = document.getElementById('sola-default-limit-msg');
+
+    function enforceDefaultLimit() {
+        var q = (searchBox ? searchBox.value : '');
+        var sf = filterStatus ? filterStatus.value : '';
+        var uf = filterUt ? filterUt.value : '';
+        var hasFilter = q || sf || uf;
+        if (hasFilter) {
+            if (defaultLimitMsg) defaultLimitMsg.style.display = 'none';
+            return;
+        }
+        var rows = getRows();
+        var visibleCount = 0;
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].style.display !== 'none') {
+                visibleCount++;
+                if (visibleCount > MAX_DEFAULT_ROWS) {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+        if (defaultLimitMsg) {
+            defaultLimitMsg.style.display = rows.length > MAX_DEFAULT_ROWS ? '' : 'none';
+            defaultLimitMsg.textContent = 'Showing ' + Math.min(MAX_DEFAULT_ROWS, rows.length) + ' of ' + rows.length + ' courses. Use the search box or filters to see all.';
+        }
+    }
+
+    var origApplyFilters = applyFilters;
+    applyFilters = function() {
+        origApplyFilters();
+        enforceDefaultLimit();
+    };
+
     if (searchBox) searchBox.addEventListener('input', applyFilters);
     if (filterStatus) filterStatus.addEventListener('change', applyFilters);
     if (filterUt) filterUt.addEventListener('change', applyFilters);
+
+    // Apply default limit on page load.
+    applyFilters();
 
     // Select all checkbox.
     if (selectAll && courseTable) {
@@ -929,3 +1023,144 @@
 {{/js}}
 {{/course.has_data}}
 {{/has_course_selected}}
+
+{{! ═══ Meta-AI Chat JS ═══ }}
+{{#has_meta_ai_providers}}
+{{#js}}
+(function() {
+    var providerSelect = document.getElementById('meta-ai-provider');
+    var modelSelect = document.getElementById('meta-ai-model');
+    var messagesDiv = document.getElementById('meta-ai-messages');
+    var inputField = document.getElementById('meta-ai-input');
+    var sendBtn = document.getElementById('meta-ai-send');
+    var sseUrl = document.getElementById('meta-ai-sse-url');
+    var sesskey = document.getElementById('meta-ai-sesskey');
+    var courseidEl = document.getElementById('meta-ai-courseid');
+    var rangeEl = document.getElementById('meta-ai-range');
+
+    if (!providerSelect || !modelSelect || !messagesDiv || !inputField || !sendBtn) return;
+
+    var chatHistory = [];
+
+    function populateModels() {
+        var opt = providerSelect.options[providerSelect.selectedIndex];
+        var models = [];
+        try { models = JSON.parse(opt.getAttribute('data-models') || '[]'); } catch (e) {}
+        modelSelect.innerHTML = '';
+        if (!models.length) {
+            var o = document.createElement('option');
+            o.value = '';
+            o.textContent = '(provider default)';
+            modelSelect.appendChild(o);
+        }
+        for (var i = 0; i < models.length; i++) {
+            var o = document.createElement('option');
+            o.value = models[i];
+            o.textContent = models[i];
+            modelSelect.appendChild(o);
+        }
+    }
+    providerSelect.addEventListener('change', populateModels);
+    populateModels();
+
+    function appendMessage(role, text) {
+        var div = document.createElement('div');
+        div.style.cssText = 'margin-bottom:10px;padding:8px 12px;border-radius:8px;max-width:90%;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
+        if (role === 'user') {
+            div.style.cssText += 'background:#023e8a;color:#fff;margin-left:auto;text-align:right;';
+        } else {
+            div.style.cssText += 'background:#fff;border:1px solid #dee2e6;';
+        }
+        div.textContent = text;
+        // Clear the placeholder if it exists
+        var placeholder = messagesDiv.querySelector('.text-muted');
+        if (placeholder) placeholder.remove();
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return div;
+    }
+
+    function sendQuery() {
+        var query = inputField.value.trim();
+        if (!query) return;
+
+        appendMessage('user', query);
+        chatHistory.push({ role: 'user', content: query });
+        inputField.value = '';
+        sendBtn.disabled = true;
+        inputField.disabled = true;
+
+        var responseDiv = appendMessage('assistant', '');
+        var fullText = '';
+
+        var params = new URLSearchParams();
+        params.append('sesskey', sesskey ? sesskey.value : '');
+        params.append('query', query);
+        params.append('provider', providerSelect.value);
+        params.append('model', modelSelect.value);
+        params.append('courseid', courseidEl ? courseidEl.value : '0');
+        params.append('range', rangeEl ? rangeEl.value : '30');
+        params.append('history', JSON.stringify(chatHistory.slice(0, -1)));
+
+        var url = sseUrl ? sseUrl.value : '';
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        }).then(function(resp) {
+            var reader = resp.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+            function read() {
+                return reader.read().then(function(result) {
+                    if (result.done) {
+                        chatHistory.push({ role: 'assistant', content: fullText });
+                        sendBtn.disabled = false;
+                        inputField.disabled = false;
+                        inputField.focus();
+                        return;
+                    }
+                    buffer += decoder.decode(result.value, { stream: true });
+                    var lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i].trim();
+                        if (line.indexOf('data: ') === 0) {
+                            try {
+                                var payload = JSON.parse(line.substring(6));
+                                if (payload.token) {
+                                    fullText += payload.token;
+                                    responseDiv.textContent = fullText;
+                                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                                }
+                                if (payload.message) {
+                                    responseDiv.textContent = 'Error: ' + payload.message;
+                                }
+                                if (payload.full && !fullText) {
+                                    fullText = payload.full;
+                                    responseDiv.textContent = fullText;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                    return read();
+                });
+            }
+            return read();
+        }).catch(function(err) {
+            responseDiv.textContent = 'Error: ' + (err.message || 'Network error');
+            sendBtn.disabled = false;
+            inputField.disabled = false;
+        });
+    }
+
+    sendBtn.addEventListener('click', sendQuery);
+    inputField.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuery();
+        }
+    });
+})();
+{{/js}}
+{{/has_meta_ai_providers}}
