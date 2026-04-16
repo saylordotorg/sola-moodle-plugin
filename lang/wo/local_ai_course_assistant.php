@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Gérer réglages wax-ak-wax AI jàng (R
 // Settings.
 $string['settings:enabled'] = 'Sopp Jëkkër AI bi ci Cours bi';
 $string['settings:enabled_desc'] = 'Sopp walla tëj widget Jëkkër AI bi ci Cours bi ci say xët cours yi.';
+$string['settings:default_course_mode'] = 'Fàww ci njàng yu bees';
+$string['settings:default_course_mode_desc'] = 'Dafay kontrole ndax SOLA dina feeñ ci njàng ba saa yu tànnul dañu tànn ci njàng. Installasioŋ yu bees ñoo ngi ag "Tëjoon ci fàww" ngir ndawalu yi mën a jàpp njàng bu nekk ci xëtu Analytics walla xëtu Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Tëjoon ci fàww (ubbil ci njàng bu nekk)';
+$string['settings:default_course_mode_all'] = 'Ubbi ci njàng yépp';
 $string['settings:provider'] = 'Fournisseur AI';
-$string['settings:provider_desc'] = 'Tann fournisseur AI bi ngay jëfandikoo ci complétions wax-ak-wax yi.';
+$string['settings:provider_desc'] = 'Tànn jukki AI bi ngay jëfandikoo ngir mat-waxtaan yi. Tànn "Moodle AI (core_ai subsystem)" ngir yóbbu ñaan yi ci ndefaru AI bu nekk ci biir Moodle ci Site admin > AI; tolof-tolof yu caabiu API, mudel ak URL bu njëkk dañu leen di dugal ci jëfi yooyu. Streaming, jëfandikoo nu jumtukaay yi, ak prompt caching amul ci core_ai — tontu yi ñoo leen di jox ci benn boor. Jëfandikoo jukkikat bu jub ngir jafandu jàngkat bu gën a baax.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Xool tableau de bord analytics bi';
 $string['coursesettings:title'] = 'Réglages AI Cours bi';
 $string['coursesettings:enabled'] = 'Sopp substitutions cours bi';
 $string['coursesettings:enabled_desc'] = 'Su soppi la, réglages yi ci suuf dañy tekk réglages fournisseur AI bi bu ñu xam xam ci cours boobu rekk. Samp champs yi vides pour hériter valeur globale bi.';
+$string['coursesettings:sola_enabled'] = 'SOLA ci njàng bii';
+$string['coursesettings:sola_enabled_toggle'] = 'Wone widget bu SOLA ci njàng bii';
+$string['coursesettings:sola_enabled_desc'] = 'Dafay kontrole ndax widget-waxtaanu SOLA dina feeñ ci njàng bii. Fàww bu sit bi yépp dañu koy tànn ci tàggat-yu-plugin ci kanam General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Jëfandikoo réglage global bi';
 $string['coursesettings:saved'] = 'Réglages AI cours bi dañ ko sauvegarder.';
 $string['coursesettings:global_settings_link'] = 'Réglages AI globaux';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Xamal bii xët';
 $string['chat:starter_ask_anything'] = 'Laaj lu la neexe';

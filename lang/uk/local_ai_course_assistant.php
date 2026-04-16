@@ -49,8 +49,12 @@ $string['ai_course_assistant:manage'] = 'Керування налаштуван
 // Settings.
 $string['settings:enabled'] = 'Увімкнути AI Асистент Курсу';
 $string['settings:enabled_desc'] = 'Увімкніть або вимкніть віджет AI Асистента на сторінках курсу.';
+$string['settings:default_course_mode'] = 'Типове значення для нових курсів';
+$string['settings:default_course_mode_desc'] = 'Керує тим, чи відображається SOLA на курсі, коли не зроблено вибір для конкретного курсу. Нові інсталяції за замовчуванням встановлюються на "Вимкнено за замовчуванням", щоб адміністратори могли вмикати курс за курсом зі сторінки Analytics або сторінки Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Вимкнено за замовчуванням (увімкнути для кожного курсу)';
+$string['settings:default_course_mode_all'] = 'Увімкнено на всіх курсах';
 $string['settings:provider'] = 'Постачальник AI';
-$string['settings:provider_desc'] = 'Виберіть постачальника AI для відповідей у чаті.';
+$string['settings:provider_desc'] = 'Виберіть постачальника AI для завершень чату. Виберіть "Moodle AI (core_ai subsystem)", щоб маршрутизувати запити через вбудовану конфігурацію AI Moodle за адресою Site admin > AI; поля API-ключа, моделі та базової URL-адреси нижче ігноруються в цьому режимі. Стрімінг, використання інструментів та prompt caching недоступні через core_ai — відповіді доставляються як один фрагмент. Використовуйте прямого постачальника для найкращого досвіду учня.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -93,6 +97,9 @@ $string['analytics:viewdashboard'] = 'Перегляд панелі аналіт
 $string['coursesettings:title'] = 'Налаштування AI курсу';
 $string['coursesettings:enabled'] = 'Увімкнути перевизначення курсу';
 $string['coursesettings:enabled_desc'] = 'Якщо увімкнено, налаштування нижче перевизначають глобальну конфігурацію AI.';
+$string['coursesettings:sola_enabled'] = 'SOLA на цьому курсі';
+$string['coursesettings:sola_enabled_toggle'] = 'Показувати віджет SOLA на цьому курсі';
+$string['coursesettings:sola_enabled_desc'] = 'Керує тим, чи відображається чат-віджет SOLA на цьому курсі. Типове значення для всього сайту встановлюється в налаштуваннях плагіна в розділі General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Використання глобальних налаштувань';
 $string['coursesettings:saved'] = 'Налаштування AI курсу збережені.';
 $string['coursesettings:ell_pronunciation'] = 'Режим практики вимови';
@@ -341,6 +348,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:history_saved_subtitle'] = 'Збережені відповіді залишаються на цьому пристрої для цього курсу.';
 $string['chat:history_saved_empty'] = 'Збережіть відповідь ШІ, щоб побачити її тут.';

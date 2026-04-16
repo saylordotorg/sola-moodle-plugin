@@ -49,8 +49,12 @@ $string['ai_course_assistant:manage'] = 'Gestire le impostazioni del tutor AI (R
 // Settings.
 $string['settings:enabled'] = 'Abilita Assistente AI per il Corso';
 $string['settings:enabled_desc'] = 'Abilita o disabilita il widget Assistente AI nelle pagine del corso.';
+$string['settings:default_course_mode'] = 'Predefinito per i nuovi corsi';
+$string['settings:default_course_mode_desc'] = 'Controlla se SOLA appare su un corso quando non è stata effettuata una scelta per corso. Le nuove installazioni hanno di default "Disabilitato per impostazione predefinita" in modo che gli amministratori possano attivare corso per corso dalla pagina Analytics o dalla pagina Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Disabilitato per impostazione predefinita (abilita per corso)';
+$string['settings:default_course_mode_all'] = 'Abilitato su tutti i corsi';
 $string['settings:provider'] = 'Provider AI';
-$string['settings:provider_desc'] = 'Seleziona il provider AI da utilizzare per le risposte chat.';
+$string['settings:provider_desc'] = 'Seleziona il provider di IA da utilizzare per i completamenti della chat. Scegli "Moodle AI (core_ai subsystem)" per instradare le richieste attraverso la configurazione AI integrata di Moodle in Site admin > AI; i campi chiave API, modello e URL di base sottostanti vengono ignorati in quella modalità. Streaming, uso di strumenti e prompt caching non sono disponibili tramite core_ai — le risposte vengono fornite come un unico blocco. Usa un provider diretto per la migliore esperienza studentesca.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -93,6 +97,9 @@ $string['analytics:viewdashboard'] = 'Visualizza dashboard analisi';
 $string['coursesettings:title'] = 'Impostazioni AI del Corso';
 $string['coursesettings:enabled'] = 'Abilita override del corso';
 $string['coursesettings:enabled_desc'] = 'Se abilitato, le impostazioni seguenti sovrascrivono la configurazione AI globale.';
+$string['coursesettings:sola_enabled'] = 'SOLA su questo corso';
+$string['coursesettings:sola_enabled_toggle'] = 'Mostra il widget SOLA su questo corso';
+$string['coursesettings:sola_enabled_desc'] = 'Controlla se il widget di chat SOLA appare su questo corso. L\'impostazione predefinita a livello di sito è impostata nelle impostazioni del plugin in General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Utilizzo impostazione globale';
 $string['coursesettings:saved'] = 'Impostazioni AI del corso salvate.';
 $string['coursesettings:ell_pronunciation'] = 'Modalità pratica pronuncia';
@@ -341,6 +348,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:history_saved_subtitle'] = 'Le risposte salvate rimangono su questo dispositivo per questo corso.';
 $string['chat:history_saved_empty'] = 'Salva una risposta dell\'IA per vederla qui.';

@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Phatha izilungiselelo zengxoxo yomfundi
 // Settings.
 $string['settings:enabled'] = 'Vula Umsizi Wesifundo AI';
 $string['settings:enabled_desc'] = 'Vula noma uvale i-widget ka-Umsizi Wesifundo AI emakhashini ezifundo.';
+$string['settings:default_course_mode'] = 'Okuzenzakalelayo kwezifundo ezintsha';
+$string['settings:default_course_mode_desc'] = 'Ilawula ukuthi ngabe i-SOLA ivela yini esifundweni uma kungekho ukukhetha ngesifundo ngasinye okwenziwe. Ukufakwa okusha kuzenzakalela ku-"Kukhutshaziwe ngokuzenzakalelayo" ukuze ababengameli bakwazi ukukhetha ngesifundo ngasinye ekhasini le-Analytics noma ekhasini le-Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Kukhutshaziwe ngokuzenzakalelayo (nika amandla ngesifundo ngasinye)';
+$string['settings:default_course_mode_all'] = 'Inikwe amandla kuzo zonke izifundo';
 $string['settings:provider'] = 'Umhlinzeki we-AI';
-$string['settings:provider_desc'] = 'Khetha umhlinzeki we-AI ozosetshenziselwa ukuphela kwezingxoxo.';
+$string['settings:provider_desc'] = 'Khetha umhlinzeki we-AI ozosetshenziswa ekuqedeleni ingxoxo. Khetha i-"Moodle AI (core_ai subsystem)" ukuze udlulisele izicelo ngokusethwa kwe-AI okwakhelwe ngaphakathi kwe-Moodle ku-Site admin > AI; ikhii ye-API, imodeli, kanye namafildi e-URL eyisisekelo angezansi anganakwa kulesiyo mode. I-Streaming, ukusetshenziswa kwethuluzi, kanye ne-prompt caching ayitholakali nge-core_ai — izimpendulo zilethwa njengesiqephu esisodwa. Sebenzisa umhlinzeki oqondile ukuze uthole ulwazi lomfundi oluhle kakhulu.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Buka ibhodi le-analytics';
 $string['coursesettings:title'] = 'Izilungiselelo Ze-AI Zesifundo';
 $string['coursesettings:enabled'] = 'Vula ukuguqulwa kwesifundo';
 $string['coursesettings:enabled_desc'] = 'Uma kuvuliwe, izilungiselelo ezilandelayo ziguqula izilungiselelo zomhlinzeki we-AI wezwe lonke zesifundo lesi kuphela. Shiya izigaba zingenalutho ukuzidlela inani lezwe lonke.';
+$string['coursesettings:sola_enabled'] = 'I-SOLA kulesi sifundo';
+$string['coursesettings:sola_enabled_toggle'] = 'Bonisa iwijethi ye-SOLA kulesi sifundo';
+$string['coursesettings:sola_enabled_desc'] = 'Ilawula ukuthi iwijethi yengxoxo ye-SOLA ivela yini kulesi sifundo. Okuzenzakalelayo kwesizindalwazi sonke kusethwa kuzilungiselelo zesengezo ngaphansi kwe-General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Isebenzisa izilungiselelo zomhlaba';
 $string['coursesettings:saved'] = 'Izilungiselelo ze-AI zesifundo zisindisiwe.';
 $string['coursesettings:global_settings_link'] = 'Izilungiselelo ze-AI zomhlaba';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Chaza leli khasi';
 $string['chat:starter_ask_anything'] = 'Buza noma yini';

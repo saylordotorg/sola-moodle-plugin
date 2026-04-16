@@ -51,8 +51,12 @@ $string['ai_course_assistant:manage'] = 'AI karamɔgɔ laadi ɲɛmɔgɔya (Admin
 // Settings.
 $string['settings:enabled'] = 'AI Kalanso Dɛmɛbaga a la';
 $string['settings:enabled_desc'] = 'AI Kalanso Dɛmɛbaga widget a la wala a bɔ kalanso fɛɛrɛw kan.';
+$string['settings:default_course_mode'] = 'Kalan kura walasa ye i sababu';
+$string['settings:default_course_mode_desc'] = 'A bɛ SOLA jira kalan na ni kalan kelen-kelen sugandili ma kɛ. Kabini-kura bɛ daminɛ ni "Dabɔlen ye i sababu ye", walisa ɲɛmɔgɔw ka se ka a da kalan kelen-kelen kan ka bɔ Analytics ɲɛ walima Course AI Settings ɲɛ kan.';
+$string['settings:default_course_mode_per_course'] = 'Dabɔlen ye i sababu ye (a bila kalan kelen-kelen kan)';
+$string['settings:default_course_mode_all'] = 'A bɛ baara la kalanw bɛɛ la';
 $string['settings:provider'] = 'AI Bɛɛlɛ Dɔnbaga';
-$string['settings:provider_desc'] = 'AI bɛɛlɛ dɔnbaga sugandi kumakanbali dafali kama.';
+$string['settings:provider_desc'] = 'IA dilanbaga sugandi baro dafali kama. "Moodle AI (core_ai subsystem)" sugandi walasa ka deliliw ci Moodle ka AI labɛnni kɔnɔna la Site admin > AI la; API kilé, ko dilanbaga ani URL jɔyɔrɔ fɛɛrɛw tɛ jatɛ o cogoya la. Streaming, tool use ani prompt caching tɛ sɔrɔ core_ai fɛ — jaabiw bɛ di i ko fɛn kelen. Dilanbaga tilennen kɛ kalandenw ka kɛcogo ɲumanba kama.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -93,6 +97,9 @@ $string['analytics:viewdashboard'] = 'Analytics tableau de bord lajɛ';
 $string['coursesettings:title'] = 'Kalanso AI Laadiliw';
 $string['coursesettings:enabled'] = 'Kalanso yɛlɛmaw a la';
 $string['coursesettings:enabled_desc'] = 'A la tuma na, kɔrɔ laadiliw bɛ global AI laadiliw sɔrɔ kalanso in kɔnɔ dɔrɔn. Global keyi sɔrɔ kama tɛ kɛ ni yɔrɔw.';
+$string['coursesettings:sola_enabled'] = 'SOLA bɛ nin kalan in na';
+$string['coursesettings:sola_enabled_toggle'] = 'SOLA minɛn jira nin kalan in kan';
+$string['coursesettings:sola_enabled_desc'] = 'A bɛ SOLA baro minɛn jira nin kalan in kan walima a ma kɛ. Sitiri-bɛɛ i sababu bɛ dabɔ palogin nafaw la General > Default for new courses kɔrɔ.';
 $string['coursesettings:using_global'] = 'Global laadili bɛ kɛ';
 $string['coursesettings:saved'] = 'Kalanso AI laadiliw mara.';
 $string['coursesettings:global_settings_link'] = 'Global AI laadiliw';
@@ -407,6 +414,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Nin ɲɛ ɲɛfɔ';
 $string['chat:starter_ask_anything'] = 'Fɛn o fɛn ɲininka';

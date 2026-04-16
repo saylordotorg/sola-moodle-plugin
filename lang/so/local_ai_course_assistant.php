@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Maaree dejinta wada-hadalka barida AI (
 // Settings.
 $string['settings:enabled'] = 'Fur Kaaliyaha Koorsada AI';
 $string['settings:enabled_desc'] = 'Fur ama xidh widget-ka Kaaliyaha Koorsada AI ee bogagga koorsada.';
+$string['settings:default_course_mode'] = 'Caadiga koorsooyinka cusub';
+$string['settings:default_course_mode_desc'] = 'Waxay kontoroshaa haddii SOLA uu ka soo muuqado koorso marka aan la sameyn xulasho koorso-koorso ah. Rakibitaannada cusub waxay u caadi yihiin "Caadi ahaan la damiyay" si maamulayaashu ay u awoodaan in ay koorso-koorso u dhiibaan laga bilaabo bogga Analytics ama bogga Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Caadi ahaan la damiyay (kala daro koorso koorso)';
+$string['settings:default_course_mode_all'] = 'Waxa la kala daray dhammaan koorsooyinka';
 $string['settings:provider'] = 'Bixiyaha AI';
-$string['settings:provider_desc'] = 'Dooro bixiyaha AI ee loo isticmaalayo dhamaadka wada-hadalka.';
+$string['settings:provider_desc'] = 'Dooro bixiyaha AI si loo isticmaalo dhammaystirka sheekada. Dooro "Moodle AI (core_ai subsystem)" si codsiyada loogu marsiiyo dejinta AI-ga ku dhex jira Moodle ee Site admin > AI; furaha API, nooca iyo goobaha URL-ka saldhiga ah ee hoose waa laga gudbaa qaabkaas. Streaming, isticmaalka qalabka, iyo prompt caching lama heli karo iyada oo loo marayo core_ai — jawaabaha waxaa la siiyaa sidii hal qaybood. Isticmaal bixiye toos ah si loo helo waayo-aragnimada ardayga ugu fiican.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Fiiri xarumaha analytics';
 $string['coursesettings:title'] = 'Dejinta AI Koorsada';
 $string['coursesettings:enabled'] = 'Fur beddelaadda koorsada';
 $string['coursesettings:enabled_desc'] = 'Marka la furo, dejinta hoose waxay beddeshaaa dejinta bixiyaha AI caalamiga ah ee koorsadaan kaliya. Ka tag goobaha madhan si aad u dhaxashid qiimaha caalamiga ah.';
+$string['coursesettings:sola_enabled'] = 'SOLA koorsadan';
+$string['coursesettings:sola_enabled_toggle'] = 'Tus widget-ka SOLA koorsadan';
+$string['coursesettings:sola_enabled_desc'] = 'Waxay kontoroshaa haddii widget-ka sheekada SOLA uu ka soo muuqdo koorsadan. Caadiga guud ee goobta waxaa lagu dejiyaa dejinta plug-in-ka hoosta General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Isticmaalaya dejinta caalamiga ah';
 $string['coursesettings:saved'] = 'Dejinta AI koorsada ayaa la keydshaday.';
 $string['coursesettings:global_settings_link'] = 'Dejinta AI caalamiga ah';
@@ -395,6 +402,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Sharax boggan';
 $string['chat:starter_ask_anything'] = 'Weydii wax kasta';

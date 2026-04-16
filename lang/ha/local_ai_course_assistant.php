@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Sarrafa saitunan tattaunawar mai koyarw
 // Settings.
 $string['settings:enabled'] = 'Kunna Mataimakin Horo na AI';
 $string['settings:enabled_desc'] = 'Kunna ko kashe kayan aikin Mataimakin Horo na AI a shafukan kozi.';
+$string['settings:default_course_mode'] = 'Tsoho don sabbin kwasa-kwasai';
+$string['settings:default_course_mode_desc'] = 'Yana sarrafa ko SOLA za ta bayyana akan kwas idan ba a yi zaɓi na kowane kwas ba. Sabbin shigarwa suna zuwa da tsoho "An kashe ta tsoho" domin masu gudanarwa su iya ba da izini kwas-da-kwas daga shafin Analytics ko shafin Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'An kashe ta tsoho (kunna kowane kwas)';
+$string['settings:default_course_mode_all'] = 'An kunna akan dukkan kwasa-kwasai';
 $string['settings:provider'] = 'Mai Bada Sabis na AI';
-$string['settings:provider_desc'] = 'Zaɓi mai bada sabis na AI don amfani da shi wajen kammala tattaunawa.';
+$string['settings:provider_desc'] = 'Zaɓi mai ba da AI don amfani da shi don kammala tattaunawa. Zaɓi "Moodle AI (core_ai subsystem)" don jagorar buƙatu ta hanyar daidaitawar AI da aka gina a cikin Moodle a Site admin > AI; an yi watsi da filayen API key, model, da base URL a ƙasa a cikin wannan yanayin. Streaming, tool use, da prompt caching ba a samun su ta core_ai — an isar da amsoshi a matsayin yanki guda. Yi amfani da mai ba da kai tsaye don mafi kyawun ƙwarewar ɗalibi.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Duba kwasfan kididdiga';
 $string['coursesettings:title'] = 'Saitunan AI na Kozi';
 $string['coursesettings:enabled'] = 'Kunna manyan sauye-sauye na kozi';
 $string['coursesettings:enabled_desc'] = 'Lokacin da aka kunna, saitunan da ke ƙasa sun soke tsarin mai bada sabis na AI na duniya don wannan kozi kawai. Bar filayen fanko don gado ƙima ta duniya.';
+$string['coursesettings:sola_enabled'] = 'SOLA akan wannan kwas';
+$string['coursesettings:sola_enabled_toggle'] = 'Nuna kayan aikin SOLA akan wannan kwas';
+$string['coursesettings:sola_enabled_desc'] = 'Yana sarrafa ko kayan aikin tattaunawa na SOLA yana bayyana akan wannan kwas. An saita tsohon na dukkan shafin a cikin saitunan plugin a General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Ana amfani da saitin duniya';
 $string['coursesettings:saved'] = 'An adana saitunan AI na kozi.';
 $string['coursesettings:global_settings_link'] = 'Saitunan AI na duniya';
@@ -408,6 +415,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Bayyana wannan shafi';
 $string['chat:starter_ask_anything'] = 'Tambayi komai';

@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Ṣàkóso àwọn ètò ìdánilẹ́k
 // Settings.
 $string['settings:enabled'] = 'Mú Olùrànlọ́wọ́ Ẹkọ AI ṣiṣẹ́';
 $string['settings:enabled_desc'] = 'Mú tàbí dáwọ́ Olùrànlọ́wọ́ Ẹkọ AI dúró lórí àwọn ojú-ewé ẹkọ.';
+$string['settings:default_course_mode'] = 'Àbáwọlé fún àwọn kọ́ọ̀sì tuntun';
+$string['settings:default_course_mode_desc'] = 'Ó ń darí bóyá SOLA yóò farahàn lórí kọ́ọ̀sì kan nígbà tí kò sí ìyàn fún kọ́ọ̀sì kọ̀ọ̀kan. Àwọn àfisọ́kan tuntun máa ń jẹ́ àbáwọlé sí "Kí a jẹ́ kú ní àbáwọlé" kí àwọn alákòóso lè jáde kọ́ọ̀sì-bí-kọ́ọ̀sì láti ojú ewé Analytics tàbí ojú ewé Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Kí a jẹ́ kú ní àbáwọlé (mú ṣiṣẹ́ fún kọ́ọ̀sì kọ̀ọ̀kan)';
+$string['settings:default_course_mode_all'] = 'A ti mú ṣiṣẹ́ lórí gbogbo kọ́ọ̀sì';
 $string['settings:provider'] = 'Olùpèsè AI';
-$string['settings:provider_desc'] = 'Yan olùpèsè AI tí a ó lò fún ìparí ìjíròrò.';
+$string['settings:provider_desc'] = 'Yan olùpèsè AI láti lò fún àwọn ìparí ìbáraẹnisọ̀rọ̀. Yan "Moodle AI (core_ai subsystem)" láti darí àwọn ìbéèrè nípasẹ̀ ìṣètò AI tí a kọ́ sínú Moodle ní Site admin > AI; àwọn apá kókó API, àwòṣe, àti URL ìpìlẹ̀ nísàlẹ̀ ni a kò gbé yẹ̀wò ní ọ̀nà ìṣiṣẹ́ yìí. Streaming, lílo irinṣẹ́, àti prompt caching kò sí nípasẹ̀ core_ai — a ó ránṣẹ́ àwọn ìdáhùn gẹ́gẹ́ bí apá kan. Lo olùpèsè tààrà fún ìrírí akẹ́kọ̀ọ́ tí ó dára jùlọ.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Wo dashboard analytics';
 $string['coursesettings:title'] = 'Àwọn Ètò AI Ẹkọ';
 $string['coursesettings:enabled'] = 'Mú àwọn àtúnṣe ẹkọ ṣiṣẹ́';
 $string['coursesettings:enabled_desc'] = 'Nígbà tí a bá mú ṣiṣẹ́, àwọn ètò ìsàlẹ̀ yọ àwọn ètò olùpèsè AI àgbáyé fún ẹkọ yìí nìkan. Fi àwọn aṣa sílẹ̀ láti jogun iye àgbáyé.';
+$string['coursesettings:sola_enabled'] = 'SOLA lórí kọ́ọ̀sì yìí';
+$string['coursesettings:sola_enabled_toggle'] = 'Fihàn widget SOLA lórí kọ́ọ̀sì yìí';
+$string['coursesettings:sola_enabled_desc'] = 'Ó ń darí bóyá widget ìbáraẹnisọ̀rọ̀ SOLA yóò farahàn lórí kọ́ọ̀sì yìí. Àbáwọlé fún gbogbo ojú òpó ni a ṣètò nínú àwọn ìṣètò plugin lábẹ́ General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Ń lò ètò àgbáyé';
 $string['coursesettings:saved'] = 'Àwọn ètò AI ẹkọ ti fipamọ́.';
 $string['coursesettings:global_settings_link'] = 'Àwọn ètò AI àgbáyé';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Ṣàlàyé ojú-ìwé yìí';
 $string['chat:starter_ask_anything'] = 'Béèrè ohunkóhun';

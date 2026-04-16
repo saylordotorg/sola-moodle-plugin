@@ -49,8 +49,12 @@ $string['ai_course_assistant:manage'] = 'AI tutor csevegés beállítások kezel
 // Settings.
 $string['settings:enabled'] = 'AI Kurzus Asszisztens engedélyezése';
 $string['settings:enabled_desc'] = 'Az AI Kurzus Asszisztens widget engedélyezése vagy letiltása a kurzusoldalon.';
+$string['settings:default_course_mode'] = 'Új kurzusok alapértelmezése';
+$string['settings:default_course_mode_desc'] = 'Szabályozza, hogy a SOLA megjelenik-e egy kurzuson, ha nincs kurzus-specifikus választás. Az új telepítések alapértelmezés szerint "Alapértelmezetten letiltva" állapotban vannak, így a rendszergazdák kurzusonként engedélyezhetik az Analytics oldalról vagy a Course AI Settings oldalról.';
+$string['settings:default_course_mode_per_course'] = 'Alapértelmezetten letiltva (kurzusonként engedélyezés)';
+$string['settings:default_course_mode_all'] = 'Minden kurzuson engedélyezve';
 $string['settings:provider'] = 'AI Szolgáltató';
-$string['settings:provider_desc'] = 'Válassza ki az AI szolgáltatót a csevegési válaszokhoz.';
+$string['settings:provider_desc'] = 'Válassza ki a csevegés-kiegészítésekhez használandó AI-szolgáltatót. Válassza a "Moodle AI (core_ai subsystem)" lehetőséget, hogy a kéréseket a Moodle beépített AI-konfigurációján keresztül irányítsa a Site admin > AI oldalon; az alábbi API-kulcs, modell és alap URL mezőket figyelmen kívül hagyja ebben az üzemmódban. A streaming, az eszközhasználat és a prompt caching nem érhető el a core_ai-n keresztül — a válaszok egyetlen darabban érkeznek. A legjobb tanulói élményért használjon közvetlen szolgáltatót.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -93,6 +97,9 @@ $string['analytics:viewdashboard'] = 'Analitikai irányítópult megtekintése';
 $string['coursesettings:title'] = 'Kurzus AI beállítások';
 $string['coursesettings:enabled'] = 'Kurzus felülírások engedélyezése';
 $string['coursesettings:enabled_desc'] = 'Ha engedélyezve van, az alábbi beállítások felülírják a globális AI konfigurációt.';
+$string['coursesettings:sola_enabled'] = 'SOLA ezen a kurzuson';
+$string['coursesettings:sola_enabled_toggle'] = 'A SOLA widget megjelenítése ezen a kurzuson';
+$string['coursesettings:sola_enabled_desc'] = 'Szabályozza, hogy a SOLA chat widget megjelenik-e ezen a kurzuson. A webhelyszintű alapértelmezés a bővítmény beállításaiban a General > Default for new courses alatt állítható be.';
 $string['coursesettings:using_global'] = 'Globális beállítás használata';
 $string['coursesettings:saved'] = 'Kurzus AI beállítások mentve.';
 $string['coursesettings:ell_pronunciation'] = 'Kiejtésgyakorlási mód';
@@ -341,6 +348,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:history_saved_subtitle'] = 'A mentett válaszok ezen az eszközön maradnak ehhez a kurzushoz.';
 $string['chat:history_saved_empty'] = 'Ments el egy AI-választ, hogy itt láthasd.';

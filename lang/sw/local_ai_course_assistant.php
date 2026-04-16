@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Simamia mipangilio ya mazungumzo ya msh
 // Settings.
 $string['settings:enabled'] = 'Wezesha Msaidizi wa Kozi wa AI';
 $string['settings:enabled_desc'] = 'Wezesha au zima kidirisha cha Msaidizi wa Kozi wa AI kwenye kurasa za kozi.';
+$string['settings:default_course_mode'] = 'Chaguo-msingi kwa kozi mpya';
+$string['settings:default_course_mode_desc'] = 'Inadhibiti ikiwa SOLA inaonekana kwenye kozi wakati hakuna uchaguzi wa kila-kozi uliofanywa. Usakinishaji mpya hupata chaguo-msingi la "Imezimwa kwa chaguo-msingi" ili wasimamizi waweze kuchagua kozi kwa kozi kutoka ukurasa wa Analytics au ukurasa wa Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Imezimwa kwa chaguo-msingi (washa kila kozi)';
+$string['settings:default_course_mode_all'] = 'Imewashwa kwenye kozi zote';
 $string['settings:provider'] = 'Mtoa Huduma wa AI';
-$string['settings:provider_desc'] = 'Chagua mtoa huduma wa AI wa kutumia kwa ukamilishaji wa mazungumzo.';
+$string['settings:provider_desc'] = 'Chagua mtoa huduma wa AI wa kutumia kwa ukamilishaji wa gumzo. Chagua "Moodle AI (core_ai subsystem)" kuelekeza maombi kupitia usanidi wa AI uliojengwa ndani ya Moodle katika Site admin > AI; sehemu za ufunguo wa API, mfano na URL ya msingi hapa chini hupuuzwa katika hali hiyo. Streaming, matumizi ya zana, na prompt caching hazipatikani kupitia core_ai — majibu hutolewa kama kipande kimoja. Tumia mtoa huduma wa moja kwa moja kwa uzoefu bora wa mwanafunzi.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Angalia dashibodi ya takwimu';
 $string['coursesettings:title'] = 'Mipangilio ya AI ya Kozi';
 $string['coursesettings:enabled'] = 'Wezesha kubatilisha kwa kozi';
 $string['coursesettings:enabled_desc'] = 'Inapowezeshwa, mipangilio hapa chini inabatilisha usanidi wa mtoa huduma wa AI wa kimataifa kwa kozi hii peke yake. Acha sehemu wazi ili kurithisha thamani ya kimataifa.';
+$string['coursesettings:sola_enabled'] = 'SOLA kwenye kozi hii';
+$string['coursesettings:sola_enabled_toggle'] = 'Onyesha wijeti ya SOLA kwenye kozi hii';
+$string['coursesettings:sola_enabled_desc'] = 'Inadhibiti ikiwa wijeti ya gumzo ya SOLA inaonekana kwenye kozi hii. Chaguo-msingi la tovuti nzima limewekwa katika mipangilio ya programu-jalizi chini ya General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Inatumia mipangilio ya kimataifa';
 $string['coursesettings:saved'] = 'Mipangilio ya AI ya kozi imehifadhiwa.';
 $string['coursesettings:global_settings_link'] = 'Mipangilio ya AI ya kimataifa';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Eleza ukurasa huu';
 $string['chat:starter_ask_anything'] = 'Uliza chochote';

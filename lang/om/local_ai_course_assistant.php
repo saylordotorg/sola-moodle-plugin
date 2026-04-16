@@ -48,8 +48,12 @@ $string['ai_course_assistant:manage'] = 'Qindaa\'ina haasawa barsiisaa AI bulchi
 // Settings.
 $string['settings:enabled'] = 'Gargaaraa Barnoota AI Dandeessisi';
 $string['settings:enabled_desc'] = 'Gargaaraa Barnoota AI fuula koorsii irratti dandeessisi ykn dhaabi.';
+$string['settings:default_course_mode'] = 'Waaltagaan kooreerra haaraa';
+$string['settings:default_course_mode_desc'] = 'Filannoon kooreerra-tokko hin godhamne yeroo, SOLA koorsii irratti akka mul\'atu to\'ata. Dhaabbiileen haaraan durtiidhaan "Durtiidhaan dhaamee" irratti hiikaa jiru, kunis bulchitootaaf fuula Analytics ykn fuula Course AI Settings irraa kaasaan koorsii-koorsi filachuuf.';
+$string['settings:default_course_mode_per_course'] = 'Durtiidhaan dhaamee (koorsii tokkoon tokkoon banii)';
+$string['settings:default_course_mode_all'] = 'Koorsii hunda irratti bananii jira';
 $string['settings:provider'] = 'Dhiyeessaa AI';
-$string['settings:provider_desc'] = 'Dhiyeessaa AI guutuu haasawaaf fayyadamuu filii.';
+$string['settings:provider_desc'] = 'Dhiheessaa AI marii xumuruuf filadhu. Kadhannoo qindaa\'ina AI ijaarame Moodle keessatti Site admin > AI irraan akka qajeelfamu "Moodle AI (core_ai subsystem)" filadhu; haala kana keessatti API key, moodela fi URL buuura armaan gadii hin itti gaafatamu. Streaming, itti fayyadama meeshaa fi prompt caching core_ai irraan hin argaman — deebiin akka qaama tokkootti kennama. Muuxannoo barataa gaarii argachuuf dhiheessaa kallattii fayyadami.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -89,6 +93,9 @@ $string['analytics:viewdashboard'] = 'Gabatee xiinxala ilaali';
 $string['coursesettings:title'] = 'Qindaa\'ina AI Koorsii';
 $string['coursesettings:enabled'] = 'Irra-deebi\'uu koorsii dandeessisi';
 $string['coursesettings:enabled_desc'] = 'Yoo dandeeffame, qindaa\'inni armaan gadii qindaa\'ina dhiyeessaa AI idila-addunyaa koorsii kana qofaaf irra-deebi\'a. Dirree duwwaa dhiisi akka gatii idila-addunyaa dhalatu.';
+$string['coursesettings:sola_enabled'] = 'SOLA kooreerra kana irratti';
+$string['coursesettings:sola_enabled_toggle'] = 'Widjet SOLA kooreerra kana irratti agarsiisi';
+$string['coursesettings:sola_enabled_desc'] = 'Widjet marii SOLA kooreerra kana irratti mul\'atuu dhabuu to\'ata. Durtiin sayitii-guutuu qindaa\'ina pilaginii jalatti General > Default for new courses keessatti qindaa\'a.';
 $string['coursesettings:using_global'] = 'Qindaa\'ina idila-addunyaa fayyadamaa jira';
 $string['coursesettings:saved'] = 'Qindaa\'ina AI koorsii ol kaa\'ame.';
 $string['coursesettings:global_settings_link'] = 'Qindaa\'ina AI idila-addunyaa';
@@ -381,6 +388,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Fuula kana ibsi';
 $string['chat:starter_ask_anything'] = 'Waan tokko gaafadhu';

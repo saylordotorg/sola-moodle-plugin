@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Управлять настройкам
 // Settings.
 $string['settings:enabled'] = 'Включить ИИ-ассистент курса';
 $string['settings:enabled_desc'] = 'Включить или отключить виджет ИИ-ассистента курса на страницах курсов.';
+$string['settings:default_course_mode'] = 'По умолчанию для новых курсов';
+$string['settings:default_course_mode_desc'] = 'Управляет тем, отображается ли SOLA на курсе, когда выбор для конкретного курса не сделан. Новые установки по умолчанию имеют значение "Отключено по умолчанию", чтобы администраторы могли включать курс за курсом со страницы Analytics или страницы Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Отключено по умолчанию (включить для каждого курса)';
+$string['settings:default_course_mode_all'] = 'Включено на всех курсах';
 $string['settings:provider'] = 'Провайдер ИИ';
-$string['settings:provider_desc'] = 'Выберите провайдера ИИ для завершения чата.';
+$string['settings:provider_desc'] = 'Выберите поставщика ИИ для завершений чата. Выберите "Moodle AI (core_ai subsystem)", чтобы направлять запросы через встроенную конфигурацию ИИ Moodle в Site admin > AI; поля API-ключа, модели и базового URL ниже игнорируются в этом режиме. Стриминг, использование инструментов и prompt caching недоступны через core_ai — ответы доставляются одним фрагментом. Используйте прямого поставщика для лучшего пользовательского опыта студента.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Просмотреть панель ана
 $string['coursesettings:title'] = 'Настройки ИИ для курса';
 $string['coursesettings:enabled'] = 'Включить переопределения для курса';
 $string['coursesettings:enabled_desc'] = 'При включении приведённые ниже настройки переопределяют глобальную конфигурацию провайдера ИИ только для данного курса. Оставьте поля пустыми для наследования глобального значения.';
+$string['coursesettings:sola_enabled'] = 'SOLA на этом курсе';
+$string['coursesettings:sola_enabled_toggle'] = 'Показывать виджет SOLA на этом курсе';
+$string['coursesettings:sola_enabled_desc'] = 'Управляет тем, отображается ли виджет чата SOLA на этом курсе. Значение по умолчанию для всего сайта устанавливается в настройках плагина в разделе General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Используется глобальная настройка';
 $string['coursesettings:saved'] = 'Настройки ИИ курса сохранены.';
 $string['coursesettings:global_settings_link'] = 'Глобальные настройки ИИ';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Объясни эту страницу';
 $string['chat:starter_ask_anything'] = 'Спросите что угодно';

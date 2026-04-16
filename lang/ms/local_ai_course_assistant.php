@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Urus tetapan chat tutor AI (Peranan Pen
 // Settings.
 $string['settings:enabled'] = 'Aktifkan Pembantu Kursus AI';
 $string['settings:enabled_desc'] = 'Aktifkan atau nyahaktifkan widget Pembantu Kursus AI pada halaman kursus.';
+$string['settings:default_course_mode'] = 'Lalai untuk kursus baharu';
+$string['settings:default_course_mode_desc'] = 'Mengawal sama ada SOLA muncul pada kursus apabila tiada pilihan setiap kursus telah dibuat. Pemasangan baharu secara lalai kepada "Dilumpuhkan secara lalai" supaya pentadbir boleh memilih untuk mengaktifkan kursus demi kursus dari halaman Analytics atau halaman Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Dilumpuhkan secara lalai (aktifkan setiap kursus)';
+$string['settings:default_course_mode_all'] = 'Diaktifkan pada semua kursus';
 $string['settings:provider'] = 'Pembekal AI';
-$string['settings:provider_desc'] = 'Pilih pembekal AI untuk digunakan bagi penyelesaian chat.';
+$string['settings:provider_desc'] = 'Pilih pembekal AI yang akan digunakan untuk penyiapan sembang. Pilih "Moodle AI (core_ai subsystem)" untuk menghalakan permintaan melalui konfigurasi AI terbina dalam Moodle di Site admin > AI; medan kunci API, model dan URL asas di bawah diabaikan dalam mod itu. Streaming, penggunaan alat, dan prompt caching tidak tersedia melalui core_ai — respons dihantar sebagai satu ketulan. Gunakan pembekal langsung untuk pengalaman pelajar terbaik.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Lihat papan pemuka analitik';
 $string['coursesettings:title'] = 'Tetapan AI Kursus';
 $string['coursesettings:enabled'] = 'Aktifkan penggantian kursus';
 $string['coursesettings:enabled_desc'] = 'Apabila diaktifkan, tetapan di bawah akan menggantikan konfigurasi pembekal AI global untuk kursus ini sahaja. Biarkan medan kosong untuk mewarisi nilai global.';
+$string['coursesettings:sola_enabled'] = 'SOLA pada kursus ini';
+$string['coursesettings:sola_enabled_toggle'] = 'Tunjukkan widget SOLA pada kursus ini';
+$string['coursesettings:sola_enabled_desc'] = 'Mengawal sama ada widget sembang SOLA muncul pada kursus ini. Tetapan lalai seluruh tapak ditetapkan dalam tetapan plugin di bawah General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Menggunakan tetapan global';
 $string['coursesettings:saved'] = 'Tetapan AI kursus disimpan.';
 $string['coursesettings:global_settings_link'] = 'Tetapan AI global';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Terangkan halaman ini';
 $string['chat:starter_ask_anything'] = 'Tanya apa sahaja';

@@ -49,8 +49,12 @@ $string['ai_course_assistant:manage'] = 'Διαχείριση ρυθμίσεων
 // Settings.
 $string['settings:enabled'] = 'Ενεργοποίηση Βοηθού Μαθήματος AI';
 $string['settings:enabled_desc'] = 'Ενεργοποίηση ή απενεργοποίηση του widget Βοηθού Μαθήματος AI στις σελίδες μαθημάτων.';
+$string['settings:default_course_mode'] = 'Προεπιλογή για νέα μαθήματα';
+$string['settings:default_course_mode_desc'] = 'Ελέγχει αν το SOLA εμφανίζεται σε ένα μάθημα όταν δεν έχει γίνει επιλογή ανά μάθημα. Οι νέες εγκαταστάσεις είναι εξ ορισμού ρυθμισμένες σε "Απενεργοποιημένο εξ ορισμού" ώστε οι διαχειριστές να μπορούν να ενεργοποιούν μάθημα προς μάθημα από τη σελίδα Analytics ή τη σελίδα Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Απενεργοποιημένο εξ ορισμού (ενεργοποίηση ανά μάθημα)';
+$string['settings:default_course_mode_all'] = 'Ενεργοποιημένο σε όλα τα μαθήματα';
 $string['settings:provider'] = 'Πάροχος AI';
-$string['settings:provider_desc'] = 'Επιλέξτε τον πάροχο AI που θα χρησιμοποιηθεί για τις απαντήσεις.';
+$string['settings:provider_desc'] = 'Επιλέξτε τον πάροχο AI που θα χρησιμοποιηθεί για τις ολοκληρώσεις συνομιλίας. Επιλέξτε "Moodle AI (core_ai subsystem)" για να δρομολογείτε τα αιτήματα μέσω της ενσωματωμένης διαμόρφωσης AI του Moodle στο Site admin > AI· τα πεδία API key, μοντέλου και base URL παρακάτω αγνοούνται σε αυτή τη λειτουργία. Το streaming, η χρήση εργαλείων και το prompt caching δεν είναι διαθέσιμα μέσω του core_ai — οι απαντήσεις παραδίδονται ως ένα ενιαίο τμήμα. Χρησιμοποιήστε έναν απευθείας πάροχο για την καλύτερη εμπειρία μαθητή.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -93,6 +97,9 @@ $string['analytics:viewdashboard'] = 'Προβολή πίνακα αναλυτι
 $string['coursesettings:title'] = 'Ρυθμίσεις AI Μαθήματος';
 $string['coursesettings:enabled'] = 'Ενεργοποίηση παρακάμψεων μαθήματος';
 $string['coursesettings:enabled_desc'] = 'Όταν ενεργοποιηθεί, οι παρακάτω ρυθμίσεις υπερισχύουν της καθολικής διαμόρφωσης AI.';
+$string['coursesettings:sola_enabled'] = 'SOLA σε αυτό το μάθημα';
+$string['coursesettings:sola_enabled_toggle'] = 'Εμφάνιση του widget SOLA σε αυτό το μάθημα';
+$string['coursesettings:sola_enabled_desc'] = 'Ελέγχει αν το widget συνομιλίας SOLA εμφανίζεται σε αυτό το μάθημα. Η προεπιλεγμένη ρύθμιση για όλον τον ιστότοπο ορίζεται στις ρυθμίσεις του πρόσθετου στην ενότητα General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Χρήση καθολικής ρύθμισης';
 $string['coursesettings:saved'] = 'Οι ρυθμίσεις AI μαθήματος αποθηκεύτηκαν.';
 $string['coursesettings:ell_pronunciation'] = 'Λειτουργία Εξάσκησης Προφοράς';
@@ -341,6 +348,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:history_saved_subtitle'] = 'Οι αποθηκευμένες απαντήσεις παραμένουν σε αυτή τη συσκευή για αυτό το μάθημα.';
 $string['chat:history_saved_empty'] = 'Αποθηκεύστε μια απάντηση AI για να τη δείτε εδώ.';

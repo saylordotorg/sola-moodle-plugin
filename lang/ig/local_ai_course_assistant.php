@@ -48,8 +48,12 @@ $string['ai_course_assistant:manage'] = 'Njikwa ntọala mkparịta ụka AI nku
 // Settings.
 $string['settings:enabled'] = 'Gbanye Onye Enyemaka AI Nkuzi';
 $string['settings:enabled_desc'] = 'Gbanye ma ọ bụ gbanyụọ widget Onye Enyemaka AI Nkuzi n\'ibe kọọsị.';
+$string['settings:default_course_mode'] = 'Ndabara maka ọmụmụ ọhụrụ';
+$string['settings:default_course_mode_desc'] = 'Na-achịkwa ma SOLA ọ̀ ga-apụta na nkuzi mgbe e meghị nhọrọ nke ọ bụla. Nrụnye ọhụrụ na-abịa site na "Agbanyụrụ na ndabara" ka ndị nchịkwa wee nwee ike ịhọrọ nkuzi na nkuzi site na ibe Analytics ma ọ bụ ibe Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Agbanyụrụ na ndabara (kwado na nkuzi)';
+$string['settings:default_course_mode_all'] = 'Akwadoro na nkuzi niile';
 $string['settings:provider'] = 'Onye Nnye AI';
-$string['settings:provider_desc'] = 'Họrọ onye nnye AI iji maka ịmecha mkparịta ụka.';
+$string['settings:provider_desc'] = 'Họrọ onye na-enye AI iji maka imecha mkparịta ụka. Họrọ "Moodle AI (core_ai subsystem)" iji hazie arịrịọ site na nhazi AI e wuru n\'ime Moodle na Site admin > AI; a na-eleghara ubi igodo API, ụdị, na isi URL dị n\'okpuru anya n\'ọnọdụ ahụ. Streaming, iji ngwaọrụ, na prompt caching adịghị site na core_ai — a na-ebuga azịza dịka ibe otu. Jiri onye na-enye ozugbo maka ahụmịhe kacha mma nke nwa akwụkwọ.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -89,6 +93,9 @@ $string['analytics:viewdashboard'] = 'Lee dashboard analytics';
 $string['coursesettings:title'] = 'Ntọala AI Kọọsị';
 $string['coursesettings:enabled'] = 'Gbanye ihe ndọpụta kọọsị';
 $string['coursesettings:enabled_desc'] = 'Mgbe ọ na-arụ ọrụ, ntọala dị n\'okpuru ndọpụta ntọala onye nnye AI zuru ụwa ọnụ maka kọọsị a naanị. Hapụ ọhọ ka ha nọdụ ala na uru zuru ụwa ọnụ.';
+$string['coursesettings:sola_enabled'] = 'SOLA na nkuzi a';
+$string['coursesettings:sola_enabled_toggle'] = 'Gosi ngwa SOLA na nkuzi a';
+$string['coursesettings:sola_enabled_desc'] = 'Na-achịkwa ma ngwa mkparịta ụka SOLA ọ̀ ga-apụta na nkuzi a. A na-edobe ndabara maka saịtị niile na ntọala mgbakwunye n\'okpuru General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Na-eji ntọala zuru ụwa ọnụ';
 $string['coursesettings:saved'] = 'Echekwara ntọala AI kọọsị.';
 $string['coursesettings:global_settings_link'] = 'Ntọala AI zuru ụwa ọnụ';
@@ -394,6 +401,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Kọwaa peeji a';
 $string['chat:starter_ask_anything'] = 'Jụọ ihe ọ bụla';

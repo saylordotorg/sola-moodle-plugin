@@ -50,8 +50,12 @@ $string['ai_course_assistant:manage'] = 'Quản lý cài đặt chat gia sư AI 
 // Settings.
 $string['settings:enabled'] = 'Bật Trợ Lý AI Khóa Học';
 $string['settings:enabled_desc'] = 'Bật hoặc tắt widget Trợ Lý AI Khóa Học trên các trang khóa học.';
+$string['settings:default_course_mode'] = 'Mặc định cho các khóa học mới';
+$string['settings:default_course_mode_desc'] = 'Kiểm soát việc SOLA có xuất hiện trên một khóa học hay không khi chưa có lựa chọn theo từng khóa học. Các lần cài đặt mới sẽ mặc định là "Tắt theo mặc định" để quản trị viên có thể bật từng khóa học từ trang Analytics hoặc trang Course AI Settings.';
+$string['settings:default_course_mode_per_course'] = 'Tắt theo mặc định (bật cho từng khóa học)';
+$string['settings:default_course_mode_all'] = 'Bật trên tất cả các khóa học';
 $string['settings:provider'] = 'Nhà cung cấp AI';
-$string['settings:provider_desc'] = 'Chọn nhà cung cấp AI để sử dụng cho các phiên chat.';
+$string['settings:provider_desc'] = 'Chọn nhà cung cấp AI để sử dụng cho các phần hoàn thành cuộc trò chuyện. Chọn "Moodle AI (core_ai subsystem)" để định tuyến các yêu cầu thông qua cấu hình AI tích hợp sẵn của Moodle tại Site admin > AI; các trường khóa API, mô hình và URL cơ sở bên dưới sẽ bị bỏ qua trong chế độ đó. Streaming, sử dụng công cụ và prompt caching không có sẵn qua core_ai — các phản hồi được gửi dưới dạng một khối duy nhất. Sử dụng nhà cung cấp trực tiếp để có trải nghiệm học viên tốt nhất.';
 $string['settings:provider_claude'] = 'Claude (Anthropic)';
 $string['settings:provider_openai'] = 'OpenAI';
 $string['settings:provider_deepseek'] = 'DeepSeek';
@@ -92,6 +96,9 @@ $string['analytics:viewdashboard'] = 'Xem bảng điều khiển phân tích';
 $string['coursesettings:title'] = 'Cài đặt AI Khóa học';
 $string['coursesettings:enabled'] = 'Bật ghi đè khóa học';
 $string['coursesettings:enabled_desc'] = 'Khi được bật, các cài đặt bên dưới sẽ ghi đè cấu hình nhà cung cấp AI toàn cục chỉ cho khóa học này. Để trống các trường để kế thừa giá trị toàn cục.';
+$string['coursesettings:sola_enabled'] = 'SOLA trên khóa học này';
+$string['coursesettings:sola_enabled_toggle'] = 'Hiển thị widget SOLA trên khóa học này';
+$string['coursesettings:sola_enabled_desc'] = 'Kiểm soát việc widget trò chuyện SOLA có xuất hiện trên khóa học này hay không. Giá trị mặc định toàn trang được đặt trong cài đặt plugin tại General > Default for new courses.';
 $string['coursesettings:using_global'] = 'Đang sử dụng cài đặt toàn cục';
 $string['coursesettings:saved'] = 'Đã lưu cài đặt AI khóa học.';
 $string['coursesettings:global_settings_link'] = 'Cài đặt AI toàn cục';
@@ -400,6 +407,7 @@ $string['settings:provider_groq'] = 'Groq';
 $string['settings:provider_openrouter'] = 'OpenRouter';
 $string['settings:provider_xai'] = 'xAI (Grok)';
 
+$string['settings:provider_coreai'] = 'Moodle AI (core_ai subsystem)';
 // Strings added by update_langs.py.
 $string['chat:starter_help_page'] = 'Giải thích trang này';
 $string['chat:starter_ask_anything'] = 'Hỏi bất cứ điều gì';
