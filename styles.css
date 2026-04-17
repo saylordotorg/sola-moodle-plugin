@@ -3834,10 +3834,11 @@ a.aica-history-panel__source:hover {
     100% { box-shadow: 0 0 0 0   rgba(74, 108, 247, 0);    }
 }
 
-/* Only animate when drawer is closed — transition: box-shadow on the base rule
-   would fight the animation, so we override it here. */
+/* Idle pulse disabled — was distracting during course editing and for
+   returning students who already know SOLA is there. The toggle is
+   visible without animation. First-visit pulse also disabled below. */
 .local-ai-course-assistant__toggle:not(.local-ai-course-assistant__toggle--close)[aria-expanded="false"] {
-    animation: aica-avatar-pulse 2.5s ease-out infinite;
+    animation: none;
     transition: transform 0.2s ease;
 }
 
@@ -3850,7 +3851,7 @@ a.aica-history-panel__source:hover {
     100% { box-shadow: 0 0 0 0    rgba(74, 108, 247, 0.6); transform: scale(1);   }
 }
 .local-ai-course-assistant__toggle:not(.local-ai-course-assistant__toggle--close).aica-first-visit {
-    animation: aica-first-visit-pulse 1.8s ease-in-out infinite !important;
+    animation: none !important;
     transition: none !important;
 }
 

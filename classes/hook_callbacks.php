@@ -99,6 +99,30 @@ class hook_callbacks {
         // objectives are discovered from page content and the summary fallback is skipped.
         $course = get_course($courseid);
 
+        // Hide in edit mode — widget competes with course editing controls.
+        if ($PAGE->user_is_editing()) {
+            return;
+        }
+
+        // Hide in excluded course categories (e.g. "Course Development").
+        $hiddencats = trim((string) get_config('local_ai_course_assistant', 'hidden_categories'));
+        if ($hiddencats !== '') {
+            $catid = (int) $course->category;
+            $catname = '';
+            try {
+                $cat = \core_course_category::get($catid, IGNORE_MISSING);
+                $catname = $cat ? $cat->name : '';
+            } catch (\Throwable $e) {
+                $catname = '';
+            }
+            $excludes = array_map('trim', explode(',', $hiddencats));
+            foreach ($excludes as $exc) {
+                if ($exc !== '' && ($exc === (string) $catid || strcasecmp($exc, $catname) === 0)) {
+                    return;
+                }
+            }
+        }
+
         $userrole = context_builder::detect_role($courseid, $USER->id);
 
         // Student mode: admins can toggle into student view for demos and

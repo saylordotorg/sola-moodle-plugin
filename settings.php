@@ -127,6 +127,14 @@ if ($hassiteconfig) {
     ));
 
     $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/hidden_categories',
+        'Hidden course categories',
+        'Comma-separated list of course category names or IDs where SOLA should not appear. Example: "Course Development, 42". SOLA is also automatically hidden when editing mode is turned on.',
+        '',
+        PARAM_RAW_TRIMMED
+    ));
+
+    $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/remoteconfigurl',
         get_string('remoteconfigurl', 'local_ai_course_assistant'),
         get_string('remoteconfigurl_desc', 'local_ai_course_assistant'),
