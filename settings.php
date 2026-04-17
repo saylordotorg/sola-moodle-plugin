@@ -222,11 +222,10 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
-    $settings->add(new admin_setting_configtextarea(
+    $settings->add(new \local_ai_course_assistant\admin_setting_comparison_providers(
         'local_ai_course_assistant/comparison_providers',
         get_string('settings:comparison_providers', 'local_ai_course_assistant'),
-        get_string('settings:comparison_providers_desc', 'local_ai_course_assistant'),
-        ''
+        get_string('settings:comparison_providers_desc', 'local_ai_course_assistant')
     ));
 
     $settings->add(new admin_setting_configcheckbox(
