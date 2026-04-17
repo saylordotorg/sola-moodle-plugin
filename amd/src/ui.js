@@ -619,7 +619,7 @@ define([
         // open behavior without a plugin deploy. v3.5.2+ always emits the
         // attribute (either "1", "0", or "") and the explicit value wins.
         var autoopenAttr = root.dataset.autoopen;
-        var shouldAutoopen = (autoopenAttr === '1') || (autoopenAttr === undefined);
+        var shouldAutoopen = (autoopenAttr === '1');
         if (shouldAutoopen) {
             var courseId = root.dataset.courseid || '';
             var firstVisitKey = 'aica_autoopened_course_' + courseId;
