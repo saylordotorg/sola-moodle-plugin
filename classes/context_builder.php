@@ -129,6 +129,20 @@ class context_builder {
         // Append personalization instructions (uses student's first name).
         $prompt .= self::get_personalization_instructions($firstname);
 
+        // Append student learning profile if one exists. This gives SOLA
+        // memory of the student's strengths, weaknesses, learning style,
+        // and interests across sessions without inflating the history.
+        if ($userid > 0 && $userrole === 'student') {
+            $profile = student_profile_manager::get_profile($userid, $courseid);
+            if (!empty($profile)) {
+                $prompt .= "\n\n## Student Learning Profile\n"
+                    . "The following profile was generated from this student's previous conversations. "
+                    . "Use it to personalize your responses: match their depth preference, reference "
+                    . "their strengths encouragingly, focus extra attention on their weak areas, and "
+                    . "use their preferred explanation style.\n\n" . $profile;
+            }
+        }
+
         // Append role-specific instructions.
         $prompt .= "\n\n" . self::get_role_instructions($userrole);
 

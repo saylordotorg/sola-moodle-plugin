@@ -226,6 +226,14 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/profile_update_interval',
+        'Student Profile Update Interval',
+        'After this many student messages in a course, SOLA generates (or refreshes) a learning profile summarising the student\'s strengths, weaknesses, learning style, and interests. The profile is injected into the system prompt for personalised responses. Set to 0 to disable. Default: 10.',
+        '10',
+        PARAM_INT
+    ));
+
     $settings->add(new \local_ai_course_assistant\admin_setting_comparison_providers(
         'local_ai_course_assistant/comparison_providers',
         get_string('settings:comparison_providers', 'local_ai_course_assistant'),
