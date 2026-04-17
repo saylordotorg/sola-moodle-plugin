@@ -120,17 +120,23 @@ foreach ($courseids as $cid) {
         $coursedata['hotspots'] = [];
     }
 
-    // Student usage: convert DB records to plain arrays for JSON.
+    // Student usage: anonymize by default; pass ?anonymize=0 to reveal real names.
+    $anonymize = optional_param('anonymize', 1, PARAM_INT);
     $studentrecords = analytics::get_student_usage($cid, $since);
     $studentusage = [];
     foreach ($studentrecords as $record) {
-        $studentusage[] = [
+        $entry = [
             'userid' => (int) $record->userid,
-            'firstname' => $record->firstname,
-            'lastname' => $record->lastname,
             'message_count' => (int) $record->message_count,
             'last_active' => (int) $record->last_active,
         ];
+        if ($anonymize) {
+            $entry['name'] = \local_ai_course_assistant\anonymizer::name((int) $record->userid);
+        } else {
+            $entry['firstname'] = $record->firstname;
+            $entry['lastname'] = $record->lastname;
+        }
+        $studentusage[] = $entry;
     }
     $coursedata['student_usage'] = $studentusage;
 
@@ -256,14 +262,22 @@ try {
     $surveydata = [];
 }
 
+// Meta-AI analytics: anonymized stats and transcript excerpt for Redash dashboards.
+$metaai = [
+    'summary' => \local_ai_course_assistant\meta_ai_data_builder::build_stats_summary($courseid, $since),
+    'transcript_excerpt' => \local_ai_course_assistant\meta_ai_data_builder::build_transcript($courseid, $since, 50000),
+];
+
 // Build response.
 $response = [
     'generated_at' => date('c'),
     'plugin_version' => $pluginversion,
+    'anonymized' => !empty($anonymize),
     'courses' => $courses,
     'feedback' => $feedback,
     'token_costs' => $tokencosts,
     'survey_responses' => $surveydata,
+    'meta_ai' => $metaai,
 ];
 
 echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

@@ -38,6 +38,17 @@ $courseid = optional_param('courseid', 0, PARAM_INT);
 $range    = optional_param('range', 30, PARAM_INT); // 7, 30, 0 = all.
 $action   = optional_param('action', '', PARAM_ALPHA);
 
+// ── Student mode toggle (session-scoped) ───────────────────────────────────
+if ($action === 'togglestudentmode' && confirm_sesskey()) {
+    if (!empty($_SESSION['sola_student_mode'])) {
+        unset($_SESSION['sola_student_mode']);
+    } else {
+        $_SESSION['sola_student_mode'] = true;
+    }
+    redirect(new moodle_url('/local/ai_course_assistant/analytics.php',
+        ['courseid' => $courseid, 'range' => $range]));
+}
+
 // ── Anonymization toggle (session-scoped) ──────────────────────────────────
 if ($action === 'togglenames' && confirm_sesskey()) {
     if (!empty($_SESSION['sola_show_real_names'])) {
@@ -449,6 +460,9 @@ $templatedata = [
 
     // Anonymization toggle.
     'show_real_names' => $show_real_names,
+
+    // Student mode.
+    'student_mode' => !empty($_SESSION['sola_student_mode']),
 
     // Meta-AI Chat.
     'meta_ai_sse_url' => (new moodle_url('/local/ai_course_assistant/meta_ai_sse.php'))->out(false),

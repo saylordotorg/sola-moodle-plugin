@@ -101,6 +101,20 @@ class hook_callbacks {
 
         $userrole = context_builder::detect_role($courseid, $USER->id);
 
+        // Student mode: admins can toggle into student view for demos and
+        // testing. URL param ?sola_student_mode=1 enters, Ctrl+Shift+A or
+        // ?sola_student_mode=0 exits. Session-scoped.
+        $isadmin = has_capability('local/ai_course_assistant:manage', $coursecontext);
+        if ($isadmin) {
+            $modeparam = optional_param('sola_student_mode', -1, PARAM_INT);
+            if ($modeparam === 1) {
+                $_SESSION['sola_student_mode'] = true;
+            } else if ($modeparam === 0) {
+                unset($_SESSION['sola_student_mode']);
+            }
+        }
+        $studentmode = $isadmin && !empty($_SESSION['sola_student_mode']);
+
         // Quiz hide: optionally suppress widget on all quiz pages (stricter than quizLocked).
         $hideonquizforstudents = (bool)get_config('local_ai_course_assistant', 'hide_on_quiz_for_students');
         $hideonquizforstaff = (bool)get_config('local_ai_course_assistant', 'hide_on_quiz_for_staff');
@@ -148,6 +162,15 @@ class hook_callbacks {
         // Check if user can access course-level AI settings (editing teachers, managers, admins).
         $cansiteconfig = has_capability('local/ai_course_assistant:manage', $coursecontext);
         $coursesettingsurl = new \moodle_url('/local/ai_course_assistant/course_settings.php', ['courseid' => $courseid]);
+
+        // Student mode: suppress all admin UI elements so the admin sees
+        // exactly what a student sees. The role is also overridden to
+        // 'student' so the system prompt matches the student experience.
+        if ($studentmode) {
+            $cansiteconfig = false;
+            $canviewanalytics = false;
+            $userrole = 'student';
+        }
 
         // Build quiz topics from visible course sections, filtering out
         // non-content sections (enrollment, feedback, certificates, etc.).
@@ -431,6 +454,7 @@ class hook_callbacks {
             'displaymode'        => $displaymode,
             'drawermode'         => ($displaymode === 'drawer'),
             'autoopen'           => self::is_autoopen_for_course($courseid),
+            'studentmode'        => $studentmode,
             'displayname'        => get_config('local_ai_course_assistant', 'display_name') ?: 'Saylor Online Learning Assistant',
             'institution'        => get_config('local_ai_course_assistant', 'institution_name') ?: 'Saylor University',
             'institutionshort'   => get_config('local_ai_course_assistant', 'institution_short_name') ?: 'Saylor U',

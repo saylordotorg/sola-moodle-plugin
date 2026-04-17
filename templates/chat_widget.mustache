@@ -163,6 +163,11 @@
          aria-label="{{shortname_label}}"
          aria-hidden="true"
          hidden>
+        {{#studentmode}}
+        {{! Subtle 2px indicator that student mode is active. Observers won't notice;
+            admin knows to look for the thin bar. Ctrl+Shift+A exits. }}
+        <div style="height:2px;background:linear-gradient(90deg,#ffc107,#fd7e14);flex-shrink:0" title="Student mode active (Ctrl+Shift+A to exit)"></div>
+        {{/studentmode}}
         <button id="local-ai-course-assistant-close-toggle"
                 class="local-ai-course-assistant__toggle local-ai-course-assistant__toggle--close"
                 type="button"
@@ -597,6 +602,17 @@
         </div>
     </div>
 </div>
+{{#studentmode}}
+<script>
+// Student mode exit: Ctrl+Shift+A from any page.
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        window.location.href = window.location.pathname + '?sola_student_mode=0';
+    }
+});
+</script>
+{{/studentmode}}
 {{#use_cdn}}
 <link rel="stylesheet" href="{{cdn_css_url}}" />
 <script>window.SOLA_I18N = {{{i18n_json}}};</script>

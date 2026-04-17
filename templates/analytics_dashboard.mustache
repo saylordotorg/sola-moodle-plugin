@@ -38,21 +38,37 @@
     <div class="mb-3 d-flex flex-wrap align-items-center" style="gap:8px">
         <a href="{{settings_url}}" class="btn btn-sm btn-outline-secondary">&larr; Plugin Settings</a>
         <a href="{{token_analytics_url}}" class="btn btn-sm btn-outline-secondary">&#36; Token Usage &amp; Cost</a>
-        <form method="post" action="{{form_action}}" style="display:inline;margin-left:auto">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <input type="hidden" name="action" value="togglenames">
-            <input type="hidden" name="courseid" value="{{courseid_param}}">
-            <input type="hidden" name="range" value="{{range}}">
-            <button type="submit" class="btn btn-sm {{#show_real_names}}btn-warning{{/show_real_names}}{{^show_real_names}}btn-outline-secondary{{/show_real_names}}">
-                {{#show_real_names}}&#128275; Hide Real Names{{/show_real_names}}{{^show_real_names}}&#128274; Show Real Names{{/show_real_names}}
-            </button>
-        </form>
+        <div style="margin-left:auto;display:flex;gap:8px">
+            <form method="post" action="{{form_action}}" style="display:inline">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="togglenames">
+                <input type="hidden" name="courseid" value="{{courseid_param}}">
+                <input type="hidden" name="range" value="{{range}}">
+                <button type="submit" class="btn btn-sm {{#show_real_names}}btn-warning{{/show_real_names}}{{^show_real_names}}btn-outline-secondary{{/show_real_names}}">
+                    {{#show_real_names}}&#128275; Hide Real Names{{/show_real_names}}{{^show_real_names}}&#128274; Show Real Names{{/show_real_names}}
+                </button>
+            </form>
+            <form method="post" action="{{form_action}}" style="display:inline">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="togglestudentmode">
+                <input type="hidden" name="courseid" value="{{courseid_param}}">
+                <input type="hidden" name="range" value="{{range}}">
+                <button type="submit" class="btn btn-sm {{#student_mode}}btn-info{{/student_mode}}{{^student_mode}}btn-outline-secondary{{/student_mode}}">
+                    {{#student_mode}}Exit Student Mode{{/student_mode}}{{^student_mode}}Student Mode{{/student_mode}}
+                </button>
+            </form>
+        </div>
     </div>
     {{#show_real_names}}
     <div class="alert alert-warning py-2 mb-3" style="font-size:13px">
         <strong>Real names are visible.</strong> Student data is not anonymized in this session. Toggle off before sharing your screen or leaving this page.
     </div>
     {{/show_real_names}}
+    {{#student_mode}}
+    <div class="alert alert-info py-2 mb-3" style="font-size:13px">
+        <strong>Student Mode active.</strong> The SOLA widget on course pages now shows exactly what students see. Exit here or press Ctrl+Shift+A from any page.
+    </div>
+    {{/student_mode}}
 
     {{! ═══ Cross-Course Summary ═══ }}
     <h3>AI Course Assistant Overview</h3>
