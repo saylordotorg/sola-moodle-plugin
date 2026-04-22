@@ -53,9 +53,10 @@ TARGETS = {
     "500": ("dev500.sylr.org", "/var/www/html/moodle500", "local",        LEGACY_INSTANCE_ID),
     "501": ("dev501.sylr.org", "/var/www/html/moodle501", "public/local", LEGACY_INSTANCE_ID),
     # dev503 runs Moodle 5.2 on its own EC2 instance (moodle-dev503).
-    # SSM requires AmazonSSMManagedInstanceCore attached to the
-    # moodle-dev503-backup-profile IAM role before deploys will succeed.
-    "503": ("dev503.sylr.org", "/var/www/html/moodle503", "public/local", "i-01c8aaf0d2e9dcab1"),
+    # Different filesystem layout: Moodle lives at /var/www/moodle (not
+    # /var/www/html/moodleNNN like the shared instance). public/local is the
+    # standard Moodle 5.1+ web-root-moved-into-public/ layout.
+    "503": ("dev503.sylr.org", "/var/www/moodle", "public/local", "i-01c8aaf0d2e9dcab1"),
 }
 
 # Local paths.
