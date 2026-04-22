@@ -29,23 +29,33 @@ import sys
 import time
 
 # AWS infrastructure.
-INSTANCE_ID = "i-04c58928fad484d97"
 S3_BUCKET = "archive-course"
 S3_KEY = "ai_course_assistant_deploy.tar.gz"
 FIXTURE_S3_KEY = "dev-fixtures/bus101.mbz"
 FIXTURE_SHORTNAME = "BUS101"
 
-# Deploy targets: name -> (hostname, moodle_dir, plugin_subdir).
+# Shared instance that hosts the original four dev sites under one EC2 VM.
+LEGACY_INSTANCE_ID = "i-04c58928fad484d97"
+
+# Deploy targets: name -> (hostname, moodle_dir, plugin_subdir, instance_id).
 # moodle_dir is the top-level Moodle repo (where admin/cli/* lives).
-# plugin_subdir is where local plugins are served from relative to moodle_dir.
-# Moodle 5.1+ moved the web root into a public/ subdirectory, so its local
-# plugins live at <moodle_dir>/public/local/*. Older Moodle (4.5, 5.0) keeps
-# them at <moodle_dir>/local/*.
+# plugin_subdir is where local plugins live relative to moodle_dir.
+# instance_id is the EC2 instance the site runs on (SSM target).
+#
+# Layout evolution across Moodle versions:
+#   Moodle 4.5 / 5.0: local plugins at <moodle_dir>/local/*
+#   Moodle 5.1:       web root moved to public/; local plugins at
+#                     <moodle_dir>/public/local/*
+#   Moodle 5.2+:      same as 5.1 (public/ layout) unless noted
 TARGETS = {
-    "dev": ("dev.sylr.org",    "/var/www/html/moodle",    "local"),
-    "405": ("dev405.sylr.org", "/var/www/html/moodle405", "local"),
-    "500": ("dev500.sylr.org", "/var/www/html/moodle500", "local"),
-    "501": ("dev501.sylr.org", "/var/www/html/moodle501", "public/local"),
+    "dev": ("dev.sylr.org",    "/var/www/html/moodle",    "local",        LEGACY_INSTANCE_ID),
+    "405": ("dev405.sylr.org", "/var/www/html/moodle405", "local",        LEGACY_INSTANCE_ID),
+    "500": ("dev500.sylr.org", "/var/www/html/moodle500", "local",        LEGACY_INSTANCE_ID),
+    "501": ("dev501.sylr.org", "/var/www/html/moodle501", "public/local", LEGACY_INSTANCE_ID),
+    # dev503 runs Moodle 5.2 on its own EC2 instance (moodle-dev503).
+    # SSM requires AmazonSSMManagedInstanceCore attached to the
+    # moodle-dev503-backup-profile IAM role before deploys will succeed.
+    "503": ("dev503.sylr.org", "/var/www/html/moodle503", "public/local", "i-01c8aaf0d2e9dcab1"),
 }
 
 # Local paths.
@@ -59,12 +69,18 @@ def run(cmd, **kwargs):
     return subprocess.run(cmd, capture_output=True, text=True, **kwargs)
 
 
-def ssm_send(commands, wait=True, timeout=120):
-    """Send a shell command to the EC2 instance via SSM and wait for result."""
+def ssm_send(commands, wait=True, timeout=120, instance_id=None):
+    """Send a shell command to an EC2 instance via SSM and wait for result.
+
+    instance_id defaults to LEGACY_INSTANCE_ID for backwards compatibility;
+    pass the target's instance_id explicitly when deploying to a site that
+    lives on a different EC2 VM (e.g., dev503).
+    """
+    iid = instance_id or LEGACY_INSTANCE_ID
     payload = {"commands": commands}
     result = run([
         "aws", "ssm", "send-command",
-        "--instance-ids", INSTANCE_ID,
+        "--instance-ids", iid,
         "--document-name", "AWS-RunShellScript",
         "--parameters", json.dumps(payload),
         "--query", "Command.CommandId",
@@ -85,7 +101,7 @@ def ssm_send(commands, wait=True, timeout=120):
         r = run([
             "aws", "ssm", "get-command-invocation",
             "--command-id", command_id,
-            "--instance-id", INSTANCE_ID,
+            "--instance-id", iid,
             "--query", "[Status,StandardOutputContent,StandardErrorContent]",
             "--output", "json",
         ])
@@ -100,7 +116,7 @@ def ssm_send(commands, wait=True, timeout=120):
     return {"status": "Timeout", "stdout": "", "stderr": "Command polling timed out"}
 
 
-def deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
+def deploy_to_target(name, hostname, moodle_dir, plugin_subdir, instance_id=None):
     """Rsync, upgrade, purge, verify on a single Moodle install."""
     plugin_dir = f"{moodle_dir}/{plugin_subdir}/ai_course_assistant"
     print(f"\n--- Deploying to {hostname} ({moodle_dir}) ---")
@@ -119,7 +135,7 @@ def deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
         f"rm -rf /tmp/sola_extract_{name}",
         "echo Deploy complete",
     ]
-    result = ssm_send(deploy_commands, timeout=180)
+    result = ssm_send(deploy_commands, timeout=180, instance_id=instance_id)
     if not result or result["status"] != "Success":
         print(f"  ERROR: {result}")
         return False
@@ -129,7 +145,7 @@ def deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
     upgrade_commands = [
         f"sudo -u www-data php {moodle_dir}/admin/cli/upgrade.php --non-interactive 2>&1 | tail -30",
     ]
-    result = ssm_send(upgrade_commands, timeout=180)
+    result = ssm_send(upgrade_commands, timeout=180, instance_id=instance_id)
     if result:
         output = result.get("stdout", "")
         for line in output.split("\n"):
@@ -137,7 +153,7 @@ def deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
                 print(f"    {line}")
 
     print("  Purging caches...")
-    result = ssm_send([f"sudo -u www-data php {moodle_dir}/admin/cli/purge_caches.php"], timeout=60)
+    result = ssm_send([f"sudo -u www-data php {moodle_dir}/admin/cli/purge_caches.php"], timeout=60, instance_id=instance_id)
     print("  Caches purged")
 
     print("  Verifying...")
@@ -146,18 +162,18 @@ def deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
         f"ls {plugin_dir}/*.php | wc -l",
         f"grep -c cdn_url {plugin_dir}/settings.php",
     ]
-    result = ssm_send([" && ".join(verify_commands)], timeout=30)
+    result = ssm_send([" && ".join(verify_commands)], timeout=30, instance_id=instance_id)
     if result and result.get("stdout"):
         for line in result["stdout"].strip().split("\n"):
             print(f"    {line}")
 
-    smoke_test_bus101(hostname, moodle_dir)
+    smoke_test_bus101(hostname, moodle_dir, instance_id=instance_id)
 
     print(f"  Deployed to https://{hostname}")
     return True
 
 
-def course_exists(moodle_dir, shortname):
+def course_exists(moodle_dir, shortname, instance_id=None):
     """Return True if a course whose shortname starts with the given prefix exists."""
     php = (
         "define('CLI_SCRIPT', true); "
@@ -166,16 +182,16 @@ def course_exists(moodle_dir, shortname):
         f"\\\"shortname LIKE '{shortname}%'\\\"); "
         "echo \\$n > 0 ? 'YES' : 'NO';"
     )
-    result = ssm_send([f"sudo -u www-data php -r \"{php}\""], timeout=30)
+    result = ssm_send([f"sudo -u www-data php -r \"{php}\""], timeout=30, instance_id=instance_id)
     return bool(result and "YES" in (result.get("stdout") or ""))
 
 
-def smoke_test_bus101(hostname, moodle_dir):
+def smoke_test_bus101(hostname, moodle_dir, instance_id=None):
     """Hit the BUS101 course page to catch hook-level regressions like v3.4.7.
 
     Skips silently if BUS101 has not been seeded yet. Only logs failures.
     """
-    if not course_exists(moodle_dir, FIXTURE_SHORTNAME):
+    if not course_exists(moodle_dir, FIXTURE_SHORTNAME, instance_id=instance_id):
         return
     url = f"https://{hostname}/course/view.php?name={FIXTURE_SHORTNAME}"
     # Match only genuine error markers. Avoid bare words like "exception" (hits
@@ -197,7 +213,7 @@ def smoke_test_bus101(hostname, moodle_dir):
         "echo 'BAD error markers in response'; exit 1; fi; "
         "echo OK"
     )
-    result = ssm_send([check], timeout=30)
+    result = ssm_send([check], timeout=30, instance_id=instance_id)
     out = (result.get("stdout") or "").strip() if result else ""
     status = (result or {}).get("status")
     if status == "Success" and out.endswith("OK"):
@@ -206,11 +222,11 @@ def smoke_test_bus101(hostname, moodle_dir):
         print(f"    BUS101 smoke: FAILED ({out or status})")
 
 
-def seed_bus101(name, hostname, moodle_dir):
+def seed_bus101(name, hostname, moodle_dir, instance_id=None):
     """Restore the BUS101 fixture backup. Idempotent: skips if already present."""
     print(f"\n--- Seeding BUS101 on {hostname} ({moodle_dir}) ---")
 
-    if course_exists(moodle_dir, FIXTURE_SHORTNAME):
+    if course_exists(moodle_dir, FIXTURE_SHORTNAME, instance_id=instance_id):
         print(f"  BUS101 already present, skipping")
         return True
 
@@ -225,7 +241,7 @@ def seed_bus101(name, hostname, moodle_dir):
         ),
         f"rm -f {fixture_path}",
     ]
-    result = ssm_send(seed_commands, timeout=600)
+    result = ssm_send(seed_commands, timeout=600, instance_id=instance_id)
     if not result or result["status"] != "Success":
         print(f"  ERROR: {result}")
         return False
@@ -233,7 +249,7 @@ def seed_bus101(name, hostname, moodle_dir):
         if line.strip():
             print(f"    {line}")
 
-    if course_exists(moodle_dir, FIXTURE_SHORTNAME):
+    if course_exists(moodle_dir, FIXTURE_SHORTNAME, instance_id=instance_id):
         print(f"  BUS101 seeded on {hostname}")
         return True
     print(f"  ERROR: restore completed but course {FIXTURE_SHORTNAME} not found")
@@ -282,8 +298,8 @@ def main():
     if args.seed_bus101:
         failures = []
         for name in selected:
-            hostname, moodle_dir, _plugin_subdir = TARGETS[name]
-            if not seed_bus101(name, hostname, moodle_dir):
+            hostname, moodle_dir, _plugin_subdir, instance_id = TARGETS[name]
+            if not seed_bus101(name, hostname, moodle_dir, instance_id=instance_id):
                 failures.append(hostname)
         print("\n" + "=" * 60)
         if failures:
@@ -333,8 +349,8 @@ def main():
     # Step 4: Deploy to every selected target in sequence.
     failures = []
     for name in selected:
-        hostname, moodle_dir, plugin_subdir = TARGETS[name]
-        if not deploy_to_target(name, hostname, moodle_dir, plugin_subdir):
+        hostname, moodle_dir, plugin_subdir, instance_id = TARGETS[name]
+        if not deploy_to_target(name, hostname, moodle_dir, plugin_subdir, instance_id=instance_id):
             failures.append(hostname)
 
     # Clean up local tarball.
