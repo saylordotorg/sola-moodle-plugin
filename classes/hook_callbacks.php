@@ -589,6 +589,18 @@ class hook_callbacks {
             'consentgiven'       => (bool) get_user_preferences('aica_sola_consent_given', 0),
             'consenturl'         => (new \moodle_url('/local/ai_course_assistant/consent.php'))->out(false),
             'privacynoticeurl'   => (new \moodle_url('/local/ai_course_assistant/privacy.php'))->out(false),
+            // Pre-substituted consent banner strings. Mustache cannot pass an
+            // object through {{#str}}, so we format in PHP and let the
+            // template consume the final text via {{consent_*}}.
+            'consent_heading'    => get_string('chat:consent_heading', 'local_ai_course_assistant',
+                \local_ai_course_assistant\branding::short_name()),
+            'consent_body'       => get_string('chat:consent_body', 'local_ai_course_assistant',
+                (object)[
+                    'product'     => \local_ai_course_assistant\branding::short_name(),
+                    'institution' => \local_ai_course_assistant\branding::institution_name(),
+                ]),
+            'consent_accept'     => get_string('chat:consent_accept', 'local_ai_course_assistant',
+                \local_ai_course_assistant\branding::short_name()),
             'englishlock'        => (bool)get_config('local_ai_course_assistant', 'english_lock_course_' . $courseid),
         ];
 

@@ -1346,16 +1346,34 @@ if ($hassiteconfig) {
 
     $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
         'local_ai_course_assistant_userdata',
-        get_string('admin:user_data:title', 'local_ai_course_assistant'),
+        get_string('admin:user_data:title', 'local_ai_course_assistant',
+            \local_ai_course_assistant\branding::short_name()),
         new moodle_url('/local/ai_course_assistant/admin_user_data.php'),
         'moodle/site:config'
     ));
 
     $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
         'local_ai_course_assistant_vendordpa',
-        get_string('admin:vendor_dpa:title', 'local_ai_course_assistant'),
+        get_string('admin:vendor_dpa:title', 'local_ai_course_assistant',
+            \local_ai_course_assistant\branding::short_name()),
         new moodle_url('/local/ai_course_assistant/vendor_dpa.php'),
         'moodle/site:config'
+    ));
+
+    // v3.9.15: white-label contact points surfaced on the privacy notice.
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/dpo_email',
+        get_string('settings:dpo_email', 'local_ai_course_assistant'),
+        get_string('settings:dpo_email_desc', 'local_ai_course_assistant'),
+        '',
+        PARAM_EMAIL
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/privacy_external_url',
+        get_string('settings:privacy_external_url', 'local_ai_course_assistant'),
+        get_string('settings:privacy_external_url_desc', 'local_ai_course_assistant'),
+        '',
+        PARAM_URL
     ));
 
     // v3.9.12: data retention controls.

@@ -292,8 +292,8 @@
          style="position:absolute;inset:0;z-index:20;background:rgba(255,255,255,0.98);
                 display:flex;flex-direction:column;justify-content:center;padding:28px 24px;
                 overflow-y:auto;font-size:14px;line-height:1.55">
-        <h3 style="margin:0 0 12px;font-size:17px">{{#str}}chat:consent_heading, local_ai_course_assistant{{/str}}</h3>
-        <p style="margin:0 0 14px;color:#333">{{#str}}chat:consent_body, local_ai_course_assistant{{/str}}</p>
+        <h3 style="margin:0 0 12px;font-size:17px">{{consent_heading}}</h3>
+        <p style="margin:0 0 14px;color:#333">{{consent_body}}</p>
         <p style="margin:0 0 18px;font-size:13px">
             <a href="{{privacynoticeurl}}" target="_blank" rel="noopener" style="color:#023e8a">
                 {{#str}}chat:consent_privacy_link, local_ai_course_assistant{{/str}}
@@ -302,7 +302,7 @@
         <div>
             <button type="button" class="aica-consent-accept btn btn-primary"
                     style="padding:8px 16px;font-weight:600">
-                {{#str}}chat:consent_accept, local_ai_course_assistant{{/str}}
+                {{consent_accept}}
             </button>
         </div>
     </div>

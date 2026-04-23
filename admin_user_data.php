@@ -40,8 +40,10 @@ $confirm      = optional_param('confirm', 0, PARAM_INT);
 
 $PAGE->set_url('/local/ai_course_assistant/admin_user_data.php');
 $PAGE->set_context($syscontext);
-$PAGE->set_title(get_string('admin:user_data:title', 'local_ai_course_assistant'));
-$PAGE->set_heading(get_string('admin:user_data:title', 'local_ai_course_assistant'));
+$PAGE->set_title(get_string('admin:user_data:title', 'local_ai_course_assistant',
+    \local_ai_course_assistant\branding::short_name()));
+$PAGE->set_heading(get_string('admin:user_data:title', 'local_ai_course_assistant',
+    \local_ai_course_assistant\branding::short_name()));
 
 $tables = [
     'convs'          => 'local_ai_course_assistant_convs',
@@ -83,7 +85,8 @@ if ($action === 'download' && $targetuserid && confirm_sesskey()) {
     \local_ai_course_assistant\audit_logger::log('admin_export_learner_data',
         (int)$USER->id, 0, ['target_userid' => $targetuserid]);
     header('Content-Type: application/json; charset=utf-8');
-    header('Content-Disposition: attachment; filename="sola-data-' . $targetuserid . '-' . date('Ymd') . '.json"');
+    $fnslug = \local_ai_course_assistant\branding::filename_slug();
+    header('Content-Disposition: attachment; filename="' . $fnslug . '-data-' . $targetuserid . '-' . date('Ymd') . '.json"');
     header('Cache-Control: no-store');
     echo json_encode($bundle, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;

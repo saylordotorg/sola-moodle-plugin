@@ -45,6 +45,6 @@ class audit_cleanup extends \core\task\scheduled_task {
             'timecreated < :cutoff',
             ['cutoff' => $cutoff]
         );
-        mtrace('SOLA audit_cleanup: removed rows older than ' . $days . ' days.');
+        mtrace('audit_cleanup: removed rows older than ' . $days . ' days.');
     }
 }

@@ -76,7 +76,7 @@ if ($action === 'download' && confirm_sesskey()) {
         }
     }
     \local_ai_course_assistant\audit_logger::log('data_download_self', $uid, 0, ['bundle_keys' => array_keys($bundle)]);
-    $filename = 'sola-data-' . $uid . '-' . date('Ymd') . '.json';
+    $filename = \local_ai_course_assistant\branding::filename_slug() . '-data-' . $uid . '-' . date('Ymd') . '.json';
     header('Content-Type: application/json; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Cache-Control: no-store');

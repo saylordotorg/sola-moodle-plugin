@@ -36,8 +36,10 @@ require_capability('moodle/site:config', $syscontext);
 
 $PAGE->set_url('/local/ai_course_assistant/vendor_dpa.php');
 $PAGE->set_context($syscontext);
-$PAGE->set_title(get_string('admin:vendor_dpa:title', 'local_ai_course_assistant'));
-$PAGE->set_heading(get_string('admin:vendor_dpa:title', 'local_ai_course_assistant'));
+$PAGE->set_title(get_string('admin:vendor_dpa:title', 'local_ai_course_assistant',
+    \local_ai_course_assistant\branding::short_name()));
+$PAGE->set_heading(get_string('admin:vendor_dpa:title', 'local_ai_course_assistant',
+    \local_ai_course_assistant\branding::short_name()));
 
 \local_ai_course_assistant\security::send_security_headers();
 

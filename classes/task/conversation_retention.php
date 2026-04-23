@@ -50,7 +50,7 @@ class conversation_retention extends \core\task\scheduled_task {
             ['cutoff' => $cutoff]
         );
         if (empty($convids)) {
-            mtrace('SOLA conversation_retention: nothing to purge (cutoff ' . $days . 'd).');
+            mtrace('conversation_retention: nothing to purge (cutoff ' . $days . 'd).');
             return;
         }
         list($insql, $params) = $DB->get_in_or_equal($convids);
@@ -58,7 +58,7 @@ class conversation_retention extends \core\task\scheduled_task {
             "conversationid {$insql}", $params);
         $DB->delete_records_select('local_ai_course_assistant_convs',
             "id {$insql}", $params);
-        mtrace('SOLA conversation_retention: purged ' . count($convids)
+        mtrace('conversation_retention: purged ' . count($convids)
             . ' conversation(s) older than ' . $days . ' days.');
     }
 }
