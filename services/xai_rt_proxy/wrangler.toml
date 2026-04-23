@@ -1,0 +1,20 @@
+name = "sola-xai-rt-proxy"
+main = "worker.js"
+compatibility_date = "2026-04-15"
+
+# Zero concurrency cap by default; adjust once we have session telemetry.
+# workers_dev = true exposes a <subdomain>.workers.dev URL you can use as
+# `xai_proxy_url` in SOLA settings while standing the integration up, then
+# switch to a custom route under saylor.org once verified.
+
+[vars]
+XAI_REALTIME_URL = "wss://api.x.ai/v1/realtime"
+
+# Secrets (NOT stored in this file):
+#   wrangler secret put XAI_API_KEY
+#   wrangler secret put MOODLE_JWT_SECRET
+
+# Optional: bind to a custom route like wss://voice.saylor.org/xai-rt/*
+# [[routes]]
+# pattern = "voice.saylor.org/xai-rt/*"
+# zone_name = "saylor.org"

@@ -1351,6 +1351,13 @@ if ($hassiteconfig) {
         'moodle/site:config'
     ));
 
+    $ADMIN->add('local_ai_course_assistant', new admin_externalpage(
+        'local_ai_course_assistant_vendordpa',
+        get_string('admin:vendor_dpa:title', 'local_ai_course_assistant'),
+        new moodle_url('/local/ai_course_assistant/vendor_dpa.php'),
+        'moodle/site:config'
+    ));
+
     // v3.9.12: data retention controls.
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/audit_retention_days',

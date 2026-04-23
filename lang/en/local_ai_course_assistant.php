@@ -560,7 +560,12 @@ $string['settings:conversation_retention_days_desc'] = 'Daily scheduled task pur
 $string['settings:xai_proxy_url'] = 'xAI Realtime proxy URL';
 $string['settings:xai_proxy_url_desc'] = 'Public wss URL of the SOLA xAI Realtime proxy service (for example wss://voice.example.com/xai-rt/rt). When this is set together with the JWT secret, xAI voice routes through the proxy and the master xAI API key never reaches the browser. Leave empty to fall back to the direct connection (not recommended for production).';
 $string['settings:xai_proxy_jwt_secret'] = 'xAI Realtime proxy JWT secret';
-$string['settings:xai_proxy_jwt_secret_desc'] = 'HS256 shared secret used to sign short-lived session tokens for the xAI Realtime proxy. Must match the MOODLE_JWT_SECRET environment variable on the proxy host. Rotate periodically.';
+$string['settings:xai_proxy_jwt_secret_desc'] = 'HS256 shared secret used to sign short-lived session tokens for the xAI Realtime proxy. Must match the MOODLE_JWT_SECRET secret on the Cloudflare Worker. Rotate periodically.';
+
+// Vendor DPA admin view (v3.9.14).
+$string['admin:vendor_dpa:title'] = 'SOLA — Vendor DPA status';
+$string['admin:vendor_dpa:intro'] = 'Training opt-out, DPA, and retention posture for every AI provider driver shipped in SOLA. Use this to decide which drivers to enable on your site. Tier 2 and higher routing requires a signed DPA and a contractual training opt-out.';
+$string['admin:vendor_dpa:maintenance_note'] = 'This table is maintained in classes/vendor_registry.php. Update it when a vendor ToS change lands.';
 
 // Quiz.
 $string['chat:quiz']                    = 'Take a practice quiz';

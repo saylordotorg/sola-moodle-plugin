@@ -94,12 +94,22 @@ class content_indexer {
                         'chunkindex' => $idx,
                     ]);
 
+                    // Neutralize prompt-injection markers embedded in course
+                    // content before the chunk is stored. Role delimiters and
+                    // system-instruction markers in PDFs/SCORM/etc would
+                    // otherwise re-enter the system prompt at retrieval time.
+                    $sanitized = \local_ai_course_assistant\security::sanitize_rag_chunk($chunk['content']);
+                    if ($sanitized['neutralized'] > 0) {
+                        $stats['injection_patterns_neutralized'] =
+                            ($stats['injection_patterns_neutralized'] ?? 0) + $sanitized['neutralized'];
+                    }
+
                     $record = new \stdClass();
                     $record->courseid    = $courseid;
                     $record->cmid        = $mod['cmid'];
                     $record->modtype     = $mod['modtype'];
                     $record->chunkindex  = $idx;
-                    $record->content     = $chunk['content'];
+                    $record->content     = $sanitized['text'];
                     $record->contenthash = $hash;
                     $record->embedding   = json_encode($vector);
                     $record->embed_model = $modelname;

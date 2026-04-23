@@ -478,6 +478,11 @@ TXT;
             return null;
         }
 
+        // SSRF: reject internal and loopback URLs before any request fires.
+        if (!\local_ai_course_assistant\security::is_safe_provider_url($url)) {
+            return null;
+        }
+
         $ch = curl_init($url);
         if ($ch === false) {
             return null;

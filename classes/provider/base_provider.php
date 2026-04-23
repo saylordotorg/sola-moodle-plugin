@@ -121,6 +121,15 @@ abstract class base_provider implements provider_interface {
      * @throws \moodle_exception On HTTP errors.
      */
     protected function http_post_stream(string $url, array $headers, string $body, callable $writecallback): void {
+        // SSRF validation. Every provider driver lands here for its outbound
+        // call, so one gate closes the internal-address attack vector for all
+        // 12 drivers. Fails loudly so a misconfigured endpoint cannot silently
+        // be redirected at 127.0.0.1 or 169.254.169.254.
+        if (!\local_ai_course_assistant\security::is_safe_provider_url($url)) {
+            throw new \moodle_exception('error', 'local_ai_course_assistant', '',
+                'Provider endpoint rejected by SSRF validator: ' . $url);
+        }
+
         $ch = curl_init();
 
         curl_setopt_array($ch, [
