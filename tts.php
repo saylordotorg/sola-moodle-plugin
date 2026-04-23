@@ -42,6 +42,16 @@ if ($courseid > 0) {
 }
 require_capability('local/ai_course_assistant:use', $context);
 
+// Rate limit: 30 TTS requests per 60 seconds per user. TTS is a per-character
+// spend vector; without this cap an authenticated learner can burn an unbounded
+// amount of OpenAI or xAI credit.
+if (\local_ai_course_assistant\rate_limiter::is_rate_limited($USER->id, 'tts', 30, 60)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode(['error' => get_string('chat:error_ratelimit', 'local_ai_course_assistant')]);
+    exit;
+}
+
 // Resolve active TTS provider via the voice_providers registry.
 $cfg = \local_ai_course_assistant\voice_registry::resolve(
     \local_ai_course_assistant\voice_registry::CAPABILITY_TTS);

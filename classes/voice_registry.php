@@ -221,6 +221,20 @@ class voice_registry {
     }
 
     /**
+     * Return true when any voice capability (Realtime, TTS, or STT) resolves
+     * to a configured provider. Used by the widget to suppress mic, speaker,
+     * and voice tab affordances (and the matching help and welcome copy) on
+     * installs where voice is not set up.
+     *
+     * @return bool
+     */
+    public static function any_voice_enabled(): bool {
+        return self::resolve(self::CAPABILITY_REALTIME) !== null
+            || self::resolve(self::CAPABILITY_TTS) !== null
+            || self::resolve(self::CAPABILITY_STT) !== null;
+    }
+
+    /**
      * List of label strings from configured voice_providers rows, for UI dropdowns.
      *
      * @return array keyed by label => display string

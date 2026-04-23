@@ -539,6 +539,7 @@ class hook_callbacks {
             'llmoptionsjson'     => json_encode($llmoptions),
             'hasstarterdata'     => $hasstarterdata,
             'voicetabenabled'    => self::is_voice_tab_enabled($courseid),
+            'voiceenabled'       => \local_ai_course_assistant\voice_registry::any_voice_enabled(),
             'englishlock'        => (bool)get_config('local_ai_course_assistant', 'english_lock_course_' . $courseid),
         ];
 

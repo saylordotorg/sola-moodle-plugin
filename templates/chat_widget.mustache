@@ -298,8 +298,10 @@
         <p>Click <strong>Quiz Me</strong> to get multiple-choice questions from the course content. You will see explanations after each answer and a score summary at the end.</p>
         <h5 style="margin:14px 0 6px;font-size:14px">Study plans</h5>
         <p>Click <strong>Study Plan</strong> to create a personalised week-by-week plan. Tell {{shortname_label}} your goal, how many hours you can study, and your deadline. You can opt into email reminders.</p>
+        {{#voiceenabled}}
         <h5 style="margin:14px 0 6px;font-size:14px">Voice</h5>
         <p>Use the mic icon to speak your question, or switch to the Voice tab for a live two-way conversation.</p>
+        {{/voiceenabled}}
         <h5 style="margin:14px 0 6px;font-size:14px">Languages</h5>
         <p>Click the gear icon and change the language. {{shortname_label}} supports 46 languages. All labels and responses switch instantly.</p>
         <h5 style="margin:14px 0 6px;font-size:14px">Your data</h5>
@@ -539,6 +541,7 @@
                         </label>
                     </div>
                     <div class="local-ai-course-assistant__composer-right">
+                        {{#voiceenabled}}
                         <button class="local-ai-course-assistant__btn-mic"
                                 title="{{#str}}chat:mic, local_ai_course_assistant{{/str}}"
                                 aria-label="{{#str}}chat:mic, local_ai_course_assistant{{/str}}"
@@ -551,6 +554,7 @@
                                 <rect x="9" y="9" width="6" height="6" rx="1"/>
                             </svg>
                         </button>
+                        {{/voiceenabled}}
                         <button class="local-ai-course-assistant__btn-send"
                                 title="{{#str}}chat:send, local_ai_course_assistant{{/str}}"
                                 aria-label="{{#str}}chat:send, local_ai_course_assistant{{/str}}"

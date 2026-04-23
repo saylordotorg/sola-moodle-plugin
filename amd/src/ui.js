@@ -1502,7 +1502,7 @@ define([
         content.className = 'local-ai-course-assistant__message-content';
 
         if (role === 'assistant') {
-            content.innerHTML = Markdown.render(text);
+            content.innerHTML = Markdown.sanitize(Markdown.render(text));
         } else {
             content.textContent = text;
         }
@@ -1709,7 +1709,7 @@ define([
         const partial = typewriterFull.substring(0, typewriterPos);
         const content = streamingEl.querySelector('.local-ai-course-assistant__message-content');
         if (content) {
-            content.innerHTML = Markdown.render(partial);
+            content.innerHTML = Markdown.sanitize(Markdown.render(partial));
             programmaticScroll = true;
             if (scrollFollowMode) {
                 // User scrolled down or clicked the down arrow — follow the bottom.
@@ -1768,7 +1768,7 @@ define([
         if (streamingEl) {
             const completedEl = streamingEl;
             const content = streamingEl.querySelector('.local-ai-course-assistant__message-content');
-            content.innerHTML = Markdown.render(fullText);
+            content.innerHTML = Markdown.sanitize(Markdown.render(fullText));
 
             // Ensure footer wrapper exists (source slot + action buttons).
             let footer = streamingEl.querySelector('.local-ai-course-assistant__msg-footer');

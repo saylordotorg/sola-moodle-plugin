@@ -258,7 +258,10 @@ define([
             if (title) {
                 pill.title = title;
             }
-            pill.innerHTML = label + linkIcon;
+            pill.textContent = label;
+            var iconWrap = document.createElement('span');
+            iconWrap.innerHTML = linkIcon;
+            pill.appendChild(iconWrap);
         } else {
             pill = document.createElement('span');
             pill.textContent = label;
@@ -3142,7 +3145,161 @@ define([
     };
 
     /**
+     * Split a response into speakable chunks. Each chunk is one or two
+     * sentences bounded to ~220 chars, so the first chunk synthesizes in
+     * 1–3s instead of waiting for the full response. Short interjections
+     * are combined to avoid a flurry of tiny TTS calls.
+     *
+     * @param {string} text
+     * @returns {string[]}
+     */
+    const splitTtsChunks = function(text) {
+        var raw = String(text || '').split(/(?<=[.!?])\s+/);
+        var chunks = [];
+        var current = '';
+        for (var i = 0; i < raw.length; i++) {
+            var next = raw[i].trim();
+            if (!next) { continue; }
+            if (current === '') {
+                current = next;
+            } else if ((current + ' ' + next).length <= 220) {
+                current = current + ' ' + next;
+            } else {
+                chunks.push(current);
+                current = next;
+            }
+        }
+        if (current) { chunks.push(current); }
+        return chunks;
+    };
+
+    /** @type {Object<string, AudioBuffer>} Bounded cache of decoded TTS chunks. */
+    var ttsChunkCache = {};
+
+    /**
+     * Fetch and decode a single TTS chunk; cache keyed on voice + text so
+     * repeat plays are instant.
+     *
+     * @param {string} chunkText
+     * @param {string} ttsUrl
+     * @param {string|null} voice
+     * @returns {Promise<AudioBuffer>}
+     */
+    const fetchAndDecodeTts = function(chunkText, ttsUrl, voice) {
+        var key = (voice || '') + '|' + chunkText;
+        if (ttsChunkCache[key]) {
+            return Promise.resolve(ttsChunkCache[key]);
+        }
+        var formData = new URLSearchParams();
+        formData.append('text', chunkText);
+        formData.append('sesskey', sessKey);
+        formData.append('courseid', String(courseId));
+        if (voice) { formData.append('voice', voice); }
+        return fetch(ttsUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: formData.toString()
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (!data.audio) { throw new Error('no audio'); }
+            var byteChars = atob(data.audio);
+            var byteArr = new Uint8Array(byteChars.length);
+            for (var i = 0; i < byteChars.length; i++) {
+                byteArr[i] = byteChars.charCodeAt(i);
+            }
+            var ctx = getOrCreateAudioContext();
+            if (!ctx || !ctx.decodeAudioData) { throw new Error('no audio context'); }
+            return new Promise(function(resolve, reject) {
+                ctx.decodeAudioData(byteArr.buffer, resolve, reject);
+            });
+        })
+        .then(function(audioBuffer) {
+            var keys = Object.keys(ttsChunkCache);
+            if (keys.length > 50) { delete ttsChunkCache[keys[0]]; }
+            ttsChunkCache[key] = audioBuffer;
+            return audioBuffer;
+        });
+    };
+
+    /**
+     * Speak a long response with sentence level chunking. Fetches all
+     * chunks in parallel so playback starts as soon as the first is ready
+     * and later chunks stream in while earlier ones play.
+     *
+     * @param {string}   text
+     * @param {string}   ttsUrl
+     * @param {Function} callback
+     */
+    const speakWithOpenAIChunked = function(text, ttsUrl, callback) {
+        var chunks = splitTtsChunks(text);
+        if (chunks.length === 0) {
+            if (callback) { callback(); }
+            return;
+        }
+        var voice = localStorage.getItem('aica_tts_voice');
+        var ctx = getOrCreateAudioContext();
+        if (!ctx) { Speech.speak(text, callback); return; }
+
+        var promises = chunks.map(function(c) {
+            return fetchAndDecodeTts(c, ttsUrl, voice);
+        });
+
+        var stopped = false;
+        var currentSource = null;
+        currentAudio = {
+            pause: function() {
+                stopped = true;
+                if (currentSource) {
+                    try { currentSource.stop(); } catch (e) { /* ignore */ }
+                }
+            }
+        };
+
+        var playIdx = 0;
+        var playNext = function() {
+            if (stopped) { return; }
+            if (playIdx >= chunks.length) {
+                currentAudio = null;
+                UI.stopMouthSync();
+                if (callback) { callback(); }
+                return;
+            }
+            var thisIdx = playIdx++;
+            promises[thisIdx].then(function(audioBuffer) {
+                if (stopped) { return; }
+                var source = ctx.createBufferSource();
+                source.buffer = audioBuffer;
+                var analyser = ctx.createAnalyser();
+                source.connect(analyser);
+                analyser.connect(ctx.destination);
+                if (thisIdx === 0) {
+                    UI.startMouthSyncFromAnalyser(analyser);
+                }
+                currentSource = source;
+                source.onended = function() {
+                    currentSource = null;
+                    playNext();
+                };
+                source.start(0);
+            }).catch(function() {
+                stopped = true;
+                currentAudio = null;
+                UI.stopMouthSync();
+                Speech.speak(chunks.slice(thisIdx).join(' '), callback);
+            });
+        };
+        playNext();
+    };
+
+    /**
      * Speak text using OpenAI TTS proxy (tts.php), falling back to browser TTS on error.
+     *
+     * For responses longer than 220 chars, routes through the chunked path
+     * so time to first audio drops from 10–20s to 1–3s. Word highlighting
+     * is only applied on the short (single call) path; mouth sync still
+     * works in the chunked path because every chunk routes through the
+     * same AudioContext analyser chain.
      *
      * @param {string}        text       Plain text to read aloud
      * @param {string}        ttsUrl     URL of tts.php
@@ -3151,6 +3308,9 @@ define([
      * @param {string|null}   cleanText  Clean plain text matching the wordSpans
      */
     const speakWithOpenAI = function(text, ttsUrl, callback, wordSpans, cleanText) {
+        if (text && text.length > 220) {
+            return speakWithOpenAIChunked(text, ttsUrl, callback);
+        }
         const formData = new URLSearchParams();
         formData.append('text', text.length > 2000 ? text.substring(0, 2000) : text);
         formData.append('sesskey', sessKey);

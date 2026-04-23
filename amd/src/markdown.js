@@ -56,13 +56,47 @@ define([], function() {
         result = result.replace(/\*(.+?)\*/g, '<em>$1</em>');
         result = result.replace(/_(.+?)_/g, '<em>$1</em>');
 
-        // Links: [text](url)
+        // Links: [text](url) — URL scheme is checked against a denylist so that
+        // poisoned AI output or RAG content cannot emit javascript:, data:,
+        // vbscript:, or file: URIs that would execute when a learner clicks.
         result = result.replace(
             /\[([^\]]+)\]\(([^)]+)\)/g,
-            '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+            function(match, linkText, url) {
+                var trimmed = String(url).trim();
+                if (/^(javascript|data|vbscript|file):/i.test(trimmed)) {
+                    trimmed = 'about:blank';
+                }
+                return '<a href="' + trimmed + '" target="_blank" rel="noopener noreferrer">' + linkText + '</a>';
+            }
         );
 
         return result;
+    };
+
+    /**
+     * Defense in depth sanitizer: strip dangerous constructs from any HTML
+     * string before it is assigned to innerHTML. Callers that render AI output
+     * pass the markdown.render() result through this. The allowlist of tags
+     * that markdown.render() emits is narrow; this function is a safety net for
+     * anything that slipped through and for callers that bypass render().
+     *
+     * @param {string} html
+     * @returns {string}
+     */
+    const sanitize = function(html) {
+        if (!html) {
+            return '';
+        }
+        var out = String(html);
+        // Remove <script> blocks entirely.
+        out = out.replace(/<script[\s\S]*?<\/script>/gi, '');
+        // Remove <iframe>, <object>, <embed>, <form>, <style>, <link>, <meta>.
+        out = out.replace(/<\/?(iframe|object|embed|form|style|link|meta)[^>]*>/gi, '');
+        // Strip event-handler attributes (onclick, onerror, onload, etc.).
+        out = out.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+        // Strip javascript:, vbscript:, data:text/html URIs inside href and src.
+        out = out.replace(/(\s(?:href|src)\s*=\s*["']?)\s*(?:javascript|vbscript|data\s*:\s*text\/html)\s*:[^"'\s>]*/gi, '$1about:blank');
+        return out;
     };
 
     /**
@@ -208,6 +242,7 @@ define([], function() {
     };
 
     return {
-        render: render
+        render: render,
+        sanitize: sanitize
     };
 });

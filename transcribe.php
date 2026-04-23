@@ -42,6 +42,16 @@ if ($courseid > 0) {
 }
 require_capability('local/ai_course_assistant:use', $context);
 
+// Rate limit: 20 STT requests per 60 seconds per user. Whisper is a per-minute
+// spend vector; without this cap an authenticated learner can upload clips in a
+// tight loop and rack up cost.
+if (\local_ai_course_assistant\rate_limiter::is_rate_limited($USER->id, 'stt', 20, 60)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode(['error' => get_string('chat:error_ratelimit', 'local_ai_course_assistant')]);
+    exit;
+}
+
 // Require the uploaded audio file.
 if (empty($_FILES['audio']['tmp_name']) || !is_uploaded_file($_FILES['audio']['tmp_name'])) {
     http_response_code(400);

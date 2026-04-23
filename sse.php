@@ -538,9 +538,11 @@ try {
     }
 
 } catch (\moodle_exception $e) {
-    // Include debuginfo (curl errors, HTTP details) alongside the user message.
+    // Include debuginfo (curl errors, HTTP details) only for site admins on
+    // developer-debug environments; never expose internal details to learners.
+    global $CFG, $USER;
     $errmsg = $e->getMessage();
-    if (!empty($e->debuginfo)) {
+    if (!empty($e->debuginfo) && !empty($CFG->debugdeveloper) && is_siteadmin($USER->id)) {
         $errmsg .= ' [' . $e->debuginfo . ']';
     }
     sse_send(['error' => $errmsg]);
