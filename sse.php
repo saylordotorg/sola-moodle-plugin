@@ -102,6 +102,7 @@ $pagetitle  = optional_param('pagetitle', '', PARAM_TEXT);  // Title of the curr
 $coachstyle = optional_param('coachingstyle', '', PARAM_ALPHA); // Coaching style: coach, buddy, tutor.
 $timelimit  = optional_param('timelimit', 0, PARAM_INT);      // Time constraint in minutes (0 = none).
 $firstgen        = optional_param('firstgen', 0, PARAM_BOOL);      // First-generation student mode.
+$readinglevel    = optional_param('readinglevel', '', PARAM_ALPHA); // Accessibility: '', 'simple', 'standard'.
 $completion      = optional_param('completion', 0, PARAM_INT);      // Course completion percentage (0-100).
 $interactiontype = optional_param('interaction_type', 'chat', PARAM_ALPHA); // Interaction mode: chat, voice, quiz, etc.
 $logonly         = optional_param('log_only', 0, PARAM_BOOL);              // Log a system message without AI call.
@@ -299,6 +300,20 @@ try {
     $systemprompt = context_builder::build_system_prompt(
         $courseid, $userid, $lang, $retrievedchunks, $pageid, $pagetitle
     );
+
+    // Accessibility: reading-level adjustment (v3.9.21). Appended after the
+    // course-specific prompt so it's the most recent instruction in scope.
+    if ($readinglevel === 'simple') {
+        $systemprompt .= "\n\n## Reading-level adjustment\n"
+            . "The learner has asked for plain language at roughly a 6th-grade reading level. "
+            . "Use short sentences. Prefer common words. Define any technical term you must use. "
+            . "Break long ideas into bullet lists. Do not lower the technical accuracy.";
+    } else if ($readinglevel === 'standard') {
+        $systemprompt .= "\n\n## Reading-level adjustment\n"
+            . "The learner has asked for plain language at roughly a high-school reading level. "
+            . "Avoid jargon unless you define it. Keep sentences medium-length. "
+            . "Do not lower the technical accuracy.";
+    }
 
     // Inject full page content when the student is viewing a specific resource.
     if ($pageid > 0) {

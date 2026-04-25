@@ -5091,3 +5091,56 @@ a.aica-history-panel__source:hover {
     border: 1px dashed #d1d5db; border-radius: 8px;
     text-align: center; color: #6b7280; font-size: 13px;
 }
+
+/* Accessibility (v3.9.21). Three optional toggles surfaced in the
+   in-widget Settings panel. Each one applies a class on the widget root
+   and persists in localStorage as aica_a11y_*. */
+
+/* Dyslexia-friendly typography: stacks Lexend (Google) and Comic Sans MS
+   first, falls back to Verdana, then system. Bumps letter-spacing and
+   line-height which independently help dyslexic readers. */
+.local-ai-course-assistant.aica-dyslexia-font,
+.local-ai-course-assistant.aica-dyslexia-font * {
+    font-family: 'Lexend', 'Comic Sans MS', 'Comic Sans', Verdana, Tahoma, sans-serif !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.7 !important;
+}
+
+/* High-contrast theme. Overrides drawer chrome + bubble + composer. */
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__drawer {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__header {
+    background: #000 !important;
+    color: #fff !important;
+    border-bottom: 1px solid #fff !important;
+}
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__message--user .local-ai-course-assistant__message-content {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+}
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__message--assistant .local-ai-course-assistant__message-content {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #fff !important;
+}
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__input,
+.local-ai-course-assistant.aica-high-contrast .local-ai-course-assistant__composer-card {
+    background: #fff !important;
+    color: #000 !important;
+    border: 2px solid #fff !important;
+}
+.local-ai-course-assistant.aica-high-contrast a {
+    color: #ffeb3b !important;
+    text-decoration: underline !important;
+}
+.local-ai-course-assistant.aica-high-contrast button:focus,
+.local-ai-course-assistant.aica-high-contrast a:focus,
+.local-ai-course-assistant.aica-high-contrast input:focus,
+.local-ai-course-assistant.aica-high-contrast textarea:focus {
+    outline: 3px solid #ffeb3b !important;
+    outline-offset: 2px !important;
+}

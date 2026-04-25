@@ -1181,6 +1181,17 @@ define([
         sseUrl = root.dataset.sseurl;
         firstName = root.dataset.firstname || '';
         customGreeting = root.dataset.chatGreeting || '';
+
+        // Accessibility (v3.9.21): apply persisted localStorage prefs at
+        // boot so dyslexia font and high contrast survive page navigation.
+        try {
+            if (localStorage.getItem('aica_a11y_dyslexia') === '1') {
+                root.classList.add('aica-dyslexia-font');
+            }
+            if (localStorage.getItem('aica_a11y_contrast') === '1') {
+                root.classList.add('aica-high-contrast');
+            }
+        } catch (e) { /**/ }
         courseName = root.dataset.coursename || '';
         currentPageId = parseInt(root.dataset.currentPageId, 10) || 0;
         currentPageTitle = root.dataset.currentPageTitle || '';
@@ -4828,6 +4839,16 @@ define([
         // First-generation student support.
         try {
             if (localStorage.getItem('aica_firstgen') === '1') { postData.firstgen = 1; }
+        } catch (e) { /**/ }
+
+        // Accessibility: reading-level adjustment (v3.9.21). Flows from the
+        // settings panel a11y row → SSE → context_builder injects the
+        // appropriate plain-language directive into the system prompt.
+        try {
+            var rl = localStorage.getItem('aica_a11y_reading_level');
+            if (rl === 'simple' || rl === 'standard') {
+                postData.readinglevel = rl;
+            }
         } catch (e) { /**/ }
 
         // Course completion percentage.

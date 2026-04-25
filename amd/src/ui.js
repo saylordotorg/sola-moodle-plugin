@@ -3956,6 +3956,91 @@ define([
             // Not appended here — appended after Saved Responses below.
         }
 
+        // ── Accessibility (v3.9.21) ──
+        // Three controls; each persists in localStorage and applies a class
+        // on the widget root so the change survives page navigation. The
+        // reading level select also flows into the SSE request as the
+        // `readinglevel` param and the system prompt picks it up from there.
+        const a11ySection = document.createElement('div');
+        a11ySection.className = 'aica-settings-panel__section';
+        const a11yHead = document.createElement('h3');
+        a11yHead.className = 'aica-settings-panel__section-title';
+        a11yHead.textContent = 'Accessibility';
+        a11ySection.appendChild(a11yHead);
+        var rootEl = document.getElementById('local-ai-course-assistant');
+
+        // Dyslexia-friendly font.
+        var dyslexiaWrap = document.createElement('label');
+        dyslexiaWrap.className = 'aica-settings-panel__a11y-row';
+        dyslexiaWrap.style.display = 'flex';
+        dyslexiaWrap.style.alignItems = 'center';
+        dyslexiaWrap.style.gap = '8px';
+        dyslexiaWrap.style.padding = '6px 0';
+        var dyslexiaCb = document.createElement('input');
+        dyslexiaCb.type = 'checkbox';
+        try { dyslexiaCb.checked = localStorage.getItem('aica_a11y_dyslexia') === '1'; } catch (e) { /**/ }
+        dyslexiaCb.addEventListener('change', function() {
+            try { localStorage.setItem('aica_a11y_dyslexia', dyslexiaCb.checked ? '1' : '0'); } catch (e) { /**/ }
+            if (rootEl) { rootEl.classList.toggle('aica-dyslexia-font', dyslexiaCb.checked); }
+        });
+        dyslexiaWrap.appendChild(dyslexiaCb);
+        var dyslexiaLabel = document.createElement('span');
+        dyslexiaLabel.textContent = 'Dyslexia-friendly font';
+        dyslexiaWrap.appendChild(dyslexiaLabel);
+        a11ySection.appendChild(dyslexiaWrap);
+
+        // High contrast.
+        var contrastWrap = document.createElement('label');
+        contrastWrap.className = 'aica-settings-panel__a11y-row';
+        contrastWrap.style.display = 'flex';
+        contrastWrap.style.alignItems = 'center';
+        contrastWrap.style.gap = '8px';
+        contrastWrap.style.padding = '6px 0';
+        var contrastCb = document.createElement('input');
+        contrastCb.type = 'checkbox';
+        try { contrastCb.checked = localStorage.getItem('aica_a11y_contrast') === '1'; } catch (e) { /**/ }
+        contrastCb.addEventListener('change', function() {
+            try { localStorage.setItem('aica_a11y_contrast', contrastCb.checked ? '1' : '0'); } catch (e) { /**/ }
+            if (rootEl) { rootEl.classList.toggle('aica-high-contrast', contrastCb.checked); }
+        });
+        contrastWrap.appendChild(contrastCb);
+        var contrastLabel = document.createElement('span');
+        contrastLabel.textContent = 'High contrast theme';
+        contrastWrap.appendChild(contrastLabel);
+        a11ySection.appendChild(contrastWrap);
+
+        // Reading level — flows into the SSE request and the system prompt.
+        var levelWrap = document.createElement('div');
+        levelWrap.className = 'aica-settings-panel__a11y-row';
+        levelWrap.style.padding = '6px 0';
+        var levelLabel = document.createElement('label');
+        levelLabel.textContent = 'Reading level: ';
+        levelLabel.style.display = 'block';
+        levelLabel.style.marginBottom = '4px';
+        levelWrap.appendChild(levelLabel);
+        var levelSelect = document.createElement('select');
+        levelSelect.className = 'aica-settings-panel__select';
+        [
+            {id: '',         label: 'Default (course level)'},
+            {id: 'simple',   label: 'Plain language (about 6th grade)'},
+            {id: 'standard', label: 'Plain language (about 12th grade)'},
+        ].forEach(function(opt) {
+            var o = document.createElement('option');
+            o.value = opt.id;
+            o.textContent = opt.label;
+            levelSelect.appendChild(o);
+        });
+        try { levelSelect.value = localStorage.getItem('aica_a11y_reading_level') || ''; } catch (e) { /**/ }
+        levelSelect.addEventListener('change', function() {
+            try { localStorage.setItem('aica_a11y_reading_level', levelSelect.value); } catch (e) { /**/ }
+        });
+        levelWrap.appendChild(levelSelect);
+        a11ySection.appendChild(levelWrap);
+
+        // Append after the avatar section, before voice. We'll attach lower
+        // when content is finalised; for now, store on panel for ordering.
+        panel._a11ySection = a11ySection;
+
         // ── Voice ──
         if (config.realtimeEnabled || config.hasTts) {
             const voiceSection = document.createElement('div');
@@ -4305,6 +4390,13 @@ define([
         // Avatar section appended last so it appears at the bottom of settings.
         if (avatarSection) {
             content.appendChild(avatarSection);
+        }
+
+        // Accessibility section appended after avatar so it sits at the
+        // bottom of the settings panel where it doesn't crowd the primary
+        // language and voice controls.
+        if (panel._a11ySection) {
+            content.appendChild(panel._a11ySection);
         }
 
         panel.appendChild(content);
