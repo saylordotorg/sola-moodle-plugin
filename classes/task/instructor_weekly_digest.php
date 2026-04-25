@@ -139,6 +139,14 @@ class instructor_weekly_digest extends \core\task\scheduled_task {
 
     /**
      * Plain text version of the digest body.
+     *
+     * @param \stdClass $course Course record.
+     * @param array $s Summary stats (active, total_messages, avg_per_learner, last_activity).
+     * @param array $mastery Weakest objectives (title, mastered_pct).
+     * @param array $confusion Modules ranked by question count (name, cmid, question_count, distinct_learners).
+     * @param array $r Rating counts (positive, negative, hallucinations).
+     * @param array $gap Engagement gap (enrolled, not_seen).
+     * @return string Plain-text email body.
      */
     protected function render_text($course, array $s, array $mastery, array $confusion, array $r, array $gap): string {
         $product = branding::short_name();
@@ -182,6 +190,14 @@ class instructor_weekly_digest extends \core\task\scheduled_task {
 
     /**
      * HTML version of the digest body.
+     *
+     * @param \stdClass $course Course record.
+     * @param array $s Summary stats (active, total_messages, avg_per_learner, last_activity).
+     * @param array $mastery Weakest objectives (title, mastered_pct).
+     * @param array $confusion Modules ranked by question count (name, cmid, question_count, distinct_learners).
+     * @param array $r Rating counts (positive, negative, hallucinations).
+     * @param array $gap Engagement gap (enrolled, not_seen).
+     * @return string HTML email body.
      */
     protected function render_html($course, array $s, array $mastery, array $confusion, array $r, array $gap): string {
         $product = s(branding::short_name());

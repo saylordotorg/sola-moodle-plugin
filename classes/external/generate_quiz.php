@@ -247,6 +247,7 @@ class generate_quiz extends external_api {
      * Return the JSON schema for structured quiz output.
      *
      * @param int $count Number of quiz questions.
+     * @param bool $tagobjectives If true, require an objectiveid on every question for mastery tagging.
      * @return array Schema definition with name, description, and JSON Schema.
      */
     private static function get_quiz_json_schema(int $count, bool $tagobjectives = false): array {
