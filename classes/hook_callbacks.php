@@ -592,6 +592,11 @@ class hook_callbacks {
             'masterychipenabled' => \local_ai_course_assistant\objective_manager::is_enabled_for_course($courseid)
                 && \local_ai_course_assistant\objective_manager::is_chip_enabled_for_course($courseid),
             'masterydashboardenabled' => \local_ai_course_assistant\objective_manager::is_dashboard_enabled_for_course($courseid),
+            'flashcardsenabled'  => \local_ai_course_assistant\flashcard_manager::is_enabled_for_course($courseid),
+            'flashcardsurl'      => (new \moodle_url('/local/ai_course_assistant/flashcards.php',
+                ['courseid' => $courseid]))->out(false),
+            'workedexamplesenabled' => (bool) get_config('local_ai_course_assistant',
+                'worked_examples_enabled_course_' . $courseid),
             'attachmentsenabled' => \local_ai_course_assistant\attachment_manager::is_enabled(),
             'attachmentmaxmb'    => (int) ceil(\local_ai_course_assistant\attachment_manager::get_max_size_bytes() / (1024 * 1024)),
             'attachmentallowedmimes' => implode(',', \local_ai_course_assistant\attachment_manager::get_allowed_mimes()),

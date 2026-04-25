@@ -279,4 +279,21 @@ $functions = [
         'capabilities' => 'local/ai_course_assistant:use',
         'services'     => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    // Spaced-repetition flashcards (v3.9.22).
+    'local_ai_course_assistant_generate_flashcards' => [
+        'classname'    => \local_ai_course_assistant\external\generate_flashcards::class,
+        'description'  => 'Extract a small batch of flashcards from a course module via the configured AI provider, then persist them.',
+        'type'         => 'write',
+        'ajax'         => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+        'services'     => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'local_ai_course_assistant_review_flashcard' => [
+        'classname'    => \local_ai_course_assistant\external\review_flashcard::class,
+        'description'  => 'Record a learner self-grade on a flashcard and reschedule via SM-2 lite.',
+        'type'         => 'write',
+        'ajax'         => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+        'services'     => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
 ];

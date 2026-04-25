@@ -1901,6 +1901,16 @@ define([
                 'through planning, structuring, and completing it? Ask me what I\'m working on first.';
         }
 
+        // v3.9.23: Worked example with progressive fading.
+        if (starterKey === 'worked-example') {
+            const topicRef = currentPageTitle ? ' related to "' + currentPageTitle + '"' : '';
+            return 'Walk me through a worked example' + topicRef + '. ' +
+                'Show every step of the solution first, then give me a similar problem with the ' +
+                'last step blank for me to fill in. After I get that one right, do another with ' +
+                'the last two steps blank, and keep fading the scaffolding until I am solving ' +
+                'similar problems on my own. Affirm correct steps explicitly when I get them right.';
+        }
+
         return '';
     };
 
@@ -1940,6 +1950,31 @@ define([
 
         if (starterType === 'quiz' || starterKey === 'quiz') {
             handleQuiz();
+            return;
+        }
+
+        // v3.9.22: Generate flashcards starter — server-side AI extraction,
+        // then a confirmation message in chat with a link to the review page.
+        if (starterKey === 'generate-flashcards') {
+            UI.appendMessage('user', 'Generate flashcards from this page');
+            UI.showTypingIndicator();
+            Repo.generateFlashcards(courseId, currentPageId || 0, 5)
+                .then(function(res) {
+                    UI.hideTypingIndicator();
+                    var url = (starterBtn && starterBtn.dataset.flashcardsUrl) || '';
+                    if (res && res.success && res.cards && res.cards.length) {
+                        var msg = 'Saved ' + res.cards.length + ' flashcards from this page. '
+                            + (url ? '[Open the review page](' + url + ') to study them with spaced repetition.' : '');
+                        UI.appendMessage('assistant', msg);
+                    } else {
+                        var why = res && res.message ? res.message : 'unknown_error';
+                        UI.appendMessage('assistant', 'I could not generate flashcards from this page (' + why + '). Try again or pick a page with more content.');
+                    }
+                })
+                .catch(function() {
+                    UI.hideTypingIndicator();
+                    UI.appendMessage('assistant', 'I could not generate flashcards from this page right now. Try again later.');
+                });
             return;
         }
 

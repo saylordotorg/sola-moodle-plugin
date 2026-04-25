@@ -463,6 +463,26 @@
                 </span>
                 <span>{{#str}}chat:starter_study_plan, local_ai_course_assistant{{/str}}</span>
             </button>
+            {{#flashcardsenabled}}
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="generate-flashcards" data-flashcards-url="{{flashcardsurl}}">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path d="M3 6h18v12H3z" opacity=".15"/><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 14H3V6h18v12zM7 9h10v2H7V9zm0 4h7v2H7v-2z"/>
+                    </svg>
+                </span>
+                <span>{{#str}}flashcards:starter_generate, local_ai_course_assistant{{/str}}</span>
+            </button>
+            {{/flashcardsenabled}}
+            {{#workedexamplesenabled}}
+            <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="worked-example">
+                <span class="aica-starter-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                        <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                </span>
+                <span>{{#str}}worked_examples:starter, local_ai_course_assistant{{/str}}</span>
+            </button>
+            {{/workedexamplesenabled}}
             <button class="local-ai-course-assistant__starter" type="button" data-builtin="1" data-starter="ai-project-coach">
                 <span class="aica-starter-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5c0 0-5 4-5 11.5 0 2.5.5 4 1.5 5.5L10 21l2-3 2 3 1.5-1.5C16.5 18 17 16.5 17 14c0-7.5-5-11.5-5-11.5zm0 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM5 17.5c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4H5zm12 0c-.3 1.5-.5 2.5-.5 4h3c0-1.5-.2-2.5-.5-4h-2z"/></svg>

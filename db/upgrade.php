@@ -646,5 +646,29 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026042400, 'local', 'ai_course_assistant');
     }
 
+    // v3.9.22: spaced-repetition flashcards table.
+    if ($oldversion < 2026042406) {
+        $table = new xmldb_table('local_ai_course_assistant_flashcards');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+            $table->add_field('question', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
+            $table->add_field('answer', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL);
+            $table->add_field('ease', XMLDB_TYPE_NUMBER, '5,2', null, XMLDB_NOTNULL, null, '2.50');
+            $table->add_field('interval_days', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('repetitions', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('next_review', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_index('user_course_review', XMLDB_INDEX_NOTUNIQUE,
+                ['userid', 'courseid', 'next_review']);
+            $dbman->create_table($table);
+        }
+        upgrade_plugin_savepoint(true, 2026042406, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

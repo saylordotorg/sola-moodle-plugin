@@ -438,6 +438,75 @@ echo html_writer::div(
                 </div>
             </div>
 
+            <?php // v3.9.22: Flashcards toggle (per-course). ?>
+            <div class="form-group row mt-2">
+                <label class="col-sm-3 col-form-label">
+                    <?php echo get_string('flashcards:title', 'local_ai_course_assistant'); ?>
+                </label>
+                <div class="col-sm-9">
+                    <?php
+                    $fcon = (bool) get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
+                    if (data_submitted() && optional_param('save_flashcards', 0, PARAM_INT) && confirm_sesskey()) {
+                        $fcon = (bool) optional_param('flashcards_on', 0, PARAM_BOOL);
+                        set_config('flashcards_enabled_course_' . $courseid,
+                            $fcon ? 1 : 0, 'local_ai_course_assistant');
+                    }
+                    ?>
+                    <form method="post" action="" style="display:inline">
+                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
+                        <input type="hidden" name="save_flashcards" value="1" />
+                        <label class="mb-0">
+                            <input type="checkbox" name="flashcards_on" value="1"
+                                <?php echo $fcon ? 'checked' : ''; ?>
+                                onchange="this.form.submit()" />
+                            <?php echo get_string('flashcards:toggle', 'local_ai_course_assistant'); ?>
+                        </label>
+                    </form>
+                    <small class="form-text text-muted">
+                        <?php echo get_string('flashcards:toggle_help', 'local_ai_course_assistant'); ?>
+                    </small>
+                    <?php if ($fcon) { ?>
+                    <div class="mt-1">
+                        <a href="<?php echo (new moodle_url('/local/ai_course_assistant/flashcards.php',
+                                ['courseid' => $courseid]))->out(false); ?>"
+                           class="btn btn-sm btn-outline-secondary" target="_blank">
+                            <?php echo get_string('flashcards:link', 'local_ai_course_assistant'); ?> &rarr;
+                        </a>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+
+            <?php // v3.9.23: Worked examples starter toggle (per-course). ?>
+            <div class="form-group row mt-2">
+                <label class="col-sm-3 col-form-label">
+                    <?php echo get_string('worked_examples:starter', 'local_ai_course_assistant'); ?>
+                </label>
+                <div class="col-sm-9">
+                    <?php
+                    $weon = (bool) get_config('local_ai_course_assistant', 'worked_examples_enabled_course_' . $courseid);
+                    if (data_submitted() && optional_param('save_we', 0, PARAM_INT) && confirm_sesskey()) {
+                        $weon = (bool) optional_param('we_on', 0, PARAM_BOOL);
+                        set_config('worked_examples_enabled_course_' . $courseid,
+                            $weon ? 1 : 0, 'local_ai_course_assistant');
+                    }
+                    ?>
+                    <form method="post" action="" style="display:inline">
+                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
+                        <input type="hidden" name="save_we" value="1" />
+                        <label class="mb-0">
+                            <input type="checkbox" name="we_on" value="1"
+                                <?php echo $weon ? 'checked' : ''; ?>
+                                onchange="this.form.submit()" />
+                            <?php echo get_string('worked_examples:toggle', 'local_ai_course_assistant'); ?>
+                        </label>
+                    </form>
+                    <small class="form-text text-muted">
+                        <?php echo get_string('worked_examples:toggle_help', 'local_ai_course_assistant'); ?>
+                    </small>
+                </div>
+            </div>
+
             <?php // v3.9.20: Weekly digest email toggle (per-course). ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">

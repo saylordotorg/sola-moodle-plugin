@@ -384,6 +384,26 @@ define(['core/ajax', 'core/config'], function(Ajax, Config) {
      * @param {boolean} iscorrect
      * @returns {Promise<{recorded:boolean, status:string, score:number}>}
      */
+    /**
+     * Generate spaced-repetition flashcards from a course module via the
+     * configured AI provider, persisting them server-side. v3.9.22.
+     *
+     * @param {number} courseid
+     * @param {number} cmid
+     * @param {number} count
+     * @returns {Promise<{success:boolean, message:string, cards:Array}>}
+     */
+    const generateFlashcards = function(courseid, cmid, count) {
+        return Ajax.call([{
+            methodname: 'local_ai_course_assistant_generate_flashcards',
+            args: {
+                courseid: courseid,
+                cmid: cmid || 0,
+                count: count || 5,
+            },
+        }])[0];
+    };
+
     const recordObjectiveAttempt = function(courseid, objectiveid, iscorrect) {
         return Ajax.call([{
             methodname: 'local_ai_course_assistant_record_objective_attempt',
@@ -446,5 +466,6 @@ define(['core/ajax', 'core/config'], function(Ajax, Config) {
         savePracticeScore: savePracticeScore,
         recordObjectiveAttempt: recordObjectiveAttempt,
         getMasterySummary: getMasterySummary,
+        generateFlashcards: generateFlashcards,
     };
 });
