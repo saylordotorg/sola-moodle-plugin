@@ -397,6 +397,14 @@ echo html_writer::div(
                        class="btn btn-sm btn-outline-secondary ml-2" target="_blank">
                         <?php echo get_string('objectives:title', 'local_ai_course_assistant'); ?> &rarr;
                     </a>
+                    <?php if (has_capability('local/ai_course_assistant:viewanalytics',
+                            context_course::instance($courseid))) { ?>
+                    <a href="<?php echo (new moodle_url('/local/ai_course_assistant/instructor_dashboard.php',
+                            ['courseid' => $courseid]))->out(false); ?>"
+                       class="btn btn-sm btn-outline-secondary ml-2" target="_blank">
+                        <?php echo get_string('instructor_dashboard:link', 'local_ai_course_assistant'); ?> &rarr;
+                    </a>
+                    <?php } ?>
                 </div>
             </div>
         </div>
