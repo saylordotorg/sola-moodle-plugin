@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'แบบทดสอบฝึกหัด';
 $string['chat:quiz_questions'] = 'จำนวนคำถาม';
 $string['chat:quiz_topic'] = 'หัวข้อ';
 $string['chat:quiz_topic_guided'] = 'AI แนะนำ (ตามความก้าวหน้าของคุณ)';
+$string['chat:quiz_topic_adaptive']      = 'ปรับเปลี่ยน — เน้นจุดอ่อนของฉัน';
 $string['chat:quiz_topic_default'] = 'เนื้อหารายวิชาปัจจุบัน';
 $string['chat:quiz_topic_custom'] = 'หัวข้อกำหนดเอง…';
 $string['chat:quiz_custom_placeholder'] = 'ป้อนหัวข้อหรือคำถาม...';

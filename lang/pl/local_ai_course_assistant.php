@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Quiz praktyczny';
 $string['chat:quiz_questions'] = 'Liczba pytań';
 $string['chat:quiz_topic'] = 'Temat';
 $string['chat:quiz_topic_guided'] = 'Prowadzony przez AI (na podstawie Twojego postępu)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptacyjny — skup się na moich słabościach';
 $string['chat:quiz_topic_default'] = 'Bieżąca treść kursu';
 $string['chat:quiz_topic_custom'] = 'Niestandardowy temat…';
 $string['chat:quiz_custom_placeholder'] = 'Wpisz temat lub pytanie...';

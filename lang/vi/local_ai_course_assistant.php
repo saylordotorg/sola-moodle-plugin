@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Bài Kiểm Tra Thực Hành';
 $string['chat:quiz_questions'] = 'Số câu hỏi';
 $string['chat:quiz_topic'] = 'Chủ đề';
 $string['chat:quiz_topic_guided'] = 'AI hướng dẫn (dựa theo tiến độ của bạn)';
+$string['chat:quiz_topic_adaptive']      = 'Thích ứng — tập trung vào điểm yếu của tôi';
 $string['chat:quiz_topic_default'] = 'Nội dung khóa học hiện tại';
 $string['chat:quiz_topic_custom'] = 'Chủ đề tùy chỉnh…';
 $string['chat:quiz_custom_placeholder'] = 'Nhập một chủ đề hoặc câu hỏi...';

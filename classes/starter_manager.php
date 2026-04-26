@@ -112,6 +112,23 @@ class starter_manager {
                 'builtin'     => true,
                 'conditional' => '',
             ],
+            // v4.0 / M2: Adaptive next-best-action. Only shown when mastery is on
+            // for the course. Prompt is intentionally short — the system prompt's
+            // mastery snapshot (built by objective_manager::build_prompt_injection)
+            // already gives the assistant per-objective state and prereq gaps,
+            // so the assistant can answer naturally without reciting the data.
+            [
+                'key'         => 'focus-next',
+                'name'        => 'What should I focus on?',
+                'description' => 'Personalized next-step suggestions based on your objective progress',
+                'prompt'      => "Based on my current progress on this course's objectives, what are the two or three things I should focus on next? Suggest specific activities — review a concept, take a short quiz, work a problem — and link to the most relevant module for each. Keep it short and concrete; no tables or percentages.",
+                'icon'        => 'target',
+                'type'        => 'prompt',
+                'enabled'     => true,
+                'sort_order'  => 5,
+                'builtin'     => true,
+                'conditional' => 'mastery',
+            ],
             [
                 'key'         => 'ell-practice',
                 'name'        => 'Conversation Practice',
@@ -171,6 +188,32 @@ class starter_manager {
         $saved = json_decode($json, true);
         if (!is_array($saved) || empty($saved)) {
             return self::get_defaults();
+        }
+        // v4.0 / M2: surface any newly added default starters that the saved
+        // config does not yet know about (e.g. focus-next added in v4.0). New
+        // builtin starters land at the end of the list with their default
+        // enabled state and conditional flag preserved.
+        $savedkeys = [];
+        foreach ($saved as $s) {
+            if (!empty($s['key'])) {
+                $savedkeys[$s['key']] = true;
+            }
+        }
+        $maxorder = 0;
+        foreach ($saved as $s) {
+            if (isset($s['sort_order']) && (int) $s['sort_order'] > $maxorder) {
+                $maxorder = (int) $s['sort_order'];
+            }
+        }
+        foreach (self::get_defaults() as $d) {
+            if (empty($d['key']) || empty($d['builtin'])) {
+                continue;
+            }
+            if (isset($savedkeys[$d['key']])) {
+                continue;
+            }
+            $d['sort_order'] = ++$maxorder;
+            $saved[] = $d;
         }
         return $saved;
     }
@@ -239,6 +282,18 @@ class starter_manager {
             }
             if ($cond === 'realtime' && !$hasrealtime) {
                 continue;
+            }
+            // v4.0 / M2: 'mastery' conditional — only show when mastery is
+            // enabled for this course AND at least one objective exists, so
+            // the focus-next starter does not appear in courses that have
+            // never set up objectives.
+            if ($cond === 'mastery') {
+                if (!objective_manager::is_enabled_for_course($courseid)) {
+                    continue;
+                }
+                if (empty(objective_manager::list_for_course($courseid))) {
+                    continue;
+                }
             }
 
             // Enrich with icon SVG for template rendering.

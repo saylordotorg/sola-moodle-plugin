@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = '练习测验';
 $string['chat:quiz_questions'] = '题目数量';
 $string['chat:quiz_topic'] = '主题';
 $string['chat:quiz_topic_guided'] = 'AI 引导（基于你的学习进度）';
+$string['chat:quiz_topic_adaptive']      = '自适应——专注于我的薄弱环节';
 $string['chat:quiz_topic_default'] = '当前课程内容';
 $string['chat:quiz_topic_custom'] = '自定义主题…';
 $string['chat:quiz_custom_placeholder'] = '输入一个主题或问题...';

@@ -281,6 +281,7 @@ $string['chat:quiz_setup_title'] = 'Qormaata Shaakala';
 $string['chat:quiz_questions'] = 'Lakkoofsa gaaffiilee';
 $string['chat:quiz_topic'] = 'Mata-duree';
 $string['chat:quiz_topic_guided'] = 'AI-kan qajeelche (bu\'uura guddina keetiin)';
+$string['chat:quiz_topic_adaptive']      = 'Madaqa — dadhabbii kiyya irratti xiyyeeffadhu';
 $string['chat:quiz_topic_default'] = 'Qabiyyee koorsii ammaa';
 $string['chat:quiz_topic_custom'] = 'Mata-duree kan itti qindaa\'e…';
 $string['chat:quiz_custom_placeholder'] = 'Mata-duree ykn gaaffii galchi...';

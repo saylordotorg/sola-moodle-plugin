@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Uhlelo Lokuhlola Lokuzilolonga';
 $string['chat:quiz_questions'] = 'Inani lemibuzo';
 $string['chat:quiz_topic'] = 'Isihloko';
 $string['chat:quiz_topic_guided'] = 'Iqondiswa yi-AI (kusekelwe ekuthuthukeni kwakho)';
+$string['chat:quiz_topic_adaptive']      = 'Okuhambelanayo — gxila kubuthakathaka bami';
 $string['chat:quiz_topic_default'] = 'Okuqukethwe kwesifundo samanje';
 $string['chat:quiz_topic_custom'] = 'Isihloko esikhethiwe…';
 $string['chat:quiz_custom_placeholder'] = 'Faka isihloko noma umbuzo...';

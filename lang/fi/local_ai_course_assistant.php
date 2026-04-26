@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Harjoituskoe';
 $string['chat:quiz_questions'] = 'Kysymysten määrä';
 $string['chat:quiz_topic'] = 'Aihe';
 $string['chat:quiz_topic_guided'] = 'AI-ohjattu (edistymisesi perusteella)';
+$string['chat:quiz_topic_adaptive']      = 'Mukautuva — keskity heikkouksiini';
 $string['chat:quiz_topic_default'] = 'Nykyinen kurssin sisältö';
 $string['chat:quiz_topic_custom'] = 'Mukautettu aihe…';
 $string['chat:quiz_custom_placeholder'] = 'Syötä aihe tai kysymys...';

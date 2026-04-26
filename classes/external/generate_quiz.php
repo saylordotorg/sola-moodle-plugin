@@ -43,7 +43,9 @@ class generate_quiz extends external_api {
         return new external_function_parameters([
             'courseid' => new external_value(PARAM_INT, 'Course ID'),
             'count'    => new external_value(PARAM_INT, 'Number of questions (3-10)', VALUE_DEFAULT, 3),
-            'topic'    => new external_value(PARAM_TEXT, 'Topic or __guided__ or empty', VALUE_DEFAULT, '__guided__'),
+            'topic'    => new external_value(PARAM_TEXT,
+                'Topic, __guided__ for AI-guided, __adaptive__ for mastery-targeted, or empty for current page.',
+                VALUE_DEFAULT, '__guided__'),
             'cmid'     => new external_value(PARAM_INT, 'Current module/page ID (0 if not on a resource page)', VALUE_DEFAULT, 0),
         ]);
     }
@@ -53,7 +55,8 @@ class generate_quiz extends external_api {
      *
      * @param int $courseid The course ID.
      * @param int $count Number of questions to generate (1-10).
-     * @param string $topic Topic string, '__guided__' for AI-guided, or empty for current page.
+     * @param string $topic Topic string, '__guided__' for AI-guided, '__adaptive__' for
+     *                      mastery-targeted (v4.0 / M1), or empty for current page.
      * @param int $cmid Course module ID for current-page mode (0 if not applicable).
      * @return array Quiz data with success flag, error message, topic, and questions.
      */
@@ -101,6 +104,42 @@ class generate_quiz extends external_api {
         }
 
         // Build the system prompt.
+        if ($topic === '__adaptive__') {
+            // v4.0 / M1: Mastery-targeted quiz. Pulls the learner's weakest
+            // 3 objectives from objective_manager and instructs the LLM to
+            // bias every question toward those. Falls back to AI-guided when
+            // mastery is off for the course or the learner has no recorded
+            // weak objectives yet (e.g. brand-new learner with no attempts).
+            $weak = [];
+            if (objective_manager::is_enabled_for_course($courseid)) {
+                $weak = objective_manager::get_weak_objectives($userid, $courseid, 3);
+            }
+            if (!empty($weak)) {
+                $weaklines = [];
+                foreach ($weak as $row) {
+                    $obj = $row['objective'];
+                    $st = $row['mastery']['status'];
+                    $label = $obj->code ? "[{$obj->code}] {$obj->title}" : $obj->title;
+                    $weaklines[] = "- {$label} (current status: {$st})";
+                }
+                $systemprompt =
+                    "You are an expert educational quiz generator for the course \"{$course->fullname}\".\n\n" .
+                    "Course topics:\n{$coursetopics}\n\n" .
+                    "## Adaptive targeting — focus on the learner's weak objectives\n" .
+                    "This is a quiz tailored to the specific objectives this learner is currently struggling with " .
+                    "or has not yet practised. Generate every question to test one of these objectives:\n" .
+                    implode("\n", $weaklines) . "\n\n" .
+                    "Distribute the {$count} questions across these objectives in proportion to weakness " .
+                    "(weakest first). Make at least one question genuinely beginner-friendly so the learner " .
+                    "can re-anchor on the basics; the rest can stretch toward applied scenarios. Do not include " .
+                    "questions on objectives outside this list.\n\n" .
+                    self::get_quiz_format_instructions($count);
+            } else {
+                // No mastery data — fall through to guided mode silently so
+                // the learner still gets a useful quiz instead of an error.
+                $topic = '__guided__';
+            }
+        }
         if ($topic === '__guided__') {
             // AI-guided mode: gather grade data and recent chat history.
             $gradecontext = self::build_grade_summary($courseid, $userid);
@@ -114,7 +153,7 @@ class generate_quiz extends external_api {
                 "Analyse the grade data and chat history to identify areas where this student needs the most practice. " .
                 "Select the most beneficial topic(s) for a {$count}-question quiz focused on weak or under-explored areas.\n\n" .
                 self::get_quiz_format_instructions($count);
-        } else {
+        } else if ($topic !== '__adaptive__') {
             if (empty($topic) && $cmid > 0) {
                 // "Current page" mode: generate from the specific module's content.
                 $pagecontent = context_builder::get_module_content($cmid);

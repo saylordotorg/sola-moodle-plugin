@@ -167,6 +167,7 @@ $string['chat:quiz_setup_title'] = 'Τεστ Εξάσκησης';
 $string['chat:quiz_questions'] = 'Αριθμός ερωτήσεων';
 $string['chat:quiz_topic'] = 'Θέμα';
 $string['chat:quiz_topic_guided'] = 'Καθοδηγούμενο από AI (βάσει της προόδου σας)';
+$string['chat:quiz_topic_adaptive']      = 'Προσαρμοστικό — επικέντρωση στα αδύναμα σημεία μου';
 $string['chat:quiz_topic_default'] = 'Τρέχον περιεχόμενο μαθήματος';
 $string['chat:quiz_topic_custom'] = 'Προσαρμοσμένο θέμα…';
 $string['chat:quiz_custom_placeholder'] = 'Εισάγετε ένα θέμα ή ερώτηση...';

@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Practice Quiz';
 $string['chat:quiz_questions'] = 'Bilang ng mga tanong';
 $string['chat:quiz_topic'] = 'Paksa';
 $string['chat:quiz_topic_guided'] = 'Pinatnubayan ng AI (batay sa iyong progreso)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptive — tumutok sa mga kahinaan ko';
 $string['chat:quiz_topic_default'] = 'Kasalukuyang nilalaman ng kurso';
 $string['chat:quiz_topic_custom'] = 'Custom na paksa…';
 $string['chat:quiz_custom_placeholder'] = 'Magpasok ng paksa o tanong...';

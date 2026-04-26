@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Ìdánwò Ìdárayá';
 $string['chat:quiz_questions'] = 'Iye àwọn ìbéèrè';
 $string['chat:quiz_topic'] = 'Kókó';
 $string['chat:quiz_topic_guided'] = 'AI ń darí (da lórí ìlọsíwájú rẹ)';
+$string['chat:quiz_topic_adaptive']      = 'Iṣatunṣe — fojusi awọn ailagbara mi';
 $string['chat:quiz_topic_default'] = 'Àkóónú ẹkọ lọwọlọwọ';
 $string['chat:quiz_topic_custom'] = 'Kókó tí o yan…';
 $string['chat:quiz_custom_placeholder'] = 'Tẹ kókó tàbí ìbéèrè kan...';

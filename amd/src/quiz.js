@@ -57,10 +57,11 @@ define(['core/str'], function(Str) {
             {key: 'chat:quiz_topic_objectives',   component: 'local_ai_course_assistant'},
             {key: 'chat:quiz_topic_modules',      component: 'local_ai_course_assistant'},
             {key: 'chat:quiz_subtopic_select',    component: 'local_ai_course_assistant'},
+            {key: 'chat:quiz_topic_adaptive',     component: 'local_ai_course_assistant'},
         ]).then(function(strings) {
             const [titleStr, questionsStr, topicStr, guidedStr, defaultStr, customStr,
                    customPlaceholder, startStr, cancelStr,
-                   objectivesStr, modulesStr, subTopicStr] = strings;
+                   objectivesStr, modulesStr, subTopicStr, adaptiveStr] = strings;
 
             const panel = document.createElement('div');
             panel.className = 'aica-quiz-setup';
@@ -124,6 +125,10 @@ define(['core/str'], function(Str) {
             const hasObjectives = Array.isArray(learningObjectives) && learningObjectives.length > 0;
             if (hasObjectives) {
                 addOption('__objectives__', objectivesStr);
+                // v4.0 / M1: Adaptive mode targets learner's weakest objectives.
+                // Only offered when objectives exist; backend falls back to
+                // guided mode silently if mastery is off or no weak data exists.
+                addOption('__adaptive__', adaptiveStr);
             }
 
             // Course topic (module/lesson titles).

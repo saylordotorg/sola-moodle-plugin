@@ -268,6 +268,7 @@ $string['chat:quiz_setup_title'] = 'الاختبار التدريبي';
 $string['chat:quiz_questions'] = 'عدد الأسئلة';
 $string['chat:quiz_topic'] = 'الموضوع';
 $string['chat:quiz_topic_guided'] = 'بتوجيه الذكاء الاصطناعي (بناءً على تقدمك)';
+$string['chat:quiz_topic_adaptive']      = 'تكيُّفي — ركز على نقاط ضعفي';
 $string['chat:quiz_topic_default'] = 'محتوى المقرر الحالي';
 $string['chat:quiz_topic_custom'] = 'موضوع مخصص…';
 $string['chat:quiz_custom_placeholder'] = 'أدخل موضوعًا أو سؤالًا...';

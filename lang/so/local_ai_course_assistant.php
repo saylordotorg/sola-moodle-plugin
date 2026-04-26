@@ -294,6 +294,7 @@ $string['chat:quiz_setup_title'] = 'Imtixaanka Tababarka';
 $string['chat:quiz_questions'] = 'Tirada su\'aalaha';
 $string['chat:quiz_topic'] = 'Mawduuca';
 $string['chat:quiz_topic_guided'] = 'Hogaaminta AI (ku salaysan horumarkaaga)';
+$string['chat:quiz_topic_adaptive']      = 'La qabsada — diirad u saar dhibcahayga liita';
 $string['chat:quiz_topic_default'] = 'Nuxurka koorsada hadda';
 $string['chat:quiz_topic_custom'] = 'Mawduuc gaar ah…';
 $string['chat:quiz_custom_placeholder'] = 'Geli mawduuc ama su\'aal...';

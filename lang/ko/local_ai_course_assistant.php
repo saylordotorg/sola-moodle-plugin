@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = '연습 퀴즈';
 $string['chat:quiz_questions'] = '질문 수';
 $string['chat:quiz_topic'] = '주제';
 $string['chat:quiz_topic_guided'] = 'AI 가이드(진도에 따라)';
+$string['chat:quiz_topic_adaptive']      = '적응형 — 내 약점에 집중';
 $string['chat:quiz_topic_default'] = '현재 코스 내용';
 $string['chat:quiz_topic_custom'] = '사용자 정의 주제…';
 $string['chat:quiz_custom_placeholder'] = '주제 또는 질문을 입력하세요...';

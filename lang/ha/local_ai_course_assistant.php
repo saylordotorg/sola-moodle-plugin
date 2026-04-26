@@ -299,6 +299,7 @@ $string['chat:quiz_setup_title'] = 'Gwajin Tunawa';
 $string['chat:quiz_questions'] = 'Yawan tambayoyi';
 $string['chat:quiz_topic'] = 'Batu';
 $string['chat:quiz_topic_guided'] = 'AI ta jagoranta (bisa ci gaban ka)';
+$string['chat:quiz_topic_adaptive']      = 'Mai daidaitawa — mai da hankali kan rashin ƙarfina';
 $string['chat:quiz_topic_default'] = 'Kayan koziyan yanzu';
 $string['chat:quiz_topic_custom'] = 'Batu na musamman…';
 $string['chat:quiz_custom_placeholder'] = 'Shigar da batu ko tambaya...';

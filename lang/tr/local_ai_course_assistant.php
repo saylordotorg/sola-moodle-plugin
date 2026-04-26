@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Alıştırma testi';
 $string['chat:quiz_questions'] = 'Soru sayısı';
 $string['chat:quiz_topic'] = 'Konu';
 $string['chat:quiz_topic_guided'] = 'AI rehberli (ilerlemenize göre)';
+$string['chat:quiz_topic_adaptive']      = 'Uyarlamalı — zayıf noktalarıma odaklan';
 $string['chat:quiz_topic_default'] = 'Mevcut ders içeriği';
 $string['chat:quiz_topic_custom'] = 'Özel konu…';
 $string['chat:quiz_custom_placeholder'] = 'Bir konu veya soru girin...';

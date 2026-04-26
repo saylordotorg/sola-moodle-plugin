@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = '練習クイズ';
 $string['chat:quiz_questions'] = '問題数';
 $string['chat:quiz_topic'] = 'トピック';
 $string['chat:quiz_topic_guided'] = 'AIガイド（あなたの進捗に基づく）';
+$string['chat:quiz_topic_adaptive']      = 'アダプティブ — 苦手な部分に集中';
 $string['chat:quiz_topic_default'] = '現在のコース内容';
 $string['chat:quiz_topic_custom'] = 'カスタムトピック…';
 $string['chat:quiz_custom_placeholder'] = 'トピックまたは質問を入力...';

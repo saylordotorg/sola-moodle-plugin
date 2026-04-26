@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Mazoezi ya Mtihani';
 $string['chat:quiz_questions'] = 'Idadi ya maswali';
 $string['chat:quiz_topic'] = 'Mada';
 $string['chat:quiz_topic_guided'] = 'Kuongozwa na AI (kulingana na maendeleo yako)';
+$string['chat:quiz_topic_adaptive']      = 'Inayobadilika — zingatia udhaifu wangu';
 $string['chat:quiz_topic_default'] = 'Maudhui ya sasa ya kozi';
 $string['chat:quiz_topic_custom'] = 'Mada maalum…';
 $string['chat:quiz_custom_placeholder'] = 'Ingiza mada au swali...';

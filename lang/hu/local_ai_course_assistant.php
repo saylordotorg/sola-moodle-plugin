@@ -167,6 +167,7 @@ $string['chat:quiz_setup_title'] = 'Gyakorló teszt';
 $string['chat:quiz_questions'] = 'Kérdések száma';
 $string['chat:quiz_topic'] = 'Téma';
 $string['chat:quiz_topic_guided'] = 'AI-vezérelt (haladása alapján)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptív — fókuszálj a gyenge pontjaimra';
 $string['chat:quiz_topic_default'] = 'Jelenlegi kurzus tartalom';
 $string['chat:quiz_topic_custom'] = 'Egyéni téma…';
 $string['chat:quiz_custom_placeholder'] = 'Írjon be egy témát vagy kérdést...';

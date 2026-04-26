@@ -299,6 +299,7 @@ $string['chat:quiz_setup_title'] = 'Kuis Latihan';
 $string['chat:quiz_questions'] = 'Jumlah pertanyaan';
 $string['chat:quiz_topic'] = 'Topik';
 $string['chat:quiz_topic_guided'] = 'Dipandu AI (berdasarkan kemajuan Anda)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptif — fokus pada kelemahan saya';
 $string['chat:quiz_topic_default'] = 'Materi kursus saat ini';
 $string['chat:quiz_topic_custom'] = 'Topik kustom…';
 $string['chat:quiz_custom_placeholder'] = 'Masukkan topik atau pertanyaan...';

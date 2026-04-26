@@ -233,13 +233,11 @@ echo html_writer::div(
                     <?php echo get_string('coursesettings:sola_enabled', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="sola_course_enabled" name="sola_course_enabled" value="1"
-                            <?php if ($solacourseenabled) { echo 'checked'; } ?>>
-                        <label class="custom-control-label" for="sola_course_enabled">
-                            <?php echo get_string('coursesettings:sola_enabled_toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="sola_course_enabled" value="1"
+                            <?php if ($solacourseenabled) { echo 'checked'; } ?> />
+                        <?php echo get_string('coursesettings:sola_enabled_toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                 </div>
             </div>
         </div>
@@ -258,13 +256,11 @@ echo html_writer::div(
                     <?php echo get_string('coursesettings:enabled', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" value="1"
-                            <?php if ($current && $current->enabled) { echo 'checked'; } ?>>
-                        <label class="custom-control-label" for="enabled">
-                            <?php echo get_string('coursesettings:enabled', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="enabled" value="1"
+                            <?php if ($current && $current->enabled) { echo 'checked'; } ?> />
+                        <?php echo get_string('coursesettings:enabled', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('coursesettings:using_global', 'local_ai_course_assistant'); ?>
                         &mdash;
@@ -394,14 +390,11 @@ echo html_writer::div(
                     <?php echo get_string('coursesettings:rag', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="rag_course_enabled"
-                               name="rag_course_enabled" value="1"
-                               <?php if ($ragcourseenabled) { echo 'checked'; } ?>>
-                        <label class="custom-control-label" for="rag_course_enabled">
-                            <?php echo get_string('coursesettings:rag_enable', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="rag_course_enabled" value="1"
+                            <?php if ($ragcourseenabled) { echo 'checked'; } ?> />
+                        <?php echo get_string('coursesettings:rag_enable', 'local_ai_course_assistant'); ?>
+                    </label>
                 </div>
             </div>
             <div class="form-group row mt-2">
@@ -586,14 +579,11 @@ echo html_writer::div(
                     English Lock
                 </label>
                 <div class="col-sm-9">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="english_lock"
-                               name="english_lock" value="1"
-                               <?php if ($englishlockenabled) { echo 'checked'; } ?>>
-                        <label class="custom-control-label" for="english_lock">
-                            Always respond in English
-                        </label>
-                    </div>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="english_lock" value="1"
+                            <?php if ($englishlockenabled) { echo 'checked'; } ?> />
+                        Always respond in English
+                    </label>
                     <small class="form-text text-muted">
                         When enabled, SOLA will respond in English even if the student writes in another language. The student's language preference in their settings panel will be overridden.
                     </small>
@@ -794,16 +784,9 @@ echo html_writer::div(
         }
     }
     function attachAll() {
-        // Pedagogy toggles (v3.9.20+).
+        // Pedagogy toggles + (v4.0/M3) the four older switches now also on
+        // .aica-toggle so they share the same smartedu-bypass handler.
         document.querySelectorAll('input.aica-toggle[type="checkbox"]').forEach(attach);
-        // Older Bootstrap custom-control switches in the same form.
-        ['sola_course_enabled', 'enabled', 'rag_course_enabled', 'english_lock']
-            .forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el && el.type === 'checkbox') {
-                    attach(el);
-                }
-            });
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', attachAll);

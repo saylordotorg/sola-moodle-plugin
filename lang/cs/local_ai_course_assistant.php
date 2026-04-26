@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Cvičný test';
 $string['chat:quiz_questions'] = 'Počet otázek';
 $string['chat:quiz_topic'] = 'Téma';
 $string['chat:quiz_topic_guided'] = 'Vedeno AI (podle vašeho pokroku)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptivní — zaměř se na mé slabiny';
 $string['chat:quiz_topic_default'] = 'Aktuální obsah kurzu';
 $string['chat:quiz_topic_custom'] = 'Vlastní téma…';
 $string['chat:quiz_custom_placeholder'] = 'Zadejte téma nebo otázku...';

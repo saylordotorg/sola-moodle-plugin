@@ -298,6 +298,7 @@ $string['chat:quiz_setup_title'] = 'Kalansen Ɲɛtaa';
 $string['chat:quiz_questions'] = 'Ɲininkali caman';
 $string['chat:quiz_topic'] = 'Kuma kun';
 $string['chat:quiz_topic_guided'] = 'AI bɛ lasigi (i ka tɛmɛnni kan)';
+$string['chat:quiz_topic_adaptive']      = 'Yɛlɛmacogo — ka n ka mago-fɛnw faraka';
 $string['chat:quiz_topic_default'] = 'Kalanso kɔnɔkow sisan';
 $string['chat:quiz_topic_custom'] = 'Kuma kun wɛrɛ…';
 $string['chat:quiz_custom_placeholder'] = 'Kuma kun wala ɲininkali sɛbɛn...';

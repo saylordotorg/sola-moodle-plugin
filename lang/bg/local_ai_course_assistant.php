@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Тренировъчен тест';
 $string['chat:quiz_questions'] = 'Брой въпроси';
 $string['chat:quiz_topic'] = 'Тема';
 $string['chat:quiz_topic_guided'] = 'Водено от AI (според вашия напредък)';
+$string['chat:quiz_topic_adaptive']      = 'Адаптивен — фокус върху слабите ми места';
 $string['chat:quiz_topic_default'] = 'Текущо съдържание на курса';
 $string['chat:quiz_topic_custom'] = 'Персонализирана тема…';
 $string['chat:quiz_custom_placeholder'] = 'Въведете тема или въпрос...';

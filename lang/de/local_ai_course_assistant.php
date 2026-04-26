@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Übungsquiz';
 $string['chat:quiz_questions'] = 'Anzahl der Fragen';
 $string['chat:quiz_topic'] = 'Thema';
 $string['chat:quiz_topic_guided'] = 'KI-gesteuert (basierend auf Ihrem Fortschritt)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptiv — auf meine Schwachstellen konzentrieren';
 $string['chat:quiz_topic_default'] = 'Aktueller Kursinhalt';
 $string['chat:quiz_topic_custom'] = 'Benutzerdefiniertes Thema…';
 $string['chat:quiz_custom_placeholder'] = 'Geben Sie ein Thema oder eine Frage ein...';

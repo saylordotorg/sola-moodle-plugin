@@ -167,6 +167,7 @@ $string['chat:quiz_setup_title'] = 'Quiz di Pratica';
 $string['chat:quiz_questions'] = 'Numero di domande';
 $string['chat:quiz_topic'] = 'Argomento';
 $string['chat:quiz_topic_guided'] = 'Guidato dall\'AI (basato sui tuoi progressi)';
+$string['chat:quiz_topic_adaptive']      = 'Adattivo — concentrati sui miei punti deboli';
 $string['chat:quiz_topic_default'] = 'Contenuto attuale del corso';
 $string['chat:quiz_topic_custom'] = 'Argomento personalizzato…';
 $string['chat:quiz_custom_placeholder'] = 'Inserisci un argomento o una domanda...';

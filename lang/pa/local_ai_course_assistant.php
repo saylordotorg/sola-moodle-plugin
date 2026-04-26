@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'ਅਭਿਆਸ ਕੁਇਜ਼';
 $string['chat:quiz_questions'] = 'ਸਵਾਲਾਂ ਦੀ ਗਿਣਤੀ';
 $string['chat:quiz_topic'] = 'ਵਿਸ਼ਾ';
 $string['chat:quiz_topic_guided'] = 'AI-ਨਿਰਦੇਸ਼ਿਤ (ਤੁਹਾਡੀ ਤਰੱਕੀ ਦੇ ਅਧਾਰ ਉੱਤੇ)';
+$string['chat:quiz_topic_adaptive']      = 'ਅਨੁਕੂਲ — ਮੇਰੇ ਕਮਜ਼ੋਰ ਪੱਖਾਂ ਉੱਤੇ ਧਿਆਨ ਦਿਓ';
 $string['chat:quiz_topic_default'] = 'ਮੌਜੂਦਾ ਕੋਰਸ ਸਮੱਗਰੀ';
 $string['chat:quiz_topic_custom'] = 'ਕਸਟਮ ਵਿਸ਼ਾ…';
 $string['chat:quiz_custom_placeholder'] = 'ਕੋਈ ਵਿਸ਼ਾ ਜਾਂ ਸਵਾਲ ਦਰਜ ਕਰੋ...';

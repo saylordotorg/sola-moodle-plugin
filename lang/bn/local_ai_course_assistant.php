@@ -268,6 +268,7 @@ $string['chat:quiz_setup_title'] = 'অনুশীলন কুইজ';
 $string['chat:quiz_questions'] = 'প্রশ্নের সংখ্যা';
 $string['chat:quiz_topic'] = 'বিষয়';
 $string['chat:quiz_topic_guided'] = 'AI-নির্দেশিত (আপনার অগ্রগতির উপর ভিত্তি করে)';
+$string['chat:quiz_topic_adaptive']      = 'অভিযোজিত — আমার দুর্বল দিকগুলিতে মনোনিবেশ করুন';
 $string['chat:quiz_topic_default'] = 'বর্তমান কোর্সের বিষয়বস্তু';
 $string['chat:quiz_topic_custom'] = 'কাস্টম বিষয়…';
 $string['chat:quiz_custom_placeholder'] = 'একটি বিষয় বা প্রশ্ন লিখুন...';

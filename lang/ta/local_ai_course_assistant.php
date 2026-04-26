@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'பயிற்சி வினாடி வ
 $string['chat:quiz_questions'] = 'கேள்விகளின் எண்ணிக்கை';
 $string['chat:quiz_topic'] = 'தலைப்பு';
 $string['chat:quiz_topic_guided'] = 'AI வழிகாட்டல் (உங்கள் முன்னேற்றத்தின் அடிப்படையில்)';
+$string['chat:quiz_topic_adaptive']      = 'தகவமைப்பு — என் பலவீனங்களில் கவனம் செலுத்துங்கள்';
 $string['chat:quiz_topic_default'] = 'தற்போதைய பாட உள்ளடக்கம்';
 $string['chat:quiz_topic_custom'] = 'தனிப்பயன் தலைப்பு…';
 $string['chat:quiz_custom_placeholder'] = 'ஒரு தலைப்பு அல்லது கேள்வி உள்ளிடவும்...';

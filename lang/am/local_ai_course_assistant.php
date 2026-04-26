@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'የልምምድ ፈተና';
 $string['chat:quiz_questions'] = 'የጥያቄዎች ቁጥር';
 $string['chat:quiz_topic'] = 'ርዕስ';
 $string['chat:quiz_topic_guided'] = 'AI-መሪ (በእድገትዎ ላይ ተመስርቶ)';
+$string['chat:quiz_topic_adaptive']      = 'ተለዋዋጭ — በደካማ ክፍሎቼ ላይ አተኩር';
 $string['chat:quiz_topic_default'] = 'የአሁኑ ኮርስ ይዘት';
 $string['chat:quiz_topic_custom'] = 'ብጁ ርዕስ…';
 $string['chat:quiz_custom_placeholder'] = 'ርዕስ ወይም ጥያቄ ያስገቡ...';

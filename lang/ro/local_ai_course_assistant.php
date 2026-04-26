@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Test de practică';
 $string['chat:quiz_questions'] = 'Număr de întrebări';
 $string['chat:quiz_topic'] = 'Subiect';
 $string['chat:quiz_topic_guided'] = 'Ghidat de AI (în funcție de progresul dvs.)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptiv — concentrează-te pe punctele mele slabe';
 $string['chat:quiz_topic_default'] = 'Conținutul actual al cursului';
 $string['chat:quiz_topic_custom'] = 'Subiect personalizat…';
 $string['chat:quiz_custom_placeholder'] = 'Introduceți un subiect sau o întrebare...';

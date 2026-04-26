@@ -297,6 +297,7 @@ $string['chat:quiz_setup_title'] = 'Ëntërviu Jàng';
 $string['chat:quiz_questions'] = 'Njomu laaj yi';
 $string['chat:quiz_topic'] = 'Sujet bi';
 $string['chat:quiz_topic_guided'] = 'AI dëkk (ci kanam sa yeg-yeg bi)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptiv — gëstu sama wenn yu xiif';
 $string['chat:quiz_topic_default'] = 'Ndigël cours bi ci waxtu bi';
 $string['chat:quiz_topic_custom'] = 'Sujet bu la neexee…';
 $string['chat:quiz_custom_placeholder'] = 'Bind sujet walla laaj...';

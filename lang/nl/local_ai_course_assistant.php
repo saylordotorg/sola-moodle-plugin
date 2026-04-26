@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Oefenquiz';
 $string['chat:quiz_questions'] = 'Aantal vragen';
 $string['chat:quiz_topic'] = 'Onderwerp';
 $string['chat:quiz_topic_guided'] = 'AI-gestuurd (op basis van uw voortgang)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptief — focus op mijn zwakke punten';
 $string['chat:quiz_topic_default'] = 'Huidige cursusinhoud';
 $string['chat:quiz_topic_custom'] = 'Aangepast onderwerp…';
 $string['chat:quiz_custom_placeholder'] = 'Voer een onderwerp of vraag in...';

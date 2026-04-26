@@ -285,6 +285,7 @@ $string['chat:quiz_setup_title'] = 'Ule Mmụta';
 $string['chat:quiz_questions'] = 'Ọnụọgụ ajụjụ';
 $string['chat:quiz_topic'] = 'Isiokwu';
 $string['chat:quiz_topic_guided'] = 'AI na-eduzi (dabere na ọganihu gị)';
+$string['chat:quiz_topic_adaptive']      = 'A na-emegharị — lekwasị anya na adịghị ike m';
 $string['chat:quiz_topic_default'] = 'Ọdịnaya kọọsị ugbu a';
 $string['chat:quiz_topic_custom'] = 'Isiokwu nke onwe onye…';
 $string['chat:quiz_custom_placeholder'] = 'Tinye isiokwu ma ọ bụ ajụjụ...';

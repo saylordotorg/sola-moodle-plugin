@@ -167,6 +167,7 @@ $string['chat:quiz_setup_title'] = 'מבחן תרגול';
 $string['chat:quiz_questions'] = 'מספר שאלות';
 $string['chat:quiz_topic'] = 'נושא';
 $string['chat:quiz_topic_guided'] = 'מונחה AI (לפי ההתקדמות שלך)';
+$string['chat:quiz_topic_adaptive']      = 'מותאם — התמקד בנקודות החולשה שלי';
 $string['chat:quiz_topic_default'] = 'תוכן הקורס הנוכחי';
 $string['chat:quiz_topic_custom'] = 'נושא מותאם אישית…';
 $string['chat:quiz_custom_placeholder'] = 'הכנס נושא או שאלה...';

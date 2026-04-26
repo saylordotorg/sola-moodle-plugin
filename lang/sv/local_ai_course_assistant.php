@@ -270,6 +270,7 @@ $string['chat:quiz_setup_title'] = 'Övningsquiz';
 $string['chat:quiz_questions'] = 'Antal frågor';
 $string['chat:quiz_topic'] = 'Ämne';
 $string['chat:quiz_topic_guided'] = 'AI-guidat (baserat på dina framsteg)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptiv — fokusera på mina svaga punkter';
 $string['chat:quiz_topic_default'] = 'Aktuellt kursinnehåll';
 $string['chat:quiz_topic_custom'] = 'Anpassat ämne…';
 $string['chat:quiz_custom_placeholder'] = 'Ange ett ämne eller en fråga...';

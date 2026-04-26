@@ -271,6 +271,7 @@ $string['chat:quiz_setup_title'] = 'Quiz d\'entraînement';
 $string['chat:quiz_questions'] = 'Nombre de questions';
 $string['chat:quiz_topic'] = 'Sujet';
 $string['chat:quiz_topic_guided'] = 'Guidé par l\'IA (selon votre progression)';
+$string['chat:quiz_topic_adaptive']      = 'Adaptatif — concentrez-vous sur mes points faibles';
 $string['chat:quiz_topic_default'] = 'Contenu actuel du cours';
 $string['chat:quiz_topic_custom'] = 'Sujet personnalisé…';
 $string['chat:quiz_custom_placeholder'] = 'Entrez un sujet ou une question...';
