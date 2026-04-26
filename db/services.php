@@ -92,6 +92,13 @@ $functions = [
         'ajax' => true,
         'capabilities' => 'local/ai_course_assistant:use',
     ],
+    'local_ai_course_assistant_set_digest_optin' => [
+        'classname' => \local_ai_course_assistant\external\set_digest_optin::class,
+        'description' => 'Record learner opt-in / opt-out for the per-course weekly mastery digest email (v4.0 / M3).',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => 'local/ai_course_assistant:use',
+    ],
     'local_ai_course_assistant_generate_quiz' => [
         'classname'    => \local_ai_course_assistant\external\generate_quiz::class,
         'description'  => 'Generate a practice quiz for a course.',

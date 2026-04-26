@@ -99,4 +99,16 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '1',  // Mondays at 09:00 server time.
     ],
+    [
+        // v4.0 / M3 — Per-learner weekly digest. Opt-in only; only fires for
+        // (userid, courseid) pairs where mastery is enabled and the learner
+        // has the digest_optin user preference set to '1' on that course.
+        'classname' => \local_ai_course_assistant\task\learner_weekly_digest::class,
+        'blocking' => 0,
+        'minute' => '15',
+        'hour' => '9',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '1',  // Mondays at 09:15 server time.
+    ],
 ];

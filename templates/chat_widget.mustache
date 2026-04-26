@@ -126,6 +126,7 @@
      data-chat-greeting="{{chatgreeting}}"
      data-coursename="{{coursename}}"
      data-intro-dismissed="{{#introdismissed}}1{{/introdismissed}}"
+     data-digest-optin-state="{{digestoptinstate}}"
      data-emailreminders="{{#emailreminders}}1{{/emailreminders}}"
      data-whatsappreminders="{{#whatsappreminders}}1{{/whatsappreminders}}"
      data-useremail="{{useremail}}"
@@ -424,6 +425,32 @@
             </div>
         </div>
         {{/contextdebugvisible}}
+
+        {{! v4.0/M3 — Soft opt-in for the weekly mastery digest. PHP only sets
+            showdigestoptin=true when mastery is on, at least one objective
+            exists, and the learner has never been asked (see
+            hook_callbacks::digest_optin_state). The two chips submit the
+            choice via Repo.setDigestOptin and hide the banner. Sits right
+            above the starters so it does not obscure them. }}
+        {{#showdigestoptin}}
+        <div class="aica-digest-optin"
+             style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+                    padding:10px 12px;margin:0 0 10px;
+                    background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;
+                    font-size:13px;color:#1f2937">
+            <span style="flex:1 1 auto">
+                {{#str}}learner_digest:optin_offer, local_ai_course_assistant{{/str}}
+            </span>
+            <button type="button" class="aica-digest-optin__yes"
+                    style="padding:6px 12px;border:1px solid #1f2937;background:#1f2937;color:#fff;border-radius:6px;cursor:pointer;font-size:13px">
+                {{#str}}learner_digest:optin_yes, local_ai_course_assistant{{/str}}
+            </button>
+            <button type="button" class="aica-digest-optin__no"
+                    style="padding:6px 12px;border:1px solid #d1d5db;background:#fff;color:#1f2937;border-radius:6px;cursor:pointer;font-size:13px">
+                {{#str}}learner_digest:optin_no, local_ai_course_assistant{{/str}}
+            </button>
+        </div>
+        {{/showdigestoptin}}
 
         {{! Conversation starters — hidden once a message is sent }}
         <div class="local-ai-course-assistant__starters"

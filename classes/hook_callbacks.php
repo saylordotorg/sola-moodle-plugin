@@ -592,6 +592,14 @@ class hook_callbacks {
             'masterychipenabled' => \local_ai_course_assistant\objective_manager::is_enabled_for_course($courseid)
                 && \local_ai_course_assistant\objective_manager::is_chip_enabled_for_course($courseid),
             'masterydashboardenabled' => \local_ai_course_assistant\objective_manager::is_dashboard_enabled_for_course($courseid),
+            // v4.0 / M3 — soft opt-in prompt for the weekly mastery digest.
+            // Only offered to learners on a mastery-enabled course who have
+            // never been asked yet (preference is unset) AND who have at
+            // least one objective on the course (so a digest would have
+            // content to send). 'unset' means show the prompt; 'opted_in'
+            // and 'declined' both mean hide it.
+            'digestoptinstate'   => self::digest_optin_state($courseid),
+            'showdigestoptin'    => self::digest_optin_state($courseid) === 'unset',
             'flashcardsenabled'  => \local_ai_course_assistant\flashcard_manager::is_enabled_for_course($courseid),
             'flashcardsurl'      => (new \moodle_url('/local/ai_course_assistant/flashcards.php',
                 ['courseid' => $courseid]))->out(false),
@@ -765,5 +773,35 @@ class hook_callbacks {
             return false;
         }
         return (bool) get_config('local_ai_course_assistant', 'auto_open');
+    }
+
+    /**
+     * v4.0 / M3 — Tri-state for the weekly digest opt-in soft prompt.
+     *
+     * Returns:
+     *   'opted_in' — preference is '1', no prompt shown.
+     *   'declined' — preference is '0', no prompt shown.
+     *   'unset'    — preference unset AND mastery is on AND at least one
+     *                objective exists on the course, prompt should render.
+     *   ''         — no offer for any other reason (mastery off, no objectives).
+     *
+     * @param int $courseid
+     * @return string
+     */
+    private static function digest_optin_state(int $courseid): string {
+        if (!\local_ai_course_assistant\objective_manager::is_enabled_for_course($courseid)) {
+            return '';
+        }
+        if (empty(\local_ai_course_assistant\objective_manager::list_for_course($courseid))) {
+            return '';
+        }
+        $pref = get_user_preferences('local_ai_course_assistant_digest_optin_' . $courseid, null);
+        if ($pref === '1') {
+            return 'opted_in';
+        }
+        if ($pref === '0') {
+            return 'declined';
+        }
+        return 'unset';
     }
 }

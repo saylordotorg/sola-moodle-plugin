@@ -1799,6 +1799,41 @@ define([
             });
         }
 
+        // v4.0 / M3 — Soft opt-in for the weekly mastery digest.
+        // Two chips ("Yes, send me" / "No thanks") record the choice via
+        // Repo.setDigestOptin and hide the banner. Once dismissed, the
+        // banner does not return on subsequent page loads because the
+        // server-side digest_optin_state preference is now set.
+        if (els.root) {
+            const optinBox = els.root.querySelector('.aica-digest-optin');
+            if (optinBox) {
+                const optinYes = optinBox.querySelector('.aica-digest-optin__yes');
+                const optinNo  = optinBox.querySelector('.aica-digest-optin__no');
+                const recordChoice = function(optin) {
+                    optinBox.style.display = 'none';
+                    Repo.setDigestOptin(courseId, optin ? 1 : 0)
+                        .then(function() {
+                            const key = optin ? 'learner_digest:optin_thanks' : 'learner_digest:optin_declined';
+                            Str.get_string(key, 'local_ai_course_assistant').then(function(msg) {
+                                UI.showNotification(msg, optin ? 'success' : 'info');
+                            });
+                        })
+                        .catch(function() {
+                            // Keep the banner hidden anyway — the user has
+                            // expressed their choice; we just failed to
+                            // persist server-side this time. Next visit
+                            // will re-offer.
+                        });
+                };
+                if (optinYes) {
+                    optinYes.addEventListener('click', function() { recordChoice(true); });
+                }
+                if (optinNo) {
+                    optinNo.addEventListener('click', function() { recordChoice(false); });
+                }
+            }
+        }
+
         // Escape to close.
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && UI.isOpen()) {

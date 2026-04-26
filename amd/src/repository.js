@@ -206,6 +206,21 @@ define(['core/ajax', 'core/config'], function(Ajax, Config) {
     };
 
     /**
+     * v4.0 / M3 — Record learner opt-in / opt-out for the weekly mastery
+     * digest email on a given course.
+     *
+     * @param {number} courseid
+     * @param {number} optin 1 to opt in, 0 to decline
+     * @returns {Promise}
+     */
+    const setDigestOptin = function(courseid, optin) {
+        return Ajax.call([{
+            methodname: 'local_ai_course_assistant_set_digest_optin',
+            args: {courseid: courseid, optin: optin ? 1 : 0},
+        }])[0];
+    };
+
+    /**
      * Generate a practice quiz.
      *
      * @param {number} courseid
@@ -453,6 +468,7 @@ define(['core/ajax', 'core/config'], function(Ajax, Config) {
         updateReminderPreferences: updateReminderPreferences,
         getReminderPreferences: getReminderPreferences,
         dismissIntro: dismissIntro,
+        setDigestOptin: setDigestOptin,
         generateQuiz: generateQuiz,
         saveAvatarPreference: saveAvatarPreference,
         getRealtimeToken: getRealtimeToken,
