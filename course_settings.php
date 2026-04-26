@@ -123,6 +123,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     \local_ai_course_assistant\starter_manager::save_course_overrides($courseid, $starteroverrides);
 
+    // Pedagogy toggles (v3.9.31). Previously each had its own inline
+    // sub-form with onchange="this.form.submit()". Browsers auto-close the
+    // outer form when they see a nested <form>, which orphaned the bottom
+    // Save button. All six are now plain checkboxes inside the outer form
+    // and save on the same Save Changes submission.
+    set_config('socratic_mode_course_' . $courseid,
+        (int) optional_param('socratic_mode', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    set_config('flashcards_enabled_course_' . $courseid,
+        (int) optional_param('flashcards_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    set_config('code_sandbox_enabled_course_' . $courseid,
+        (int) optional_param('sandbox_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    set_config('essay_feedback_enabled_course_' . $courseid,
+        (int) optional_param('essay_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    set_config('worked_examples_enabled_course_' . $courseid,
+        (int) optional_param('we_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    set_config('digest_email_enabled_course_' . $courseid,
+        (int) optional_param('digest_email', 0, PARAM_BOOL), 'local_ai_course_assistant');
+
     redirect($pageurl, get_string('coursesettings:saved', 'local_ai_course_assistant'),
         null, \core\output\notification::NOTIFY_SUCCESS);
 }
@@ -408,62 +426,51 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.20: Socratic mode toggle (per-course). ?>
+            <?php
+            // Pedagogy toggles — collapsed into the outer form (v3.9.31). Read
+            // current state once from config; saving happens in the big-form
+            // POST handler at the top of the file alongside every other
+            // per-course toggle. Each <input> is a plain checkbox without an
+            // inline form so the outer form is no longer auto-closed by the
+            // browser HTML parser, which previously orphaned the bottom Save
+            // Changes button. The aica-toggle class wires the smartedu-bypass
+            // pointerdown handler at the bottom of this file.
+            $socraticon = (bool) get_config('local_ai_course_assistant', 'socratic_mode_course_' . $courseid);
+            $fcon       = (bool) get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
+            $sbon       = (bool) get_config('local_ai_course_assistant', 'code_sandbox_enabled_course_' . $courseid);
+            $esson      = (bool) get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $courseid);
+            $weon       = (bool) get_config('local_ai_course_assistant', 'worked_examples_enabled_course_' . $courseid);
+            $digeston   = (bool) get_config('local_ai_course_assistant', 'digest_email_enabled_course_' . $courseid);
+            ?>
+
+            <?php // v3.9.20: Socratic mode toggle. ?>
             <div class="form-group row mt-3">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('socratic:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $socraticon = (bool) get_config('local_ai_course_assistant', 'socratic_mode_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_socratic', 0, PARAM_INT) && confirm_sesskey()) {
-                        $socraticon = (bool) optional_param('socratic_mode', 0, PARAM_BOOL);
-                        set_config('socratic_mode_course_' . $courseid,
-                            $socraticon ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_socratic" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="socratic_mode" value="1"
-                                <?php echo $socraticon ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('socratic:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="socratic_mode" value="1"
+                            <?php echo $socraticon ? 'checked' : ''; ?> />
+                        <?php echo get_string('socratic:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('socratic:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
                 </div>
             </div>
 
-            <?php // v3.9.22: Flashcards toggle (per-course). ?>
+            <?php // v3.9.22: Flashcards toggle. ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('flashcards:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $fcon = (bool) get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_flashcards', 0, PARAM_INT) && confirm_sesskey()) {
-                        $fcon = (bool) optional_param('flashcards_on', 0, PARAM_BOOL);
-                        set_config('flashcards_enabled_course_' . $courseid,
-                            $fcon ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_flashcards" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="flashcards_on" value="1"
-                                <?php echo $fcon ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('flashcards:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="flashcards_on" value="1"
+                            <?php echo $fcon ? 'checked' : ''; ?> />
+                        <?php echo get_string('flashcards:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('flashcards:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -479,31 +486,17 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.26: Python code sandbox toggle (per-course). ?>
+            <?php // v3.9.26: Python code sandbox toggle. ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('sandbox:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $sbon = (bool) get_config('local_ai_course_assistant', 'code_sandbox_enabled_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_sandbox', 0, PARAM_INT) && confirm_sesskey()) {
-                        $sbon = (bool) optional_param('sandbox_on', 0, PARAM_BOOL);
-                        set_config('code_sandbox_enabled_course_' . $courseid,
-                            $sbon ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_sandbox" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="sandbox_on" value="1"
-                                <?php echo $sbon ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('sandbox:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="sandbox_on" value="1"
+                            <?php echo $sbon ? 'checked' : ''; ?> />
+                        <?php echo get_string('sandbox:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('sandbox:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -519,31 +512,17 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.25: Essay feedback toggle (per-course). ?>
+            <?php // v3.9.25: Essay feedback toggle. ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('essay_feedback:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $esson = (bool) get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_essay', 0, PARAM_INT) && confirm_sesskey()) {
-                        $esson = (bool) optional_param('essay_on', 0, PARAM_BOOL);
-                        set_config('essay_feedback_enabled_course_' . $courseid,
-                            $esson ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_essay" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="essay_on" value="1"
-                                <?php echo $esson ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('essay_feedback:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="essay_on" value="1"
+                            <?php echo $esson ? 'checked' : ''; ?> />
+                        <?php echo get_string('essay_feedback:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('essay_feedback:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -559,62 +538,34 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.23: Worked examples starter toggle (per-course). ?>
+            <?php // v3.9.23: Worked examples starter toggle. ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('worked_examples:starter', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $weon = (bool) get_config('local_ai_course_assistant', 'worked_examples_enabled_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_we', 0, PARAM_INT) && confirm_sesskey()) {
-                        $weon = (bool) optional_param('we_on', 0, PARAM_BOOL);
-                        set_config('worked_examples_enabled_course_' . $courseid,
-                            $weon ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_we" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="we_on" value="1"
-                                <?php echo $weon ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('worked_examples:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="we_on" value="1"
+                            <?php echo $weon ? 'checked' : ''; ?> />
+                        <?php echo get_string('worked_examples:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('worked_examples:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
                 </div>
             </div>
 
-            <?php // v3.9.20: Weekly digest email toggle (per-course). ?>
+            <?php // v3.9.20: Weekly digest email toggle. ?>
             <div class="form-group row mt-2">
                 <label class="col-sm-3 col-form-label">
                     <?php echo get_string('digest:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <?php
-                    $digeston = (bool) get_config('local_ai_course_assistant', 'digest_email_enabled_course_' . $courseid);
-                    if (data_submitted() && optional_param('save_digest', 0, PARAM_INT) && confirm_sesskey()) {
-                        $digeston = (bool) optional_param('digest_email', 0, PARAM_BOOL);
-                        set_config('digest_email_enabled_course_' . $courseid,
-                            $digeston ? 1 : 0, 'local_ai_course_assistant');
-                    }
-                    ?>
-                    <form method="post" action="" style="display:inline">
-                        <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-                        <input type="hidden" name="save_digest" value="1" />
-                        <label class="mb-0" onclick="event.stopPropagation();">
-                            <input type="checkbox" name="digest_email" value="1"
-                                <?php echo $digeston ? 'checked' : ''; ?>
-                                onchange="this.form.submit()"
-                                onclick="event.stopPropagation();" />
-                            <?php echo get_string('digest:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </form>
+                    <label class="aica-toggle-row mb-0">
+                        <input type="checkbox" class="aica-toggle" name="digest_email" value="1"
+                            <?php echo $digeston ? 'checked' : ''; ?> />
+                        <?php echo get_string('digest:toggle', 'local_ai_course_assistant'); ?>
+                    </label>
                     <small class="form-text text-muted">
                         <?php echo get_string('digest:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -772,6 +723,95 @@ echo html_writer::div(
         <?php echo get_string('cancel'); ?>
     </a>
 </form>
+
+<style>
+.aica-toggle-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+.aica-toggle-row .aica-toggle {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+</style>
+
+<script>
+/*
+ * smartedu / generic click-hijack workaround (v3.9.31).
+ *
+ * Some Moodle blocks (notably block_smartedu) attach document-level click
+ * handlers that intercept label clicks before the browser flips a checkbox.
+ * Earlier we tried inline onclick="event.stopPropagation()", which only
+ * works against bubble-phase listeners; a capture-phase document listener
+ * still beats it.
+ *
+ * pointerdown fires before click and is rarely intercepted. We toggle the
+ * checkbox programmatically on pointerdown and call preventDefault to
+ * suppress the subsequent click event entirely. Space-key still works for
+ * keyboard accessibility because a focused checkbox dispatches its own
+ * synthetic click that doesn't go through the document hijacker.
+ *
+ * Same handler is applied to the older Bootstrap custom-control switches
+ * (sola_course_enabled, enabled, rag_course_enabled, english_lock) so they
+ * behave consistently on smartedu sites.
+ */
+(function() {
+    'use strict';
+    function attach(cb) {
+        if (cb.dataset.aicaToggleBound === '1') {
+            return;
+        }
+        cb.dataset.aicaToggleBound = '1';
+        var pointerHandler = function(e) {
+            // Only respond to primary button (left click / single touch).
+            if (e.button !== undefined && e.button !== 0) {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change', {bubbles: true}));
+        };
+        cb.addEventListener('pointerdown', pointerHandler);
+        // Also intercept clicks on the wrapping label / sibling label[for=].
+        var label = cb.closest('label');
+        if (label && label.dataset.aicaLabelBound !== '1') {
+            label.dataset.aicaLabelBound = '1';
+            label.addEventListener('pointerdown', pointerHandler);
+        }
+        if (cb.id) {
+            document.querySelectorAll('label[for="' + cb.id + '"]').forEach(function(forLabel) {
+                if (forLabel.dataset.aicaLabelBound === '1') {
+                    return;
+                }
+                forLabel.dataset.aicaLabelBound = '1';
+                forLabel.addEventListener('pointerdown', pointerHandler);
+            });
+        }
+    }
+    function attachAll() {
+        // Pedagogy toggles (v3.9.20+).
+        document.querySelectorAll('input.aica-toggle[type="checkbox"]').forEach(attach);
+        // Older Bootstrap custom-control switches in the same form.
+        ['sola_course_enabled', 'enabled', 'rag_course_enabled', 'english_lock']
+            .forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && el.type === 'checkbox') {
+                    attach(el);
+                }
+            });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachAll);
+    } else {
+        attachAll();
+    }
+})();
+</script>
 
 <?php
 echo $OUTPUT->footer();
