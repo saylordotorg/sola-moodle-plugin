@@ -124,6 +124,11 @@ if ($cfg['provider'] === 'xai') {
     $model = 'whisper-1';
 }
 
+if (!\local_ai_course_assistant\security::is_safe_provider_url($cfg['endpoint'])) {
+    http_response_code(502);
+    echo json_encode(['error' => 'STT endpoint failed SSRF validation']);
+    exit;
+}
 $ch = curl_init($cfg['endpoint']);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,

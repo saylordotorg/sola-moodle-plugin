@@ -341,7 +341,7 @@ echo $OUTPUT->header();
         // Type selector.
         var typeField = document.createElement('div'); typeField.className = 'aica-ut-field';
         var typeLbl = document.createElement('label'); typeLbl.textContent = 'Task Type'; typeField.appendChild(typeLbl);
-        var typeSelect = document.createElement('select');
+        var typeSelect = document.createElement('select'); typeSelect.setAttribute('aria-label', 'Task type');
         [['action_then_rate', 'Action + Rate'], ['free_response', 'Free Response'], ['multiple_choice', 'Multiple Choice']].forEach(function(opt) {
             var o = document.createElement('option'); o.value = opt[0]; o.textContent = opt[1];
             if (t.type === opt[0]) o.selected = true;
@@ -359,7 +359,7 @@ echo $OUTPUT->header();
         // Instruction text.
         var instrField = document.createElement('div'); instrField.className = 'aica-ut-field';
         var instrLbl = document.createElement('label'); instrLbl.textContent = 'Task Instruction'; instrField.appendChild(instrLbl);
-        var instrInput = document.createElement('textarea'); instrInput.value = t.instruction || ''; instrInput.rows = 2;
+        var instrInput = document.createElement('textarea'); instrInput.setAttribute('aria-label', 'Task instruction'); instrInput.value = t.instruction || ''; instrInput.rows = 2;
         instrInput.addEventListener('input', function() { t.instruction = instrInput.value; });
         instrField.appendChild(instrInput);
         card.appendChild(instrField);
@@ -369,7 +369,7 @@ echo $OUTPUT->header();
             // Rating label.
             var rlField = document.createElement('div'); rlField.className = 'aica-ut-field';
             var rlLbl = document.createElement('label'); rlLbl.textContent = 'Rating Label'; rlField.appendChild(rlLbl);
-            var rlInp = document.createElement('input'); rlInp.type = 'text'; rlInp.value = t.rating_label || '';
+            var rlInp = document.createElement('input'); rlInp.type = 'text'; rlInp.setAttribute('aria-label', 'Rating label'); rlInp.value = t.rating_label || '';
             rlInp.addEventListener('input', function() { t.rating_label = rlInp.value; });
             rlField.appendChild(rlInp);
             card.appendChild(rlField);
@@ -379,14 +379,14 @@ echo $OUTPUT->header();
             [['Min', 'min', 1], ['Max', 'max', 5]].forEach(function(cfg) {
                 var f = document.createElement('div'); f.className = 'aica-ut-field';
                 var l = document.createElement('label'); l.textContent = cfg[0] + ' Value'; f.appendChild(l);
-                var inp = document.createElement('input'); inp.type = 'number'; inp.value = t[cfg[1]] || cfg[2]; inp.min = 0; inp.max = 10;
+                var inp = document.createElement('input'); inp.type = 'number'; inp.setAttribute('aria-label', cfg[0] + ' rating value'); inp.value = t[cfg[1]] || cfg[2]; inp.min = 0; inp.max = 10;
                 inp.addEventListener('input', function() { t[cfg[1]] = parseInt(inp.value, 10) || cfg[2]; });
                 f.appendChild(inp); ratingFields.appendChild(f);
             });
             [['Min Label', 'min_label', 'e.g. Not helpful'], ['Max Label', 'max_label', 'e.g. Very helpful']].forEach(function(cfg) {
                 var f = document.createElement('div'); f.className = 'aica-ut-field';
                 var l = document.createElement('label'); l.textContent = cfg[0]; f.appendChild(l);
-                var inp = document.createElement('input'); inp.type = 'text'; inp.value = t[cfg[1]] || ''; inp.placeholder = cfg[2];
+                var inp = document.createElement('input'); inp.type = 'text'; inp.setAttribute('aria-label', cfg[0]); inp.value = t[cfg[1]] || ''; inp.placeholder = cfg[2];
                 inp.addEventListener('input', function() { t[cfg[1]] = inp.value; });
                 f.appendChild(inp); ratingFields.appendChild(f);
             });
@@ -395,7 +395,7 @@ echo $OUTPUT->header();
             // Follow-up.
             var fuField = document.createElement('div'); fuField.className = 'aica-ut-field';
             var fuLbl = document.createElement('label'); fuLbl.textContent = 'Follow-up Question (optional free text)'; fuField.appendChild(fuLbl);
-            var fuInp = document.createElement('input'); fuInp.type = 'text'; fuInp.value = t.follow_up || '';
+            var fuInp = document.createElement('input'); fuInp.type = 'text'; fuInp.setAttribute('aria-label', 'Follow-up question'); fuInp.value = t.follow_up || '';
             fuInp.addEventListener('input', function() { t.follow_up = fuInp.value; });
             fuField.appendChild(fuInp);
             card.appendChild(fuField);
@@ -409,7 +409,7 @@ echo $OUTPUT->header();
             var optList = document.createElement('div');
             (t.options || []).forEach(function(opt, oi) {
                 var row = document.createElement('div'); row.className = 'aica-ut-opt-row';
-                var inp = document.createElement('input'); inp.type = 'text'; inp.value = opt;
+                var inp = document.createElement('input'); inp.type = 'text'; inp.setAttribute('aria-label', 'Option ' + (oi + 1)); inp.value = opt;
                 inp.addEventListener('input', function() { t.options[oi] = inp.value; });
                 row.appendChild(inp);
                 var rmBtn = document.createElement('button'); rmBtn.type = 'button'; rmBtn.innerHTML = '&times;';
@@ -427,7 +427,7 @@ echo $OUTPUT->header();
         if (t.type === 'free_response') {
             var fuField2 = document.createElement('div'); fuField2.className = 'aica-ut-field';
             var fuLbl2 = document.createElement('label'); fuLbl2.textContent = 'Additional Prompt (optional)'; fuField2.appendChild(fuLbl2);
-            var fuInp2 = document.createElement('input'); fuInp2.type = 'text'; fuInp2.value = t.follow_up || '';
+            var fuInp2 = document.createElement('input'); fuInp2.type = 'text'; fuInp2.setAttribute('aria-label', 'Additional prompt'); fuInp2.value = t.follow_up || '';
             fuInp2.addEventListener('input', function() { t.follow_up = fuInp2.value; });
             fuField2.appendChild(fuInp2);
             card.appendChild(fuField2);

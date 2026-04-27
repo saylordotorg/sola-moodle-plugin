@@ -78,6 +78,13 @@ class zendesk_client {
 
         $url = "https://{$subdomain}.zendesk.com/api/v2/tickets.json";
 
+        // Subdomain comes from admin config; defend against malformed or
+        // hijacked values (e.g. injection of /, embedded port, IDN homograph).
+        if (!security::is_safe_provider_url($url)) {
+            debugging("Zendesk URL failed SSRF validation: {$url}", DEBUG_DEVELOPER);
+            return null;
+        }
+
         $ticketdata = [
             'ticket' => [
                 'subject' => $subject,

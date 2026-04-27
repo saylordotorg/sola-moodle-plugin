@@ -291,6 +291,9 @@ class reminder_manager {
         }
 
         // Generic provider (Bearer token auth, JSON body).
+        if (!security::is_safe_provider_url($apiurl)) {
+            return false;
+        }
         $payload = json_encode([
             'to' => $reminder->destination,
             'from' => $fromnumber,
@@ -380,6 +383,13 @@ class reminder_manager {
                 'httpcode' => 0,
                 'response' => '',
                 'error' => 'Twilio URLs must include /Accounts/{AccountSid}/Messages.json.',
+            ];
+        }
+
+        if (!security::is_safe_provider_url($config['apiurl'])) {
+            return [
+                'success' => false,
+                'error' => 'Twilio API URL failed SSRF validation.',
             ];
         }
 

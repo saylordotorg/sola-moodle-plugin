@@ -551,17 +551,20 @@ class analytics {
         $sql = "SELECT m.timecreated
                   FROM {local_ai_course_assistant_msgs} m
                  WHERE {$where}";
-        $records = $DB->get_records_sql($sql, $params);
+        // get_fieldset_sql returns a flat array of values rather than a map
+        // keyed on the first column — necessary because timecreated values
+        // collide for messages sent in the same second.
+        $timestamps = $DB->get_fieldset_sql($sql, $params);
 
         // Initialize distributions.
         $hourly = array_fill(0, 24, 0);
         $daily = ['Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 'Fri' => 0, 'Sat' => 0, 'Sun' => 0];
 
-        foreach ($records as $record) {
-            $hour = (int) date('G', $record->timecreated);
+        foreach ($timestamps as $ts) {
+            $hour = (int) date('G', $ts);
             $hourly[$hour]++;
 
-            $dayname = date('D', $record->timecreated);
+            $dayname = date('D', $ts);
             if (isset($daily[$dayname])) {
                 $daily[$dayname]++;
             }

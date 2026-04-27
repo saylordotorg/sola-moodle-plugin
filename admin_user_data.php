@@ -145,7 +145,7 @@ echo '<label style="display:block;margin-bottom:6px;font-weight:600">'
     . get_string('admin:user_data:search_label', 'local_ai_course_assistant')
     . '</label>';
 echo '<input type="number" name="targetuserid" value="' . $targetuserid
-    . '" min="1" style="padding:6px 10px;font-size:14px;width:160px" placeholder="user id" />';
+    . '" min="1" style="padding:6px 10px;font-size:14px;width:160px" placeholder="user id" aria-label="Target user ID" />';
 echo ' <button type="submit" class="btn btn-primary" style="padding:6px 14px">'
     . get_string('admin:user_data:lookup', 'local_ai_course_assistant') . '</button>';
 echo '</form>';

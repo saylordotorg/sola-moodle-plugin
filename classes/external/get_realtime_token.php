@@ -74,6 +74,13 @@ class get_realtime_token extends external_api {
                 throw new \moodle_exception('error', 'local_ai_course_assistant', '',
                     'xAI Realtime proxy is not configured. Set xai_proxy_url and xai_proxy_jwt_secret in SOLA admin settings, or switch voice to OpenAI.');
             }
+            // SSRF check: the proxy URL is wss://; the validator wants https://
+            // for the host-and-IP-range check, so map for validation only.
+            $proxyurlforcheck = preg_replace('/^wss:\/\//i', 'https://', $proxyurl);
+            if (!\local_ai_course_assistant\security::is_safe_provider_url($proxyurlforcheck)) {
+                throw new \moodle_exception('error', 'local_ai_course_assistant', '',
+                    'xAI Realtime proxy URL failed SSRF validation.');
+            }
             $now = time();
             $header = self::b64url(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
             $payload = self::b64url(json_encode([

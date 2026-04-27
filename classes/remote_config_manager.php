@@ -50,8 +50,8 @@ class remote_config_manager {
         $url = get_config('local_ai_course_assistant', 'remoteconfigurl') ?: self::DEFAULT_URL;
         $url = trim($url);
 
-        // Security: only allow HTTPS URLs.
-        if (!$url || strpos($url, 'https://') !== 0) {
+        // Defence in depth: HTTPS, allowlist, no private/reserved IPs.
+        if (!$url || !security::is_safe_provider_url($url)) {
             $cache->set('config', []);
             return [];
         }

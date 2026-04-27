@@ -162,9 +162,14 @@ foreach ($bymodel as $row) {
 
 // ── Query 2: Per-student breakdown (top 100 by token usage) ───────────────────
 
+// Moodle's fullname() emits a debugging() warning when the user object is
+// missing any of firstnamephonetic, lastnamephonetic, middlename,
+// alternatename — fetch them all so the warning doesn't break page render.
 $bystudent = $DB->get_records_sql(
     "SELECT m.userid,
             u.firstname, u.lastname,
+            u.firstnamephonetic, u.lastnamephonetic,
+            u.middlename, u.alternatename,
             COUNT(m.id)                           AS response_count,
             SUM(COALESCE(m.prompt_tokens,0))      AS total_prompt,
             SUM(COALESCE(m.completion_tokens,0))  AS total_completion,
@@ -172,7 +177,9 @@ $bystudent = $DB->get_records_sql(
        FROM {local_ai_course_assistant_msgs} m
        JOIN {user} u ON u.id = m.userid
       WHERE {$msgwhere}
-      GROUP BY m.userid, u.firstname, u.lastname
+      GROUP BY m.userid, u.firstname, u.lastname,
+               u.firstnamephonetic, u.lastnamephonetic,
+               u.middlename, u.alternatename
       ORDER BY SUM(COALESCE(m.prompt_tokens,0)) + SUM(COALESCE(m.completion_tokens,0)) DESC",
     $params, 0, 100
 );

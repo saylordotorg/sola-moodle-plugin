@@ -25,6 +25,18 @@
     "http://localhost:8080/local/ai_course_assistant/instructor_dashboard.php?courseid=2",
     "http://localhost:8080/local/ai_course_assistant/rag_admin.php",
     "http://localhost:8080/local/ai_course_assistant/analytics.php?courseid=2",
-    "http://localhost:8080/local/ai_course_assistant/starter_settings.php?courseid=2"
+    "http://localhost:8080/local/ai_course_assistant/starter_settings.php?courseid=2",
+    "http://localhost:8080/local/ai_course_assistant/token_analytics.php?courseid=2",
+    "http://localhost:8080/local/ai_course_assistant/essay_feedback.php?courseid=2",
+    "http://localhost:8080/local/ai_course_assistant/integrity_admin.php",
+    "http://localhost:8080/local/ai_course_assistant/usertesting_admin.php",
+    "http://localhost:8080/local/ai_course_assistant/update_admin.php",
+    "http://localhost:8080/local/ai_course_assistant/vendor_dpa.php",
+    "http://localhost:8080/local/ai_course_assistant/survey_admin.php",
+    "http://localhost:8080/local/ai_course_assistant/rubric_admin.php",
+    "http://localhost:8080/local/ai_course_assistant/admin_user_data.php",
+    "http://localhost:8080/local/ai_course_assistant/privacy.php",
+    "http://localhost:8080/local/ai_course_assistant/settings_user.php"
   ]
 }
+
