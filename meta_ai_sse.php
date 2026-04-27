@@ -142,15 +142,20 @@ try {
         sse_send('token', json_encode(['token' => $fullresponse]));
     }
 
-    // Log this Learning Radar query to msgs so it shows up under the
-    // "Analytics" category in Token Cost analytics. interaction_type=meta
-    // isolates admin-side queries from student chat. Tokens are approximated
-    // from content length (~4 chars/token) since the SSE stream does not
-    // surface an official usage total for every provider.
+    // Persist the Learning Radar query and response (interaction_type='meta')
+    // so it shows up under the "Analytics" category in Token Cost analytics
+    // AND is exportable via redash_export.php. Tokens are approximated from
+    // content length (~4 chars/token) since the SSE stream does not surface
+    // an official usage total for every provider.
     try {
         $promptchars = strlen($systemprompt);
+        $lastquerytext = '';
         foreach ($messages as $m) {
-            $promptchars += strlen((string) ($m['content'] ?? ''));
+            $content = (string) ($m['content'] ?? '');
+            $promptchars += strlen($content);
+            if (($m['role'] ?? '') === 'user') {
+                $lastquerytext = $content;
+            }
         }
         $approxprompt = (int) ceil($promptchars / 4);
         $approxcompletion = (int) ceil(strlen($fullresponse) / 4);
@@ -160,17 +165,15 @@ try {
         $providerid = $provider !== '' ? $provider
             : ($llmconf['provider'] ?? (get_config('local_ai_course_assistant', 'provider') ?: 'unknown'));
 
-        $conv = \local_ai_course_assistant\conversation_manager::get_or_create_conversation(
-            $USER->id, SITEID);
-        \local_ai_course_assistant\conversation_manager::add_message(
-            $conv->id, $USER->id, SITEID, 'assistant',
-            '[Learning Radar query]',
-            $approxprompt + $approxcompletion,
+        \local_ai_course_assistant\conversation_manager::record_meta_query(
+            (int) $USER->id,
+            $lastquerytext,
+            $fullresponse,
             $providerid,
+            $modelname,
             $approxprompt,
             $approxcompletion,
-            $modelname,
-            'meta'
+            false /* ad-hoc, not scheduled */
         );
     } catch (\Throwable $logerr) {
         debugging('Learning Radar meta-log failed: ' . $logerr->getMessage(), DEBUG_DEVELOPER);

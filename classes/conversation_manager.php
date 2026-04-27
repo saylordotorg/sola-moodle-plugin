@@ -147,6 +147,78 @@ class conversation_manager {
     }
 
     /**
+     * Record a Learning Radar (meta-AI) query and its response so the pair
+     * is exportable via redash_export.php.
+     *
+     * Bypasses the 100-message conversation cap that {@see add_message()}
+     * enforces — the cap is for student-chat hygiene; admin Learning Radar
+     * queries are kept indefinitely so they can be exported to BI tools.
+     *
+     * Writes two rows: a `user` row with the query text and prompt tokens,
+     * and an `assistant` row with the response text and completion tokens.
+     * Both use `interaction_type='meta'` (ad-hoc) or `'meta_scheduled'`
+     * (cron-driven), so analytics that filter on interaction_type can
+     * include or exclude admin queries cleanly.
+     *
+     * @param int $userid
+     * @param string $query Full text the admin asked.
+     * @param string $response Full LLM response.
+     * @param string $provider Provider id.
+     * @param string $modelname Model id.
+     * @param int $prompttokens Approximate input tokens.
+     * @param int $completiontokens Approximate output tokens.
+     * @param bool $scheduled True for cron-driven runs.
+     * @return void
+     */
+    public static function record_meta_query(
+        int $userid,
+        string $query,
+        string $response,
+        string $provider,
+        string $modelname,
+        int $prompttokens,
+        int $completiontokens,
+        bool $scheduled = false
+    ): void {
+        global $DB;
+
+        $convid = self::get_or_create_conversation($userid, SITEID)->id;
+        $now = time();
+        $itype = $scheduled ? 'meta_scheduled' : 'meta';
+
+        $userrow = new \stdClass();
+        $userrow->conversationid = $convid;
+        $userrow->userid = $userid;
+        $userrow->courseid = SITEID;
+        $userrow->role = 'user';
+        $userrow->message = $query;
+        $userrow->tokens_used = $prompttokens;
+        $userrow->prompt_tokens = $prompttokens;
+        $userrow->completion_tokens = 0;
+        $userrow->model_name = null;
+        $userrow->provider = null;
+        $userrow->interaction_type = $itype;
+        $userrow->cmid = null;
+        $userrow->timecreated = $now;
+        $DB->insert_record('local_ai_course_assistant_msgs', $userrow);
+
+        $assistrow = clone $userrow;
+        $assistrow->role = 'assistant';
+        $assistrow->message = $response;
+        $assistrow->tokens_used = $completiontokens;
+        $assistrow->prompt_tokens = 0;
+        $assistrow->completion_tokens = $completiontokens;
+        $assistrow->model_name = $modelname !== '' ? $modelname : null;
+        $assistrow->provider = $provider !== '' ? $provider : null;
+        // +1 second so the user row sorts strictly before the assistant row
+        // even when both are inserted in the same wall-clock second.
+        $assistrow->timecreated = $now + 1;
+        $DB->insert_record('local_ai_course_assistant_msgs', $assistrow);
+
+        $DB->set_field('local_ai_course_assistant_convs', 'timemodified', $now + 1, ['id' => $convid]);
+    }
+
+    /**
      * Get all messages for a conversation, ordered by time.
      *
      * @param int $conversationid

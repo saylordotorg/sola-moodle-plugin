@@ -16,6 +16,7 @@
 
 namespace local_ai_course_assistant\task;
 
+use local_ai_course_assistant\conversation_manager;
 use local_ai_course_assistant\meta_ai_data_builder;
 use local_ai_course_assistant\provider\base_provider;
 
@@ -98,6 +99,30 @@ class run_meta_ai_query extends \core\task\scheduled_task {
         $format = get_config('local_ai_course_assistant', 'metaai_cron_format') ?: 'text';
         mtrace("  Learning Radar cron: sending {$format} report to {$email}...");
         $this->send_report($email, $query, $response, $frequency, $format);
+
+        // Persist the query+response so the run is exportable via Redash
+        // (interaction_type='meta_scheduled'). Non-fatal on failure.
+        try {
+            $admin = get_admin();
+            $approxprompt = (int) ceil((strlen($systemprompt) + strlen($query)) / 4);
+            $approxcompletion = (int) ceil(strlen($response) / 4);
+            $persistedmodel = $model !== '' ? $model : 'unknown';
+            $persistedprovider = $providerid !== '' ? $providerid
+                : (get_config('local_ai_course_assistant', 'provider') ?: 'unknown');
+            conversation_manager::record_meta_query(
+                (int) $admin->id,
+                $query,
+                $response,
+                $persistedprovider,
+                $persistedmodel,
+                $approxprompt,
+                $approxcompletion,
+                true /* scheduled */
+            );
+        } catch (\Throwable $persisterr) {
+            mtrace('  Learning Radar cron: persistence failed (non-fatal): ' . $persisterr->getMessage());
+        }
+
         mtrace('  Learning Radar cron: done.');
     }
 

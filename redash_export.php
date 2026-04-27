@@ -268,6 +268,57 @@ $metaai = [
     'transcript_excerpt' => \local_ai_course_assistant\meta_ai_data_builder::build_transcript($courseid, $since, 50000),
 ];
 
+// Learning Radar query log: every admin query (ad-hoc + scheduled) and its
+// response, paired by (conversationid, sequential timecreated). Each record
+// is one query/response pair with provider, model, approximate token counts,
+// and a `scheduled` flag distinguishing cron-driven runs from ad-hoc ones.
+$radarwhere = "interaction_type IN ('meta', 'meta_scheduled')";
+$radarparams = [];
+if ($since > 0) {
+    $radarwhere .= ' AND timecreated >= :since';
+    $radarparams['since'] = $since;
+}
+// Sort by `id` (auto-increment sequence) rather than `timecreated`. Two
+// queries persisted within the same wall-clock second would otherwise
+// interleave (all `user` rows before all `assistant` rows when sharing a
+// timestamp), and the pairing walk below would cross-pair them. `id` is
+// monotonic at insertion and preserves insertion order regardless of
+// timestamp ties.
+$radarrecords = $DB->get_records_sql(
+    "SELECT id, conversationid, userid, role, message, prompt_tokens, completion_tokens,
+            model_name, provider, interaction_type, timecreated
+       FROM {local_ai_course_assistant_msgs}
+      WHERE {$radarwhere}
+      ORDER BY conversationid ASC, id ASC",
+    $radarparams
+);
+
+$radarpairs = [];
+$pendinguser = null;
+foreach ($radarrecords as $row) {
+    if ($row->role === 'user') {
+        $pendinguser = $row;
+        continue;
+    }
+    if ($row->role === 'assistant' && $pendinguser !== null
+            && (int) $pendinguser->conversationid === (int) $row->conversationid) {
+        $radarpairs[] = [
+            'id'                => (int) $row->id,
+            'userid'            => (int) $row->userid,
+            'query'             => (string) $pendinguser->message,
+            'response'          => (string) $row->message,
+            'provider'          => $row->provider,
+            'model'             => $row->model_name,
+            'prompt_tokens'     => (int) ($pendinguser->prompt_tokens ?? 0),
+            'completion_tokens' => (int) ($row->completion_tokens ?? 0),
+            'scheduled'         => $row->interaction_type === 'meta_scheduled',
+            'asked_at'          => (int) $pendinguser->timecreated,
+            'answered_at'       => (int) $row->timecreated,
+        ];
+        $pendinguser = null;
+    }
+}
+
 // Build response.
 $response = [
     'generated_at' => date('c'),
@@ -278,6 +329,7 @@ $response = [
     'token_costs' => $tokencosts,
     'survey_responses' => $surveydata,
     'meta_ai' => $metaai,
+    'learning_radar_queries' => $radarpairs,
 ];
 
 echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
