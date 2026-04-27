@@ -115,17 +115,20 @@ class analytics {
 
         $since = time() - ($days * 86400);
 
-        // Get all messages in the range, group by day.
+        // Get all message timestamps in the range, group by day.
+        // get_fieldset_sql returns a flat array of values rather than a
+        // map keyed on the first column — necessary here because
+        // timecreated values collide for messages sent in the same second.
         $sql = "SELECT m.timecreated
                   FROM {local_ai_course_assistant_msgs} m
                  WHERE m.courseid = :courseid AND m.timecreated >= :since AND m.role = 'user'
                  ORDER BY m.timecreated ASC";
-        $records = $DB->get_records_sql($sql, ['courseid' => $courseid, 'since' => $since]);
+        $timestamps = $DB->get_fieldset_sql($sql, ['courseid' => $courseid, 'since' => $since]);
 
         // Aggregate by day.
         $dailycounts = [];
-        foreach ($records as $record) {
-            $day = date('Y-m-d', $record->timecreated);
+        foreach ($timestamps as $ts) {
+            $day = date('Y-m-d', $ts);
             if (!isset($dailycounts[$day])) {
                 $dailycounts[$day] = 0;
             }

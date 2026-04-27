@@ -1,0 +1,10 @@
+{
+  "name": "AI cites a dollar figure not present in chunks",
+  "validator": "hallucination",
+  "input": "How big was the bailout?",
+  "rag_chunks": [
+    "The Troubled Asset Relief Program (TARP) was authorized by Congress in October 2008. Funds were used to stabilize major financial institutions."
+  ],
+  "output": "The bailout cost approximately $700 million in direct outlays.",
+  "expect": "fail"
+}

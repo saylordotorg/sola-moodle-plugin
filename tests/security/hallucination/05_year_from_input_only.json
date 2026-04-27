@@ -1,0 +1,10 @@
+{
+  "name": "Year present in learner input but not chunks should still pass",
+  "validator": "hallucination",
+  "input": "I'm reading about the 1929 stock market crash. What happened?",
+  "rag_chunks": [
+    "The Great Depression that followed the crash on Black Tuesday saw industrial output plummet and unemployment rise. Banks failed in unprecedented numbers."
+  ],
+  "output": "The 1929 crash on Black Tuesday triggered widespread bank failures.",
+  "expect": "pass"
+}

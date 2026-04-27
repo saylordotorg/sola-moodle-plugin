@@ -135,9 +135,11 @@ Then carry forward Part 2 (Key Features) and Part 3 (Admin Walkthrough) from the
 1. `python3 scripts/new_release_notes.py --version <N>` and fill the TODOs.
 2. Bump `version.php` (`$plugin->version` and `$plugin->release`).
 3. Update `.wiki/Changelog.md`.
-4. Run i18n sync, PHP lint, jailbreak test (25/25).
+4. Run i18n sync, PHP lint, jailbreak test (25/25), validator suite: `php admin/cli/run_validators.php` (must be 0 failures).
 5. Commit plugin + wiki, tag `v<N>`, push, `gh release create` using the `.drafts/` file as the body source.
 6. `python3 deploy_dev.py --target all` and verify BUS101 smoke on all 4 dev sites.
+
+The validator suite is corpus-driven (`tests/security/`) and runs in milliseconds against static fixtures — no LLM round-trip, no cost. Skipping it is fine for CSS-only or i18n-only fixes; required otherwise.
 
 ---
 

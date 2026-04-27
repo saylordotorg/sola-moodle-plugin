@@ -1,0 +1,10 @@
+{
+  "name": "AI cites a year that does appear in chunks",
+  "validator": "hallucination",
+  "input": "When did the company dissolve?",
+  "rag_chunks": [
+    "The British East India Company was formally dissolved by the East India Stock Dividend Redemption Act of 1873 and ceased to exist on 1 June 1874."
+  ],
+  "output": "The British East India Company ceased to exist in 1874, following the 1873 redemption act.",
+  "expect": "pass"
+}

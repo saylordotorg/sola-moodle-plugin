@@ -39,6 +39,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../../config.php');
 
 use local_ai_course_assistant\validators\credential_leak_validator;
+use local_ai_course_assistant\validators\hallucination_validator;
 use local_ai_course_assistant\validators\pii_echo_validator;
 use local_ai_course_assistant\validators\result;
 use local_ai_course_assistant\validators\validator_interface;
@@ -62,6 +63,7 @@ if (!is_dir($corpus)) {
 $validators = [
     'pii_echo' => new pii_echo_validator(),
     'credential_leak' => new credential_leak_validator(),
+    'hallucination' => new hallucination_validator(),
 ];
 
 mtrace("SOLA Validator Suite");
@@ -108,6 +110,9 @@ foreach ($fixtures as $path) {
     /** @var validator_interface $validator */
     $validator = $validators[$vname];
     $context = ['input' => (string) ($fx['input'] ?? '')];
+    if (isset($fx['rag_chunks']) && is_array($fx['rag_chunks'])) {
+        $context['rag_chunks'] = $fx['rag_chunks'];
+    }
     $r = $validator->validate((string) ($fx['output'] ?? ''), $context);
 
     $expect = $fx['expect'] ?? 'pass';

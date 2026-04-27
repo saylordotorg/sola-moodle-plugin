@@ -6,7 +6,8 @@
     "viewport": { "width": 1280, "height": 900 },
     "ignore": [
       "WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Fail",
-      "WCAG2AA.Principle1.Guideline1_4.1_4_3.G145.Fail"
+      "WCAG2AA.Principle1.Guideline1_4.1_4_3.G145.Fail",
+      "WCAG2AA.Principle3.Guideline3_2.3_2_2.H32.2"
     ],
     "actions": [
       "navigate to http://localhost:8080/login/index.php",

@@ -238,17 +238,17 @@ echo $OUTPUT->header();
             '<div class="aica-starter-card-body">' +
                 '<div class="aica-field">' +
                     '<label>Name</label>' +
-                    '<input type="text" class="aica-f-name" value="' + escAttr(s.name) + '" placeholder="Chip display name">' +
+                    '<input type="text" class="aica-f-name" aria-label="Chip name" value="' + escAttr(s.name) + '" placeholder="Chip display name">' +
                 '</div>' +
                 '<div class="aica-field">' +
                     '<label>Description</label>' +
-                    '<input type="text" class="aica-f-desc" value="' + escAttr(s.description || '') + '" placeholder="Admin-only description">' +
+                    '<input type="text" class="aica-f-desc" aria-label="Chip description" value="' + escAttr(s.description || '') + '" placeholder="Admin-only description">' +
                     '<div class="aica-help">Shown only in this admin panel for reference.</div>' +
                 '</div>' +
                 (s.type === 'prompt' ?
                 '<div class="aica-field">' +
                     '<label>AI Prompt</label>' +
-                    '<textarea class="aica-f-prompt" placeholder="The message sent to the AI when this chip is clicked...">' + escHtml(s.prompt || '') + '</textarea>' +
+                    '<textarea class="aica-f-prompt" aria-label="AI prompt template" placeholder="The message sent to the AI when this chip is clicked...">' + escHtml(s.prompt || '') + '</textarea>' +
                     '<div class="aica-help">Use <code>{page}</code> for the current page title. This is sent as the student\'s message to the AI.</div>' +
                 '</div>' : '') +
                 '<div class="aica-field">' +

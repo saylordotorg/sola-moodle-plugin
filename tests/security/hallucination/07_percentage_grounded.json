@@ -1,0 +1,10 @@
+{
+  "name": "Percentage that appears verbatim in chunks should pass",
+  "validator": "hallucination",
+  "input": "What was the unemployment peak?",
+  "rag_chunks": [
+    "Unemployment in the United States peaked at roughly 25% in 1933, the deepest point of the Great Depression."
+  ],
+  "output": "Unemployment peaked at about 25% in 1933.",
+  "expect": "pass"
+}

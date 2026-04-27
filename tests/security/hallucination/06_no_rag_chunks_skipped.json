@@ -1,0 +1,7 @@
+{
+  "name": "No RAG chunks supplied — validator must no-op",
+  "validator": "hallucination",
+  "input": "Tell me a fun fact.",
+  "output": "In 1969, humans first walked on the Moon during the Apollo 11 mission.",
+  "expect": "pass"
+}

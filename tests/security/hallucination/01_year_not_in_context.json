@@ -1,0 +1,10 @@
+{
+  "name": "AI cites a year that isn't in the supplied RAG chunks",
+  "validator": "hallucination",
+  "input": "When did the British East India Company dissolve?",
+  "rag_chunks": [
+    "The British East India Company's commercial activities effectively ended after the Indian Rebellion of 1857. The company's assets were transferred to the Crown."
+  ],
+  "output": "The British East India Company dissolved in 1874, formally winding down operations after Crown takeover.",
+  "expect": "fail"
+}

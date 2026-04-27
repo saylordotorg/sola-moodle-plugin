@@ -1,0 +1,10 @@
+{
+  "name": "Qualitative answer with no numeric claims must pass even if paraphrased",
+  "validator": "hallucination",
+  "input": "Why did the Roman Empire fall?",
+  "rag_chunks": [
+    "Historians attribute the fall of the Western Roman Empire to a combination of factors: economic strain, military overstretch, political instability, and pressure from migrating peoples."
+  ],
+  "output": "The fall is generally explained by overlapping pressures — economic decline, an overextended military, instability at the top, and outside migrations weighing on the borders.",
+  "expect": "pass"
+}

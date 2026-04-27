@@ -1,0 +1,10 @@
+{
+  "name": "AI cites a percentage not present in supplied chunks",
+  "validator": "hallucination",
+  "input": "What did the experiment find?",
+  "rag_chunks": [
+    "Subjects who completed the cognitive training showed a measurable improvement on the post-test compared to controls. Effect size was reported as Cohen's d = 0.42."
+  ],
+  "output": "The cognitive training group outperformed controls by 28% on average, a moderate effect.",
+  "expect": "fail"
+}
