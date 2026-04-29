@@ -1014,3 +1014,24 @@ $string['settings:csp_course_pages_mode_desc'] = 'Optional CSP header on course 
 $string['settings:csp_mode_off']               = 'Off (no header on course pages)';
 $string['settings:csp_mode_report_only']       = 'Report-only (log violations, do not block)';
 $string['settings:csp_mode_enforce']           = 'Enforce (block off-allowlist loads)';
+
+// v4.5.0: site-wide pedagogy defaults.
+$string['settings:pedagogy_defaults_heading']      = 'Pedagogy defaults';
+$string['settings:pedagogy_defaults_heading_desc'] = 'Site-wide default state for each pedagogy feature. Flip a feature on here and every course inherits it unless that course has an explicit override on its SOLA course settings page (force on / force off). On upgrade to v4.5.0, every per-course "force off" override that was set to the legacy default-off value of <code>0</code> is cleared so the new global defaults take effect cleanly. Default off — upgrades from v4.4.x are a no-op until an admin flips a feature on.';
+$string['pedagogy:mastery']                = 'Mastery tracking on by default';
+$string['pedagogy:mastery_desc']           = 'When on, every course inherits mastery tracking unless the course has its own override. Mastery requires curated learning objectives — courses without objectives fall back gracefully, no error.';
+$string['pedagogy:socratic_mode']          = 'Socratic mode on by default';
+$string['pedagogy:socratic_mode_desc']     = 'When on, SOLA leads with questions instead of direct answers in every course unless the course has its own override.';
+$string['pedagogy:worked_examples']        = 'Worked examples starter on by default';
+$string['pedagogy:worked_examples_desc']   = 'When on, the "Show me a worked example" conversation starter appears in every course unless the course has its own override.';
+$string['pedagogy:flashcards']             = 'Flashcards on by default';
+$string['pedagogy:flashcards_desc']        = 'When on, spaced-repetition flashcards are available in every course unless the course has its own override.';
+$string['pedagogy:code_sandbox']           = 'Python code sandbox on by default';
+$string['pedagogy:code_sandbox_desc']      = 'When on, the in-browser Python sandbox is available in every course unless the course has its own override.';
+$string['pedagogy:essay_feedback']         = 'Essay feedback on by default';
+$string['pedagogy:essay_feedback_desc']    = 'When on, AI essay feedback is available in every course unless the course has its own override.';
+$string['pedagogy:per_course_inherit']     = 'Inherit site default ({$a})';
+$string['pedagogy:per_course_force_on']    = 'Force on for this course';
+$string['pedagogy:per_course_force_off']   = 'Force off for this course';
+$string['pedagogy:on']                     = 'on';
+$string['pedagogy:off']                    = 'off';

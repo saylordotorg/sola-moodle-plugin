@@ -36,7 +36,7 @@ $course = get_course($courseid);
 $context = context_course::instance($courseid);
 require_capability('local/ai_course_assistant:use', $context);
 
-if (!get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $courseid)) {
+if (!\local_ai_course_assistant\feature_flags::resolve('essay_feedback', $courseid)) {
     throw new \moodle_exception('essay_feedback:disabled', 'local_ai_course_assistant');
 }
 

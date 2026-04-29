@@ -244,7 +244,7 @@ class context_builder {
         // less likely to be diluted by the brevity instruction. Made more
         // emphatic with explicit "do/don't" examples so weaker models still
         // follow it instead of defaulting to direct answers.
-        if ((bool) get_config('local_ai_course_assistant', 'socratic_mode_course_' . $courseid)) {
+        if (feature_flags::resolve('socratic_mode', $courseid)) {
             $prompt .= "\n\n## SOCRATIC MODE — ACTIVE FOR THIS COURSE\n"
                 . "This is a HARD REQUIREMENT for this course, not a suggestion. It overrides the brevity guidance above whenever the two conflict.\n\n"
                 . "**You must NOT give direct answers to subject-matter questions.** Instead, lead the learner with one focused guiding question at a time. Wait for their reply before asking the next one.\n\n"
@@ -404,10 +404,22 @@ class context_builder {
         foreach ($keys as $key) {
             $bits .= ((int) (bool) get_config('local_ai_course_assistant', $key . '_course_' . $courseid));
         }
-        // External resources toggle reads as three-way (inherit/on/off), so
-        // also include the global setting in the fingerprint — flipping the
-        // global must invalidate cached prompts on every "inherit" course.
-        $bits .= ((int) (bool) get_config('local_ai_course_assistant', 'external_resources_enabled'));
+        // v4.5.0: every pedagogy feature now reads as three-way
+        // (inherit/on/off), so include the site-wide globals in the
+        // fingerprint too. Flipping a global must invalidate cached prompts
+        // on every "inherit" course.
+        $globals = [
+            'socratic_mode_enabled',
+            'mastery_enabled',
+            'worked_examples_enabled',
+            'essay_feedback_enabled',
+            'flashcards_enabled',
+            'code_sandbox_enabled',
+            'external_resources_enabled',
+        ];
+        foreach ($globals as $g) {
+            $bits .= ((int) (bool) get_config('local_ai_course_assistant', $g));
+        }
         return substr(md5($bits), 0, 12);
     }
 

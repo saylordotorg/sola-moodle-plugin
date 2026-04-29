@@ -67,7 +67,9 @@ class objective_manager {
      * @return bool
      */
     public static function is_enabled_for_course(int $courseid): bool {
-        return (bool) get_config('local_ai_course_assistant', 'mastery_enabled_course_' . $courseid);
+        // v4.5.0: per-course override wins, else fall back to the site-wide
+        // `mastery_enabled` default. Default off if neither is set.
+        return feature_flags::resolve('mastery', $courseid);
     }
 
     /**

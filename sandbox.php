@@ -36,7 +36,7 @@ $course = get_course($courseid);
 $context = context_course::instance($courseid);
 require_capability('local/ai_course_assistant:use', $context);
 
-if (!get_config('local_ai_course_assistant', 'code_sandbox_enabled_course_' . $courseid)) {
+if (!\local_ai_course_assistant\feature_flags::resolve('code_sandbox', $courseid)) {
     throw new \moodle_exception('sandbox:disabled', 'local_ai_course_assistant');
 }
 

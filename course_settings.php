@@ -128,16 +128,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // outer form when they see a nested <form>, which orphaned the bottom
     // Save button. All six are now plain checkboxes inside the outer form
     // and save on the same Save Changes submission.
-    set_config('socratic_mode_course_' . $courseid,
-        (int) optional_param('socratic_mode', 0, PARAM_BOOL), 'local_ai_course_assistant');
-    set_config('flashcards_enabled_course_' . $courseid,
-        (int) optional_param('flashcards_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
-    set_config('code_sandbox_enabled_course_' . $courseid,
-        (int) optional_param('sandbox_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
-    set_config('essay_feedback_enabled_course_' . $courseid,
-        (int) optional_param('essay_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
-    set_config('worked_examples_enabled_course_' . $courseid,
-        (int) optional_param('we_on', 0, PARAM_BOOL), 'local_ai_course_assistant');
+    // v4.5.0: pedagogy toggles save as three-way (inherit / force on /
+    // force off). Empty value = inherit (unset the per-course key, fall
+    // back to site-wide default). '1' = force on. '0' = force off.
+    foreach ([
+        'socratic_mode'           => 'socratic_mode_course_',
+        'flashcards_on'           => 'flashcards_enabled_course_',
+        'sandbox_on'              => 'code_sandbox_enabled_course_',
+        'essay_on'                => 'essay_feedback_enabled_course_',
+        'we_on'                   => 'worked_examples_enabled_course_',
+    ] as $field => $cfgprefix) {
+        $v = optional_param($field, '', PARAM_RAW_TRIMMED);
+        if ($v === '1' || $v === '0') {
+            set_config($cfgprefix . $courseid, $v, 'local_ai_course_assistant');
+        } else {
+            unset_config($cfgprefix . $courseid, 'local_ai_course_assistant');
+        }
+    }
+    // Digest email keeps its checkbox semantics — it's a per-course delivery
+    // toggle, not a feature on/off.
     set_config('digest_email_enabled_course_' . $courseid,
         (int) optional_param('digest_email', 0, PARAM_BOOL), 'local_ai_course_assistant');
 
@@ -444,14 +453,48 @@ echo html_writer::div(
             // inline form so the outer form is no longer auto-closed by the
             // browser HTML parser, which previously orphaned the bottom Save
             // Changes button.
-            $socraticon = (bool) get_config('local_ai_course_assistant', 'socratic_mode_course_' . $courseid);
-            $fcon       = (bool) get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
-            $sbon       = (bool) get_config('local_ai_course_assistant', 'code_sandbox_enabled_course_' . $courseid);
-            $esson      = (bool) get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $courseid);
-            $weon       = (bool) get_config('local_ai_course_assistant', 'worked_examples_enabled_course_' . $courseid);
+            // v4.5.0: read each pedagogy override raw (string '1', '0', or
+            // false) plus the site-wide default so we can render three-way
+            // selects with an "Inherit (currently on/off)" label. Old code
+            // read these as bool only.
+            $socraticraw  = get_config('local_ai_course_assistant', 'socratic_mode_course_' . $courseid);
+            $fcraw        = get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
+            $sbraw        = get_config('local_ai_course_assistant', 'code_sandbox_enabled_course_' . $courseid);
+            $essraw       = get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $courseid);
+            $weraw        = get_config('local_ai_course_assistant', 'worked_examples_enabled_course_' . $courseid);
+            $socraticgbl  = (bool) get_config('local_ai_course_assistant', 'socratic_mode_enabled');
+            $fcgbl        = (bool) get_config('local_ai_course_assistant', 'flashcards_enabled');
+            $sbgbl        = (bool) get_config('local_ai_course_assistant', 'code_sandbox_enabled');
+            $essgbl       = (bool) get_config('local_ai_course_assistant', 'essay_feedback_enabled');
+            $wegbl        = (bool) get_config('local_ai_course_assistant', 'worked_examples_enabled');
+            // Resolved booleans for `if (X) { show secondary link }` checks.
+            $fcon       = \local_ai_course_assistant\feature_flags::resolve('flashcards', $courseid);
+            $sbon       = \local_ai_course_assistant\feature_flags::resolve('code_sandbox', $courseid);
+            $esson      = \local_ai_course_assistant\feature_flags::resolve('essay_feedback', $courseid);
             $digeston   = (bool) get_config('local_ai_course_assistant', 'digest_email_enabled_course_' . $courseid);
             $extresraw  = get_config('local_ai_course_assistant', 'external_resources_enabled_course_' . $courseid);
             $extresglobal = (bool) get_config('local_ai_course_assistant', 'external_resources_enabled');
+
+            // Helper: render a three-way pedagogy select (inherit / force on / force off).
+            $renderpedagogyselect = function (string $name, $raw, bool $globalon, string $id) {
+                $on  = get_string('pedagogy:on',  'local_ai_course_assistant');
+                $off = get_string('pedagogy:off', 'local_ai_course_assistant');
+                $inheritlabel = get_string('pedagogy:per_course_inherit',
+                    'local_ai_course_assistant', $globalon ? $on : $off);
+                $forceon  = get_string('pedagogy:per_course_force_on',  'local_ai_course_assistant');
+                $forceoff = get_string('pedagogy:per_course_force_off', 'local_ai_course_assistant');
+                $sel = function ($value, $current) {
+                    return ($value === $current) ? ' selected' : '';
+                };
+                $current = ($raw === '1' || $raw === '0') ? $raw : '';
+                $html  = '<select id="' . s($id) . '" name="' . s($name)
+                       . '" class="form-control form-control-sm" style="max-width:280px">';
+                $html .= '<option value=""' . $sel('', $current) . '>' . s($inheritlabel) . '</option>';
+                $html .= '<option value="1"' . $sel('1', $current) . '>' . s($forceon) . '</option>';
+                $html .= '<option value="0"' . $sel('0', $current) . '>' . s($forceoff) . '</option>';
+                $html .= '</select>';
+                return $html;
+            };
             ?>
 
             <?php // v3.9.20: Socratic mode toggle. v4.1.5: bare-checkbox markup
@@ -468,34 +511,20 @@ echo html_writer::div(
                     <?php echo get_string('socratic:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div>
-                        <input type="checkbox" role="switch"
-                               id="aica-socratic-mode" name="socratic_mode" value="1"
-                               <?php echo $socraticon ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="aica-socratic-mode">
-                            <?php echo get_string('socratic:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <?php echo $renderpedagogyselect('socratic_mode', $socraticraw, $socraticgbl, 'aica-socratic-mode'); ?>
                     <small class="form-text text-muted">
                         <?php echo get_string('socratic:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
                 </div>
             </div>
 
-            <?php // v3.9.22: Flashcards toggle. ?>
+            <?php // v3.9.22: Flashcards toggle. v4.5.0: three-way (inherit/force on/force off). ?>
             <div class="form-group row mt-2">
-                <label class="col-sm-3 col-form-label">
+                <label class="col-sm-3 col-form-label" for="aica-flashcards-on">
                     <?php echo get_string('flashcards:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div>
-                        <input type="checkbox" role="switch"
-                               id="aica-flashcards-on" name="flashcards_on" value="1"
-                               <?php echo $fcon ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="aica-flashcards-on">
-                            <?php echo get_string('flashcards:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <?php echo $renderpedagogyselect('flashcards_on', $fcraw, $fcgbl, 'aica-flashcards-on'); ?>
                     <small class="form-text text-muted">
                         <?php echo get_string('flashcards:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -511,20 +540,13 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.26: Python code sandbox toggle. ?>
+            <?php // v3.9.26: Python code sandbox toggle. v4.5.0: three-way. ?>
             <div class="form-group row mt-2">
-                <label class="col-sm-3 col-form-label">
+                <label class="col-sm-3 col-form-label" for="aica-sandbox-on">
                     <?php echo get_string('sandbox:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div>
-                        <input type="checkbox" role="switch"
-                               id="aica-sandbox-on" name="sandbox_on" value="1"
-                               <?php echo $sbon ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="aica-sandbox-on">
-                            <?php echo get_string('sandbox:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <?php echo $renderpedagogyselect('sandbox_on', $sbraw, $sbgbl, 'aica-sandbox-on'); ?>
                     <small class="form-text text-muted">
                         <?php echo get_string('sandbox:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -540,20 +562,13 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.25: Essay feedback toggle. ?>
+            <?php // v3.9.25: Essay feedback toggle. v4.5.0: three-way. ?>
             <div class="form-group row mt-2">
-                <label class="col-sm-3 col-form-label">
+                <label class="col-sm-3 col-form-label" for="aica-essay-on">
                     <?php echo get_string('essay_feedback:title', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div>
-                        <input type="checkbox" role="switch"
-                               id="aica-essay-on" name="essay_on" value="1"
-                               <?php echo $esson ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="aica-essay-on">
-                            <?php echo get_string('essay_feedback:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <?php echo $renderpedagogyselect('essay_on', $essraw, $essgbl, 'aica-essay-on'); ?>
                     <small class="form-text text-muted">
                         <?php echo get_string('essay_feedback:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>
@@ -569,20 +584,13 @@ echo html_writer::div(
                 </div>
             </div>
 
-            <?php // v3.9.23: Worked examples starter toggle. ?>
+            <?php // v3.9.23: Worked examples starter toggle. v4.5.0: three-way. ?>
             <div class="form-group row mt-2">
-                <label class="col-sm-3 col-form-label">
+                <label class="col-sm-3 col-form-label" for="aica-we-on">
                     <?php echo get_string('worked_examples:starter', 'local_ai_course_assistant'); ?>
                 </label>
                 <div class="col-sm-9">
-                    <div>
-                        <input type="checkbox" role="switch"
-                               id="aica-we-on" name="we_on" value="1"
-                               <?php echo $weon ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="aica-we-on">
-                            <?php echo get_string('worked_examples:toggle', 'local_ai_course_assistant'); ?>
-                        </label>
-                    </div>
+                    <?php echo $renderpedagogyselect('we_on', $weraw, $wegbl, 'aica-we-on'); ?>
                     <small class="form-text text-muted">
                         <?php echo get_string('worked_examples:toggle_help', 'local_ai_course_assistant'); ?>
                     </small>

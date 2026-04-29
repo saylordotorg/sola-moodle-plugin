@@ -52,7 +52,7 @@ class score_essay extends external_api {
         self::validate_context($context);
         require_capability('local/ai_course_assistant:use', $context);
 
-        if (!get_config('local_ai_course_assistant', 'essay_feedback_enabled_course_' . $params['courseid'])) {
+        if (!\local_ai_course_assistant\feature_flags::resolve('essay_feedback', (int) $params['courseid'])) {
             return self::empty_result('disabled');
         }
 

@@ -759,5 +759,34 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026042800, 'local', 'ai_course_assistant');
     }
 
+    // v4.5.0: clear stale legacy "force off" overrides on per-course pedagogy
+    // toggles. Pre-v4.5.0, these stored '0' on every form save (default
+    // checkbox-unchecked state), so upgrading installs would have most
+    // courses pinned to "force off" and the new global defaults would not
+    // take effect. Delete every per-course key whose value is '0' for the
+    // six pedagogy features. '1' rows (deliberate force-on) and absent rows
+    // (already inherit) are untouched.
+    if ($oldversion < 2026042920) {
+        $features = [
+            'mastery_enabled',
+            'socratic_mode',
+            'worked_examples_enabled',
+            'flashcards_enabled',
+            'code_sandbox_enabled',
+            'essay_feedback_enabled',
+        ];
+        foreach ($features as $feature) {
+            $like = $DB->sql_like('name', ':namepattern');
+            $DB->delete_records_select('config_plugins',
+                "plugin = :plugin AND {$like} AND value = :zero",
+                [
+                    'plugin' => 'local_ai_course_assistant',
+                    'namepattern' => $feature . '_course_%',
+                    'zero' => '0',
+                ]);
+        }
+        upgrade_plugin_savepoint(true, 2026042920, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

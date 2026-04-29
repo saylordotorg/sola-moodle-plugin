@@ -1540,6 +1540,32 @@ if ($hassiteconfig) {
         PARAM_RAW
     ));
 
+    // v4.5.0: Pedagogy defaults. Each setting here is a site-wide default
+    // that applies to every course unless the per-course override is set.
+    // Per-course override remains authoritative — admins can still force a
+    // single course on or off independent of the global default. Default
+    // off so upgrade is a no-op.
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/pedagogy_defaults_heading',
+        get_string('settings:pedagogy_defaults_heading', 'local_ai_course_assistant'),
+        get_string('settings:pedagogy_defaults_heading_desc', 'local_ai_course_assistant')
+    ));
+    foreach ([
+        'mastery_enabled'         => 'pedagogy:mastery',
+        'socratic_mode_enabled'   => 'pedagogy:socratic_mode',
+        'worked_examples_enabled' => 'pedagogy:worked_examples',
+        'flashcards_enabled'      => 'pedagogy:flashcards',
+        'code_sandbox_enabled'    => 'pedagogy:code_sandbox',
+        'essay_feedback_enabled'  => 'pedagogy:essay_feedback',
+    ] as $key => $stringkey) {
+        $settings->add(new admin_setting_configcheckbox(
+            'local_ai_course_assistant/' . $key,
+            get_string($stringkey, 'local_ai_course_assistant'),
+            get_string($stringkey . '_desc', 'local_ai_course_assistant'),
+            0
+        ));
+    }
+
     // v4.4.0: Optional Content-Security-Policy header on course pages where
     // the SOLA widget is active. Default off — admin opts in. Defense-in-
     // depth against arbitrary scripts pasted into Site administration →

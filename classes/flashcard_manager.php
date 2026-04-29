@@ -34,7 +34,9 @@ class flashcard_manager {
     public const QUALITY_EASY  = 5;  // Recalled fluently.
 
     public static function is_enabled_for_course(int $courseid): bool {
-        return (bool) get_config('local_ai_course_assistant', 'flashcards_enabled_course_' . $courseid);
+        // v4.5.0: per-course override wins, else fall back to the site-wide
+        // `flashcards_enabled` default. Default off if neither is set.
+        return feature_flags::resolve('flashcards', $courseid);
     }
 
     public static function set_enabled_for_course(int $courseid, bool $enabled): void {
