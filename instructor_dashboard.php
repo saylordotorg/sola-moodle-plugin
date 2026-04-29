@@ -86,6 +86,32 @@ $gap           = instructor_analytics::engagement_gap($courseid, $gapdays);
 
 echo $OUTPUT->header();
 
+// ── Top navigation strip ────────────────────────────────────────────────────
+// v4.3.3: explicit links back to the course, the SOLA course-level settings,
+// and the SOLA analytics drill-down for this course. Visible to anyone who
+// reaches this page (cap-gated above) so designers can hop between the
+// dashboard, the controls, and the cross-course analytics in one click.
+$navlinks = [
+    html_writer::link(
+        new moodle_url('/course/view.php', ['id' => $courseid]),
+        get_string('instructor_dashboard:nav_back_course', 'local_ai_course_assistant'),
+        ['class' => 'btn btn-sm btn-outline-secondary']
+    ),
+    html_writer::link(
+        new moodle_url('/local/ai_course_assistant/course_settings.php', ['courseid' => $courseid]),
+        get_string('instructor_dashboard:nav_settings', 'local_ai_course_assistant'),
+        ['class' => 'btn btn-sm btn-outline-secondary']
+    ),
+    html_writer::link(
+        new moodle_url('/local/ai_course_assistant/analytics.php', ['courseid' => $courseid, 'range' => $range]),
+        get_string('instructor_dashboard:nav_analytics', 'local_ai_course_assistant'),
+        ['class' => 'btn btn-sm btn-outline-secondary']
+    ),
+];
+echo html_writer::div(implode(' ', $navlinks),
+    'aica-id-nav mb-3 d-flex flex-wrap',
+    ['style' => 'gap:8px']);
+
 // ── Header card ────────────────────────────────────────────────────────────
 echo html_writer::start_div('aica-id-dashboard');
 echo html_writer::tag('h2', get_string('instructor_dashboard:title', 'local_ai_course_assistant',

@@ -974,3 +974,7 @@ $string['settings:redash_user_api_key']       = 'Redash user API key';
 $string['settings:redash_user_api_key_desc']  = 'API key of a Redash user with permission to create queries against the chosen data source. Found under your Redash user profile. Different from the SOLA Redash API key (which controls inbound auth on redash_export.php).';
 $string['settings:redash_data_source_id']     = 'Redash data source ID';
 $string['settings:redash_data_source_id_desc']= 'Numeric id of the Redash JSON data source pointed at SOLA\'s redash_export.php. Visible in the Redash data source URL after saving.';
+
+$string['instructor_dashboard:nav_back_course']  = '← Back to course';
+$string['instructor_dashboard:nav_settings']     = 'AI Course Assistant settings';
+$string['instructor_dashboard:nav_analytics']    = 'AI Course Assistant analytics';

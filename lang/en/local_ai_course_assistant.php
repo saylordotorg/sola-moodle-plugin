@@ -908,8 +908,11 @@ $string['mastery:celebrate']            = 'You have mastered every objective for
 $string['mastery:ask_template']         = 'Help me practice and deepen my understanding of this objective: {$a}.';
 
 // Instructor & Instructional Designer Dashboard (v3.9.19).
-$string['instructor_dashboard:title']            = '{$a} — Instructor & Instructional Designer Dashboard';
-$string['instructor_dashboard:link']             = 'Instructor & Instructional Designer Dashboard';
+$string['instructor_dashboard:title']            = '{$a} — Course Instructor & Designer Dashboard';
+$string['instructor_dashboard:link']             = 'Course Instructor & Designer Dashboard';
+$string['instructor_dashboard:nav_back_course']  = '← Back to course';
+$string['instructor_dashboard:nav_settings']     = 'AI Course Assistant settings';
+$string['instructor_dashboard:nav_analytics']    = 'AI Course Assistant analytics';
 $string['instructor_dashboard:intro']            = 'Per-course usage, mastery, and content-revision signals. Aggregate-only by default; click Show real names to bind aggregate rows to specific learners (writes a FERPA audit row).';
 $string['instructor_dashboard:period']           = 'Period';
 $string['instructor_dashboard:period_all']      = 'all';

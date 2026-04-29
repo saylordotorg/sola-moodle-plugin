@@ -116,6 +116,17 @@ class hook_callbacks {
             return;
         }
 
+        // v4.3.3: also skip every page served from this plugin, regardless of
+        // pagelayout. The Course Instructor & Designer Dashboard uses the
+        // 'incourse' layout (so designers keep the course nav chrome), which
+        // would otherwise let the widget through. A single URL-prefix guard
+        // covers it plus any future SOLA admin page that picks a non-admin
+        // layout for visual reasons.
+        if ($PAGE->url instanceof \moodle_url
+                && strpos($PAGE->url->get_path(), '/local/ai_course_assistant/') === 0) {
+            return;
+        }
+
         // Get the course context (may need to go up from module context).
         if ($context->contextlevel === CONTEXT_MODULE) {
             $coursecontext = $context->get_course_context();
