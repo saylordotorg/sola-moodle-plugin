@@ -763,7 +763,7 @@ $string['chat:footer_usertesting']      = 'Usability Testing';
 $string['chat:footer_feedback']         = 'Feedback';
 
 // Voice panel title (uses {$a} for assistant display name).
-$string['chat:voice_panel_title']       = 'Talk with {$a} (Experimental)';
+$string['chat:voice_panel_title']       = 'Talk with {$a}';
 
 // Quiz hide settings.
 $string['settings:quiz_hide_heading'] = 'Quiz Page Visibility';
@@ -929,6 +929,14 @@ $string['pedagogy:code_sandbox']           = 'Python code sandbox on by default'
 $string['pedagogy:code_sandbox_desc']      = 'When on, the in-browser Python sandbox is available in every course unless the course has its own override.';
 $string['pedagogy:essay_feedback']         = 'Essay feedback on by default';
 $string['pedagogy:essay_feedback_desc']    = 'When on, AI essay feedback is available in every course unless the course has its own override.';
+$string['pedagogy:talking_avatar']         = 'Talking avatar on by default';
+$string['pedagogy:talking_avatar_desc']    = 'When on, the talking-avatar surface is enabled in every course unless the course has its own override. Requires the Talking Avatar provider URL and API key configured below; otherwise the widget shows a configuration notice and the avatar does not animate. Default off pending provider selection.';
+$string['settings:talking_avatar_heading']      = 'Talking avatar';
+$string['settings:talking_avatar_heading_desc'] = 'Vendor-neutral configuration for an external talking-avatar provider (Hedra, HeyGen, D-ID, Tavus, or another). Leave both fields empty until the institution has signed off on a provider; the talking-avatar pedagogy default toggle still appears in <em>Pedagogy defaults</em> but produces a "configure a provider" notice in the widget when selected. Both provider URL and API key are required for the avatar to render.';
+$string['settings:talking_avatar_provider_url']      = 'Provider API base URL';
+$string['settings:talking_avatar_provider_url_desc'] = 'Base URL of the talking-avatar provider API (e.g. <code>https://api.hedra.com</code>, <code>https://api.heygen.com</code>). SSRF-checked before every outbound call.';
+$string['settings:talking_avatar_provider_api_key']      = 'Provider API key';
+$string['settings:talking_avatar_provider_api_key_desc'] = 'API key for the chosen provider. Stored encrypted at rest like the rest of the SOLA provider keys.';
 $string['pedagogy:per_course_inherit']     = 'Inherit site default ({$a})';
 $string['pedagogy:per_course_force_on']    = 'Force on for this course';
 $string['pedagogy:per_course_force_off']   = 'Force off for this course';

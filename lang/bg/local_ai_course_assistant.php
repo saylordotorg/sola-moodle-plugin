@@ -412,7 +412,7 @@ $string['chat:llm_model_label'] = 'Модел';
 $string['chat:llm_model_select'] = 'Избери LLM модел';
 $string['chat:footer_usertesting'] = 'Тестване на използваемостта';
 $string['chat:footer_feedback'] = 'Обратна връзка';
-$string['chat:voice_panel_title'] = 'Говори с {$a} (експериментално)';
+$string['chat:voice_panel_title']       = 'Talk with {$a}';
 
 // Additional translated strings.
 $string['chat:debug_context'] = 'Отстраняване на грешки';
@@ -1052,3 +1052,13 @@ $string['instructor_dashboard:review_resolved']    = 'Marked resolved.';
 $string['instructor_dashboard:review_source_rating']    = 'Negative rating';
 $string['instructor_dashboard:review_source_offtopic']  = 'Off-topic';
 $string['instructor_dashboard:review_source_integrity'] = 'Integrity';
+
+// v4.8.1: talking avatar (placeholder, default off, provider-neutral).
+$string['pedagogy:talking_avatar']         = 'Talking avatar on by default';
+$string['pedagogy:talking_avatar_desc']    = 'When on, the talking-avatar surface is enabled in every course unless the course has its own override. Requires the Talking Avatar provider URL and API key configured below.';
+$string['settings:talking_avatar_heading']      = 'Talking avatar';
+$string['settings:talking_avatar_heading_desc'] = 'Vendor-neutral configuration for an external talking-avatar provider. Leave both fields empty until the institution has signed off on a provider.';
+$string['settings:talking_avatar_provider_url']      = 'Provider API base URL';
+$string['settings:talking_avatar_provider_url_desc'] = 'Base URL of the talking-avatar provider API. SSRF-checked before every outbound call.';
+$string['settings:talking_avatar_provider_api_key']      = 'Provider API key';
+$string['settings:talking_avatar_provider_api_key_desc'] = 'API key for the chosen provider.';

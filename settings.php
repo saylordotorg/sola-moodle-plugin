@@ -339,6 +339,32 @@ if ($hassiteconfig) {
         PARAM_RAW
     ));
 
+    // v4.8.1: Talking Avatar (placeholder configuration). The provider
+    // integration is intentionally vendor-neutral — admins paste in their
+    // own provider URL + API key once the institution has selected one
+    // (Hedra, HeyGen, D-ID, Tavus, etc., pricing/architecture decision
+    // pending). Default empty: feature surfaces an "configure a provider"
+    // notice in the widget when the per-course toggle is on but config is
+    // missing. SSRF-checked on every outbound call.
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/talking_avatar_heading',
+        get_string('settings:talking_avatar_heading', 'local_ai_course_assistant'),
+        get_string('settings:talking_avatar_heading_desc', 'local_ai_course_assistant')
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/talking_avatar_provider_url',
+        get_string('settings:talking_avatar_provider_url', 'local_ai_course_assistant'),
+        get_string('settings:talking_avatar_provider_url_desc', 'local_ai_course_assistant'),
+        '',
+        PARAM_URL
+    ));
+    $settings->add(new admin_setting_configpasswordunmask(
+        'local_ai_course_assistant/talking_avatar_provider_api_key',
+        get_string('settings:talking_avatar_provider_api_key', 'local_ai_course_assistant'),
+        get_string('settings:talking_avatar_provider_api_key_desc', 'local_ai_course_assistant'),
+        ''
+    ));
+
     // v3.9.13: xAI Realtime WebSocket proxy settings. When configured,
     // xAI voice routes through services/xai_rt_proxy instead of opening a
     // direct browser connection to api.x.ai with the master key.
@@ -1157,6 +1183,7 @@ if ($hassiteconfig) {
         'flashcards_enabled'      => 'pedagogy:flashcards',
         'code_sandbox_enabled'    => 'pedagogy:code_sandbox',
         'essay_feedback_enabled'  => 'pedagogy:essay_feedback',
+        'talking_avatar_enabled'  => 'pedagogy:talking_avatar',
     ] as $key => $stringkey) {
         $settings->add(new admin_setting_configcheckbox(
             'local_ai_course_assistant/' . $key,

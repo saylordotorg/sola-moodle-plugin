@@ -759,27 +759,6 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026042800, 'local', 'ai_course_assistant');
     }
 
-    // v4.8.0: needs-review queue resolution table.
-    if ($oldversion < 2026043010) {
-        $table = new xmldb_table('local_ai_course_assistant_review_res');
-        if (!$dbman->table_exists($table)) {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-            $table->add_field('source', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL);
-            $table->add_field('sourceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-            $table->add_field('resolved_by', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-            $table->add_field('note', XMLDB_TYPE_TEXT, null, null, null, null, null);
-            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-            $table->add_key('resolved_by_fk', XMLDB_KEY_FOREIGN, ['resolved_by'], 'user', ['id']);
-            $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
-            $table->add_index('source_sourceid', XMLDB_INDEX_UNIQUE, ['source', 'sourceid']);
-            $table->add_index('courseid_timecreated', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'timecreated']);
-            $dbman->create_table($table);
-        }
-        upgrade_plugin_savepoint(true, 2026043010, 'local', 'ai_course_assistant');
-    }
-
     // v4.5.0: clear stale legacy "force off" overrides on per-course pedagogy
     // toggles. Pre-v4.5.0, these stored '0' on every form save (default
     // checkbox-unchecked state), so upgrading installs would have most
@@ -807,6 +786,27 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
                 ]);
         }
         upgrade_plugin_savepoint(true, 2026042920, 'local', 'ai_course_assistant');
+    }
+
+    // v4.8.0: needs-review queue resolution table.
+    if ($oldversion < 2026043010) {
+        $table = new xmldb_table('local_ai_course_assistant_review_res');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('source', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL);
+            $table->add_field('sourceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('resolved_by', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('note', XMLDB_TYPE_TEXT, null, null, null, null, null);
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('resolved_by_fk', XMLDB_KEY_FOREIGN, ['resolved_by'], 'user', ['id']);
+            $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_index('source_sourceid', XMLDB_INDEX_UNIQUE, ['source', 'sourceid']);
+            $table->add_index('courseid_timecreated', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'timecreated']);
+            $dbman->create_table($table);
+        }
+        upgrade_plugin_savepoint(true, 2026043010, 'local', 'ai_course_assistant');
     }
 
     return true;
