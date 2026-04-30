@@ -959,6 +959,30 @@ $string['settings:rate_card_last_refresh_success']= 'Last fetch succeeded.';
 $string['settings:rate_card_never_refreshed']    = 'Never refreshed.';
 $string['task:refresh_rate_card']                = 'Refresh SOLA LLM rate card from upstream';
 
+// v4.8.0: runtime validator pipeline.
+$string['settings:validators_runtime_mode']      = 'Runtime validators';
+$string['settings:validators_runtime_mode_desc'] = 'Apply the same pipeline that gates releases (PII echo, credential leak, hallucination, second-person) to every assistant response in real time. <strong>Off</strong>: no checks (default). <strong>Annotate</strong>: append a small warning line to flagged responses so learners and instructors see the flag. <strong>Block</strong>: replace flagged responses with a safe fallback message. Both non-off modes audit-log every fail under the <code>runtime_validator_fail</code> event so ops can measure trip rates before tightening to <em>Block</em>.';
+$string['settings:validators_runtime_off']       = 'Off (no runtime checks)';
+$string['settings:validators_runtime_annotate']  = 'Annotate (append warning line on fail)';
+$string['settings:validators_runtime_block']     = 'Block (replace with safe fallback on fail)';
+$string['settings:rag_auto_reindex_drifted']      = 'Auto-reindex drifted RAG content';
+$string['settings:rag_auto_reindex_drifted_desc'] = 'When on, a daily scheduled task scans every visible RAG-enabled course for modules whose source content (mod_page, mod_book chapters) was edited after the last indexed-at time, and re-indexes them. Closes the gap where the standard daily indexer only processes courses with active enrolments — authors editing not-yet-enrolled courses leave a stale index until students show up. Default on.';
+$string['task:auto_reindex_rag_drifted']          = 'Re-index drifted RAG content';
+
+// v4.8.0: needs-review queue on instructor dashboard.
+$string['instructor_dashboard:review_heading']     = 'Needs review';
+$string['instructor_dashboard:review_intro']       = 'Pending items from this course that an instructor or course designer should look at: thumbs-down ratings, off-topic conversations, and integrity flags. Click "Resolve" once you have read the item and decided no action is needed (or after you have followed up with the learner).';
+$string['instructor_dashboard:review_empty']       = 'No items pending review. Course is clean.';
+$string['instructor_dashboard:review_col_when']    = 'When';
+$string['instructor_dashboard:review_col_source']  = 'Source';
+$string['instructor_dashboard:review_col_who']     = 'Who';
+$string['instructor_dashboard:review_col_summary'] = 'Summary';
+$string['instructor_dashboard:review_resolve']     = 'Mark resolved';
+$string['instructor_dashboard:review_resolved']    = 'Marked resolved.';
+$string['instructor_dashboard:review_source_rating']    = 'Negative rating';
+$string['instructor_dashboard:review_source_offtopic']  = 'Off-topic';
+$string['instructor_dashboard:review_source_integrity'] = 'Integrity';
+
 // v4.4.0: course-page CSP setting.
 $string['settings:csp_course_pages_mode']      = 'Course-page Content-Security-Policy';
 $string['settings:csp_course_pages_mode_desc'] = 'Optional CSP header on course pages where the AI Course Assistant widget is active. <strong>Off</strong>: no header (default). <strong>Report-only</strong>: send <code>Content-Security-Policy-Report-Only</code> — browsers log violations but do not block. Useful for a one-week observation pass. <strong>Enforce</strong>: send <code>Content-Security-Policy</code> — browsers block off-allowlist iframe sources, fetches, and other risky loads. Helps contain the impact of arbitrary scripts pasted into Additional HTML site config (the IBL AI / Raison incident on 2026-04-29). Does not affect SOLA endpoints, which always send a stricter CSP.';

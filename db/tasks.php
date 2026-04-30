@@ -136,4 +136,17 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '1',
     ],
+    [
+        // v4.8.0 — Daily RAG drift auto-reindex. Re-indexes modules whose
+        // source content was edited since the last indexed-at time. Runs
+        // at 02:45 (just after the weekly rate-card refresh window) so
+        // they do not compete for the LLM scheduler.
+        'classname' => \local_ai_course_assistant\task\auto_reindex_rag_drifted::class,
+        'blocking' => 0,
+        'minute' => '45',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];

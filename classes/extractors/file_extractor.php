@@ -188,7 +188,25 @@ class file_extractor {
         global $CFG;
 
         $binary = self::resolve_pdftotext_path();
+
+        // v4.8.0: pure-PHP fallback when pdftotext is unavailable. Handles
+        // the common case (text PDFs with FlateDecode-compressed content
+        // streams from Word/Pages/LibreOffice). Encrypted, image-only, and
+        // complex-font PDFs still require the binary; install poppler-utils
+        // on those hosts.
         if ($binary === '') {
+            try {
+                $bytes = $file->get_content();
+                if ($bytes === '') {
+                    return '';
+                }
+                $text = self::extract_pdf_php_fallback($bytes);
+                if ($text !== '') {
+                    return self::normalize_whitespace($text);
+                }
+            } catch (\Throwable $e) {
+                debugging('PDF PHP fallback failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            }
             debugging(get_string('rag:pdftotext_missing', 'local_ai_course_assistant'), DEBUG_DEVELOPER);
             return '';
         }
@@ -235,6 +253,150 @@ class file_extractor {
                 @unlink($tmppath);
             }
         }
+    }
+
+    /**
+     * Pure-PHP PDF text extraction fallback.
+     *
+     * Walks the PDF byte stream looking for `stream`/`endstream` content
+     * blocks, decompresses any that carry a `/Filter /FlateDecode`
+     * indicator, and pulls text out of the standard PDF text operators
+     * (`Tj`, `TJ`, `'`, `"`) inside `BT`/`ET` text-object pairs.
+     *
+     * Designed for the common case: text PDFs produced by Word/Pages/
+     * LibreOffice, where the content stream is plain compressed text.
+     * Will produce poor or empty output for encrypted PDFs, image-only
+     * PDFs, or PDFs that use custom font encodings without a ToUnicode
+     * map. Those still need the pdftotext binary (poppler-utils).
+     *
+     * @param string $bytes Raw PDF bytes.
+     * @return string Extracted plain text. Empty string when the heuristic
+     *                cannot find any decodable text.
+     */
+    private static function extract_pdf_php_fallback(string $bytes): string {
+        if (strncmp($bytes, '%PDF-', 5) !== 0) {
+            return '';
+        }
+        // Encrypted PDFs are out of scope for the fallback — admins need
+        // pdftotext for those.
+        if (strpos($bytes, '/Encrypt ') !== false || strpos($bytes, '/Encrypt\n') !== false) {
+            return '';
+        }
+
+        $offset = 0;
+        $out = [];
+        while (($streampos = strpos($bytes, "stream", $offset)) !== false) {
+            $headerstart = strrpos(substr($bytes, 0, $streampos), '<<');
+            if ($headerstart === false) {
+                $offset = $streampos + 6;
+                continue;
+            }
+            $header = substr($bytes, $headerstart, $streampos - $headerstart);
+            // Skip the line break after `stream`.
+            $datastart = $streampos + 6;
+            if (isset($bytes[$datastart]) && $bytes[$datastart] === "\r") {
+                $datastart++;
+            }
+            if (isset($bytes[$datastart]) && $bytes[$datastart] === "\n") {
+                $datastart++;
+            }
+            $dataend = strpos($bytes, "endstream", $datastart);
+            if ($dataend === false) {
+                break;
+            }
+            $rawdata = rtrim(substr($bytes, $datastart, $dataend - $datastart), "\r\n");
+            $offset = $dataend + 9;
+
+            // Skip non-text streams (images/fonts) to avoid garbage output.
+            if (preg_match('#/Subtype\s*/(Image|Form)\b#', $header) === 1) {
+                continue;
+            }
+
+            $data = $rawdata;
+            if (preg_match('#/Filter\s*/FlateDecode\b#', $header) === 1) {
+                $decoded = @gzuncompress($data);
+                if ($decoded === false) {
+                    // Try with the 2-byte zlib header offset, occasionally needed.
+                    $decoded = @gzinflate(substr($data, 2));
+                }
+                if ($decoded === false) {
+                    continue;
+                }
+                $data = $decoded;
+            }
+
+            // Walk BT...ET text objects.
+            if (preg_match_all('#BT\s*(.*?)\s*ET#s', $data, $blocks)) {
+                foreach ($blocks[1] as $block) {
+                    $out[] = self::extract_pdf_text_ops($block);
+                }
+            }
+        }
+
+        $combined = implode("\n", array_filter(array_map('trim', $out), 'strlen'));
+        return $combined;
+    }
+
+    /**
+     * Pull text from a single PDF text-object body. Recognises the four
+     * common text-showing operators: `Tj`, `TJ`, `'`, `"`.
+     *
+     * @param string $block Body between BT and ET.
+     * @return string
+     */
+    private static function extract_pdf_text_ops(string $block): string {
+        $strings = [];
+
+        // Tj  ('text') Tj    — single string.
+        if (preg_match_all("#\\(((?:\\\\.|[^()\\\\])*)\\)\\s*Tj#s", $block, $m)) {
+            foreach ($m[1] as $s) {
+                $strings[] = self::pdf_unescape($s);
+            }
+        }
+        // TJ  [(text)... numeric kerning ...] TJ — array form.
+        if (preg_match_all('#\[\s*((?:[^\[\]]|\\\\.)*?)\s*\]\s*TJ#s', $block, $m)) {
+            foreach ($m[1] as $arr) {
+                if (preg_match_all("#\\(((?:\\\\.|[^()\\\\])*)\\)#s", $arr, $am)) {
+                    $piece = '';
+                    foreach ($am[1] as $s) {
+                        $piece .= self::pdf_unescape($s);
+                    }
+                    $strings[] = $piece;
+                }
+            }
+        }
+        // ' and " operators — newline + string.
+        if (preg_match_all("#\\(((?:\\\\.|[^()\\\\])*)\\)\\s*'#s", $block, $m)) {
+            foreach ($m[1] as $s) {
+                $strings[] = "\n" . self::pdf_unescape($s);
+            }
+        }
+        if (preg_match_all("#\\(((?:\\\\.|[^()\\\\])*)\\)\\s*\"#s", $block, $m)) {
+            foreach ($m[1] as $s) {
+                $strings[] = "\n" . self::pdf_unescape($s);
+            }
+        }
+        return implode(' ', $strings);
+    }
+
+    /**
+     * Decode the small set of escape sequences PDF strings use inside
+     * literal `(...)` syntax: `\n`, `\r`, `\t`, `\b`, `\f`, `\\`, `\(`,
+     * `\)`, plus `\NNN` octal codes.
+     *
+     * @param string $s
+     * @return string
+     */
+    private static function pdf_unescape(string $s): string {
+        $s = preg_replace_callback('#\\\\([0-7]{1,3})#', static function ($m) {
+            return chr(octdec($m[1]));
+        }, $s);
+        $s = strtr($s, [
+            '\\n' => "\n", '\\r' => "\r", '\\t' => "\t",
+            '\\b' => "\x08", '\\f' => "\x0c",
+            '\\(' => '(', '\\)' => ')', '\\\\' => '\\',
+        ]);
+        return $s;
     }
 
     /**

@@ -1030,3 +1030,25 @@ $string['settings:rate_card_last_refresh_at']    = 'Last refresh: {$a}';
 $string['settings:rate_card_last_refresh_success']= 'Last fetch succeeded.';
 $string['settings:rate_card_never_refreshed']    = 'Never refreshed.';
 $string['task:refresh_rate_card']                = 'Refresh SOLA LLM rate card from upstream';
+
+// v4.8.0: runtime validators + RAG drift + needs-review queue.
+$string['settings:validators_runtime_mode']      = 'Runtime validators';
+$string['settings:validators_runtime_mode_desc'] = 'Apply the same pipeline that gates releases (PII echo, credential leak, hallucination, second-person) to every assistant response in real time. Off (default), Annotate, or Block.';
+$string['settings:validators_runtime_off']       = 'Off (no runtime checks)';
+$string['settings:validators_runtime_annotate']  = 'Annotate (append warning line on fail)';
+$string['settings:validators_runtime_block']     = 'Block (replace with safe fallback on fail)';
+$string['settings:rag_auto_reindex_drifted']      = 'Auto-reindex drifted RAG content';
+$string['settings:rag_auto_reindex_drifted_desc'] = 'Daily scheduled task that re-indexes course modules whose source content was edited after the last indexed-at time. Default on.';
+$string['task:auto_reindex_rag_drifted']          = 'Re-index drifted RAG content';
+$string['instructor_dashboard:review_heading']     = 'Needs review';
+$string['instructor_dashboard:review_intro']       = 'Pending items from this course that an instructor or course designer should look at: thumbs-down ratings, off-topic conversations, and integrity flags.';
+$string['instructor_dashboard:review_empty']       = 'No items pending review. Course is clean.';
+$string['instructor_dashboard:review_col_when']    = 'When';
+$string['instructor_dashboard:review_col_source']  = 'Source';
+$string['instructor_dashboard:review_col_who']     = 'Who';
+$string['instructor_dashboard:review_col_summary'] = 'Summary';
+$string['instructor_dashboard:review_resolve']     = 'Mark resolved';
+$string['instructor_dashboard:review_resolved']    = 'Marked resolved.';
+$string['instructor_dashboard:review_source_rating']    = 'Negative rating';
+$string['instructor_dashboard:review_source_offtopic']  = 'Off-topic';
+$string['instructor_dashboard:review_source_integrity'] = 'Integrity';

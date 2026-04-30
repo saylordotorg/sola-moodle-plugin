@@ -379,6 +379,16 @@ if ($hassiteconfig) {
         1
     ));
 
+    // v4.8.0: auto-reindex of drifted modules. Closes the gap where
+    // `index_course_content` skips courses without active enrolments,
+    // leaving content edits invisible to RAG until students show up.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/rag_auto_reindex_drifted',
+        get_string('settings:rag_auto_reindex_drifted', 'local_ai_course_assistant'),
+        get_string('settings:rag_auto_reindex_drifted_desc', 'local_ai_course_assistant'),
+        1
+    ));
+
     // v4.2.3: external resources (opt-in). When on, SOLA may suggest links to
     // reputable open educational resources (Wikipedia, Khan Academy, OER
     // Commons, OpenStax, MIT OpenCourseWare) alongside its course-grounded
@@ -821,6 +831,24 @@ if ($hassiteconfig) {
         get_string('settings:conversation_retention_days_desc', 'local_ai_course_assistant'),
         '730',
         PARAM_INT
+    ));
+
+    // v4.8.0: runtime validator pipeline. Default off so the upgrade is a
+    // no-op for existing installs. 'annotate' appends a small visible
+    // warning line to flagged responses; 'block' replaces them with a
+    // safe fallback message. Both modes audit-log every fail so ops can
+    // measure how often each validator trips before tightening to
+    // 'block'.
+    $settings->add(new admin_setting_configselect(
+        'local_ai_course_assistant/validators_runtime_mode',
+        get_string('settings:validators_runtime_mode', 'local_ai_course_assistant'),
+        get_string('settings:validators_runtime_mode_desc', 'local_ai_course_assistant'),
+        'off',
+        [
+            'off'      => get_string('settings:validators_runtime_off', 'local_ai_course_assistant'),
+            'annotate' => get_string('settings:validators_runtime_annotate', 'local_ai_course_assistant'),
+            'block'    => get_string('settings:validators_runtime_block', 'local_ai_course_assistant'),
+        ]
     ));
 
     // v4.4.0: Optional Content-Security-Policy header on course pages where

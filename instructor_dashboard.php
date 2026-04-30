@@ -56,6 +56,18 @@ $PAGE->set_heading($course->fullname);
 
 security::send_security_headers();
 
+// v4.8.0: needs-review queue resolve action.
+if ($action === 'resolvereview' && confirm_sesskey()) {
+    $source = required_param('source', PARAM_ALPHA);
+    $sourceid = required_param('sourceid', PARAM_INT);
+    $note = optional_param('note', '', PARAM_TEXT);
+    \local_ai_course_assistant\review_queue::mark_resolved(
+        $source, $sourceid, $courseid, (int) $USER->id, $note
+    );
+    redirect($pageurl, get_string('instructor_dashboard:review_resolved', 'local_ai_course_assistant'),
+        null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
 // Reveal-real-names toggle (session-scoped + audit logged).
 if ($action === 'togglenames' && confirm_sesskey()) {
     $key = 'sola_id_show_real_names_' . $courseid;
@@ -83,6 +95,7 @@ $topics        = instructor_analytics::top_topics($courseid, $since, 10);
 $confusion     = instructor_analytics::confusion_heatmap($courseid, $since, 15);
 $ratings       = instructor_analytics::ratings_summary($courseid, $since);
 $gap           = instructor_analytics::engagement_gap($courseid, $gapdays);
+$reviewqueue   = \local_ai_course_assistant\review_queue::pending_for_course($courseid, 50);
 
 echo $OUTPUT->header();
 
@@ -310,6 +323,49 @@ if ($showrealnames && !empty($gap['sample_userids'])) {
         echo '<li>' . s(fullname($u)) . '</li>';
     }
     echo '</ul></details>';
+}
+
+// ── v4.8.0: Needs-review queue ────────────────────────────────────────────
+echo html_writer::tag('h3', get_string('instructor_dashboard:review_heading', 'local_ai_course_assistant'),
+    ['style' => 'margin-top:32px']);
+echo html_writer::tag('p',
+    get_string('instructor_dashboard:review_intro', 'local_ai_course_assistant'),
+    ['class' => 'text-muted', 'style' => 'max-width:820px']);
+if (empty($reviewqueue)) {
+    echo html_writer::tag('p',
+        get_string('instructor_dashboard:review_empty', 'local_ai_course_assistant'),
+        ['class' => 'text-success']);
+} else {
+    echo '<table class="generaltable"><thead><tr>'
+        . '<th>' . s(get_string('instructor_dashboard:review_col_when', 'local_ai_course_assistant')) . '</th>'
+        . '<th>' . s(get_string('instructor_dashboard:review_col_source', 'local_ai_course_assistant')) . '</th>'
+        . '<th>' . s(get_string('instructor_dashboard:review_col_who', 'local_ai_course_assistant')) . '</th>'
+        . '<th>' . s(get_string('instructor_dashboard:review_col_summary', 'local_ai_course_assistant')) . '</th>'
+        . '<th></th></tr></thead><tbody>';
+    foreach ($reviewqueue as $row) {
+        $sourcelabel = get_string('instructor_dashboard:review_source_' . $row['source'],
+            'local_ai_course_assistant');
+        $resolveurl = new moodle_url('/local/ai_course_assistant/instructor_dashboard.php',
+            [
+                'courseid' => $courseid,
+                'range'    => $range,
+                'gapdays'  => $gapdays,
+                'action'   => 'resolvereview',
+                'source'   => $row['source'],
+                'sourceid' => $row['sourceid'],
+                'sesskey'  => sesskey(),
+            ]);
+        echo '<tr>'
+            . '<td><small>' . s(userdate($row['when'], '%Y-%m-%d %H:%M')) . '</small></td>'
+            . '<td><span class="badge badge-secondary">' . s($sourcelabel) . '</span></td>'
+            . '<td>' . s($row['who']) . '</td>'
+            . '<td><small>' . s($row['summary']) . '</small></td>'
+            . '<td><a href="' . $resolveurl->out(false) . '" class="btn btn-sm btn-outline-success">'
+            . s(get_string('instructor_dashboard:review_resolve', 'local_ai_course_assistant'))
+            . '</a></td>'
+            . '</tr>';
+    }
+    echo '</tbody></table>';
 }
 
 echo html_writer::end_div();

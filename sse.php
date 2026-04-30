@@ -575,6 +575,16 @@ try {
     // patterns, and credentials from the response before saving/sending.
     $cleanresponse = filter_response_safety($cleanresponse);
 
+    // v4.8.0: runtime validator pipeline. Off by default; admin opts in
+    // via `validators_runtime_mode` (annotate / block). On fail, either
+    // appends a warning line ('annotate') or replaces with a safe
+    // fallback ('block'). Audit-logged in either case.
+    $cleanresponse = \local_ai_course_assistant\runtime_guard::apply($cleanresponse, [
+        'input'    => (string) ($message ?? ''),
+        'userid'   => (int) $userid,
+        'courseid' => (int) $courseid,
+    ]);
+
     // Save the clean assistant response (without markers), recording which provider was used.
     $effectivecfg = \local_ai_course_assistant\course_config_manager::get_effective_config($courseid);
     $providername = $effectivecfg['provider'] ?? get_config('local_ai_course_assistant', 'provider');

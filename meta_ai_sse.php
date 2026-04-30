@@ -142,6 +142,16 @@ try {
         sse_send('token', json_encode(['token' => $fullresponse]));
     }
 
+    // v4.8.0: runtime validator pipeline applies to Learning Radar
+    // analytics responses too — admins should not be exempt from the
+    // PII-echo / credential-leak / hallucination / second-person checks.
+    // Annotation mode appends a warning line; block mode swaps in a
+    // safe fallback message.
+    $fullresponse = \local_ai_course_assistant\runtime_guard::apply($fullresponse, [
+        'input'  => $query,
+        'userid' => (int) ($USER->id ?? 0),
+    ]);
+
     // Persist the Learning Radar query and response (interaction_type='meta')
     // so it shows up under the "Analytics" category in Token Cost analytics
     // AND is exportable via redash_export.php. Tokens are approximated from
