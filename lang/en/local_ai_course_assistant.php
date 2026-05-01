@@ -967,6 +967,11 @@ $string['talking_avatar:viewer_title']    = 'SOLA talking avatar';
 $string['talking_avatar:bundle_required'] = 'The talking-avatar viewer requires the SOLA CDN bundle to be configured. Ask an administrator to set the CDN bundle URL in plugin settings.';
 $string['talking_avatar:open']            = 'Open avatar';
 $string['talking_avatar:close']           = 'Close avatar';
+// v4.11.0: prompt slimming + debug.
+$string['settings:prompt_debug_enabled']      = 'Log assembled system prompt to file';
+$string['settings:prompt_debug_enabled_desc'] = 'When on, every chat-turn writes the full assembled system prompt and per-section character counts to <code>moodledata/temp/sola_prompt_debug.log</code> (rolling at ~1MB). Default off. Use to measure prompt size empirically and audit which sections contribute the most tokens. The log contains the system prompt only (no learner input or PII).';
+$string['settings:socratic_verbose']      = 'Verbose Socratic mode prompt';
+$string['settings:socratic_verbose_desc'] = 'When on, Socratic-mode courses receive the full ~600-token do/don\'t directive originally added in v3.9.30. When off (default), they receive a single-line directive that modern hosted models follow reliably and saves ~600 tokens per turn. Turn this on if a course is running on a weaker self-hosted model that needs the explicit scaffolding.';
 // v4.10.0: avatar session cost tracking.
 $string['settings:avatar_rate_card_overrides']      = 'Avatar rate card overrides (JSON)';
 $string['settings:avatar_rate_card_overrides_desc'] = 'JSON object keyed by avatar provider with a single per-minute USD rate. Replaces the bundled rate for that provider. Example: <pre>{ "did": 0.18, "heygen": 0.40, "tavus": 0.25 }</pre> Empty = use the v4.10.0 bundled defaults: D-ID $0.30/min, HeyGen $0.50/min, Tavus $0.30/min, Synthesia $0.40/min. Set this to your contracted rate so the analytics dashboard reflects the institution\'s actual cost.';

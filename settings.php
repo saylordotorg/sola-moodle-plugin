@@ -255,6 +255,20 @@ if ($hassiteconfig) {
         ''
     ));
 
+    // v4.11.0: prompt size + debugging controls.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/prompt_debug_enabled',
+        get_string('settings:prompt_debug_enabled', 'local_ai_course_assistant'),
+        get_string('settings:prompt_debug_enabled_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/socratic_verbose',
+        get_string('settings:socratic_verbose', 'local_ai_course_assistant'),
+        get_string('settings:socratic_verbose_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/max_tokens',
         'Max Response Length (tokens)',

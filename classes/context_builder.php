@@ -168,44 +168,29 @@ class context_builder {
         // Append role-specific instructions.
         $prompt .= "\n\n" . self::get_role_instructions($userrole);
 
-        // Append FAQ content if configured.
+        // v4.11.0: One consolidated "Output markers" block — replaces five
+        // scattered marker-explanation paragraphs (saves ~500 tokens).
+        $offtopicon = (bool) get_config('local_ai_course_assistant', 'offtopic_enabled');
         $faq = faq_manager::get_faq_for_prompt();
-        if (!empty($faq)) {
+        $hasfaq = !empty($faq);
+        $prompt .= self::get_marker_instructions($ragmode, $offtopicon, $hasfaq);
+
+        // Append FAQ content (if any) without the now-consolidated marker explanation.
+        if ($hasfaq) {
             $prompt .= "\n\n## Support FAQ\n" . $faq;
-            $prompt .= "\nIf a student asks a support question, try to answer it using the FAQ above. "
-                . "If you cannot find a relevant answer in the FAQ and the question is a support/administrative issue "
-                . "(not a course content question), include the marker [NEEDS_ESCALATION] at the very end of your response. "
-                . "This marker will be detected by the system and a support ticket will be created automatically.";
         }
 
         // Append widget feature awareness so the AI can guide students to existing UI features.
         $prompt .= self::get_widget_feature_instructions();
 
-        // Append off-topic detection instructions.
-        if (get_config('local_ai_course_assistant', 'offtopic_enabled')) {
-            $prompt .= "\n\n## Off-topic Detection\n"
-                . "Monitor whether the user's messages are related to this course, its subject matter, "
-                . "study skills, support questions, or using AI tools for learning. "
-                . "If a message is clearly unrelated (e.g. personal conversations, requests about other subjects, "
-                . "entertainment, or anything not connected to the course or education), include the marker "
-                . "[OFF_TOPIC] at the very end of your response. Politely redirect the student back to "
-                . "course-related topics. The [OFF_TOPIC] marker must be the last thing in your response "
-                . "and will be hidden from the student.";
-        }
-
         // Append study planning context.
         $prompt .= study_planner::get_plan_context($userid, $courseid);
 
-        // Append wellbeing/safety instructions if enabled.
-        if (get_config('local_ai_course_assistant', 'wellbeing_enabled')) {
-            $prompt .= self::get_wellbeing_instructions();
-        }
-
-        // Append struggle detection instructions.
-        $prompt .= self::get_struggle_detection_instructions();
-
-        // Append AI literacy instructions.
-        $prompt .= self::get_ai_literacy_instructions();
+        // v4.11.0: One consolidated "House style" block — replaces brevity,
+        // AI literacy, wellbeing, and struggle-detection blocks (saves ~600
+        // tokens). Wellbeing line is included only when the admin flag is on.
+        $wellbeingon = (bool) get_config('local_ai_course_assistant', 'wellbeing_enabled');
+        $prompt .= self::get_house_style_instructions($wellbeingon);
 
         // Append mastery state (silent steering). No-op when the feature is
         // off for the course or the course has no objectives.
@@ -216,55 +201,33 @@ class context_builder {
             }
         }
 
-        // Append source attribution instructions.
-        $prompt .= self::get_source_attribution_instructions();
-
-        // Append next-steps suggestion instructions.
-        $prompt .= self::get_next_steps_instructions();
-
         // Append practice scoring instructions.
         $prompt .= self::get_scoring_instructions();
 
         // Append multilingual instructions (with explicit language if set).
         $prompt .= self::get_multilingual_instructions($lang);
 
-        // Brevity instruction — keep responses scannable in the small widget.
-        $remote_blocks = remote_config_manager::get_value('instruction_blocks', []);
-        if (!empty($remote_blocks['brevity'])) {
-            $prompt .= "\n\n" . $remote_blocks['brevity'];
-        } else {
-            $prompt .= "\n\nKEEP RESPONSES BRIEF: Use 2-4 short sentences or bullet points unless the student "
-                . "explicitly asks for more detail. After answering, you may add a short follow-up offer like "
-                . "\"Want me to go deeper on any part?\" — but only occasionally, not every time.";
-        }
-
-        // Socratic mode (v3.9.20, prompt strengthened in v3.9.30). Per-course
-        // toggle. Placed late in the prompt (just before security) so the
-        // directive is in the model's most-recent attention window and is
-        // less likely to be diluted by the brevity instruction. Made more
-        // emphatic with explicit "do/don't" examples so weaker models still
-        // follow it instead of defaulting to direct answers.
+        // Socratic mode (v3.9.20). Per-course toggle. v4.11.0: default to a
+        // 1-line directive (~30 tokens) which modern models follow reliably.
+        // The 600-token explicit do/don't version is retained behind the
+        // socratic_verbose admin flag for early-pilot courses on weaker
+        // self-hosted models that need the extra scaffolding.
         if (feature_flags::resolve('socratic_mode', $courseid)) {
-            $prompt .= "\n\n## SOCRATIC MODE — ACTIVE FOR THIS COURSE\n"
-                . "This is a HARD REQUIREMENT for this course, not a suggestion. It overrides the brevity guidance above whenever the two conflict.\n\n"
-                . "**You must NOT give direct answers to subject-matter questions.** Instead, lead the learner with one focused guiding question at a time. Wait for their reply before asking the next one.\n\n"
-                . "Format every reply as:\n"
-                . "- One short framing sentence acknowledging where they are (optional, no more than one sentence).\n"
-                . "- Exactly **one** guiding question that helps them take the next step in their own reasoning.\n\n"
-                . "When they answer:\n"
-                . "- If correct: affirm specifically what they got right (\"Yes — and the reason that works is…\"), then ask the next guiding question that builds on it.\n"
-                . "- If partly correct: acknowledge the right part, point out the gap with another question (\"Right about X. What about Y?\").\n"
-                . "- If wrong: do NOT correct them outright. Ask a question that exposes the contradiction (\"What would happen to that if we changed Z?\").\n\n"
-                . "**Only give the direct answer in these specific cases:**\n"
-                . "- The learner explicitly asks (\"just tell me the answer\", \"give me the answer\", \"I give up\", or similar).\n"
-                . "- The learner has worked through the reasoning and just needs you to confirm the final result.\n"
-                . "- The question is purely procedural (where to click, how to navigate) and not subject-matter.\n\n"
-                . "Examples of WRONG behaviour in Socratic mode:\n"
-                . "- Learner: \"What is photosynthesis?\" → DO NOT answer \"Photosynthesis is the process by which plants…\". Instead: \"Good question. What do you already know about how plants get energy?\"\n"
-                . "- Learner: \"How do I solve x² + 3x + 2 = 0?\" → DO NOT show the solution. Instead: \"Let's work it out together. Can you tell me what kind of equation this is?\"\n\n"
-                . "Examples of CORRECT behaviour:\n"
-                . "- Learner: \"I think it's because of the chlorophyll, right?\" → \"Yes — chlorophyll is doing something specific in this process. What do you think it does to the light?\"\n"
-                . "- Learner: \"just tell me the answer please\" → Give the direct answer plainly, then optionally offer to walk through the reasoning afterwards.\n";
+            if ((bool) get_config('local_ai_course_assistant', 'socratic_verbose')) {
+                $prompt .= "\n\n## SOCRATIC MODE — ACTIVE FOR THIS COURSE\n"
+                    . "This is a HARD REQUIREMENT for this course, not a suggestion. It overrides the brevity guidance above whenever the two conflict.\n\n"
+                    . "**You must NOT give direct answers to subject-matter questions.** Instead, lead the learner with one focused guiding question at a time. Wait for their reply before asking the next one.\n\n"
+                    . "Format every reply as:\n"
+                    . "- One short framing sentence acknowledging where they are (optional, no more than one sentence).\n"
+                    . "- Exactly **one** guiding question that helps them take the next step in their own reasoning.\n\n"
+                    . "When they answer:\n"
+                    . "- If correct: affirm specifically what they got right, then ask the next guiding question.\n"
+                    . "- If partly correct: acknowledge the right part, point out the gap with another question.\n"
+                    . "- If wrong: do NOT correct them outright. Ask a question that exposes the contradiction.\n\n"
+                    . "Only give the direct answer when the learner explicitly asks (\"just tell me\", \"I give up\"), when they've already reasoned through it and need confirmation, or when the question is purely procedural (not subject-matter).";
+            } else {
+                $prompt .= "\n\n## Socratic mode\nLead with one guiding question at a time; do NOT give direct answers to subject-matter questions. Exception: if the learner explicitly asks (\"just tell me\", \"I give up\"), gives a procedural question, or has already reasoned through and only needs confirmation, answer plainly.";
+            }
         }
 
         // v4.2.3: External resources opt-in. When enabled (per-course wins
@@ -298,10 +261,23 @@ class context_builder {
         }
 
         // Append current-page context AFTER caching — it is per-request, not per-course.
+        // v4.11.0: skip when a RAG chunk for this cmid is already in context;
+        // the chunk content already grounds the model on this page.
         if (!empty($pagetitle)) {
-            $prompt .= "\n\n## Current Page\n"
-                . "The student is currently viewing the resource or activity titled: \"{$pagetitle}\". "
-                . "When relevant, tailor your explanations and examples to this specific page or topic.";
+            $ragcoversthispage = false;
+            if ($ragmode && $pageid > 0) {
+                foreach ($retrieved_chunks as $chunk) {
+                    if ((int) ($chunk['cmid'] ?? 0) === $pageid) {
+                        $ragcoversthispage = true;
+                        break;
+                    }
+                }
+            }
+            if (!$ragcoversthispage) {
+                $prompt .= "\n\n## Current Page\n"
+                    . "The student is currently viewing the resource or activity titled: \"{$pagetitle}\". "
+                    . "When relevant, tailor your explanations and examples to this specific page or topic.";
+            }
         }
 
         return $prompt;
@@ -416,6 +392,9 @@ class context_builder {
             'flashcards_enabled',
             'code_sandbox_enabled',
             'external_resources_enabled',
+            'socratic_verbose',     // v4.11.0
+            'wellbeing_enabled',    // v4.11.0 (now drives a House-style line)
+            'offtopic_enabled',     // v4.11.0 (now drives a marker entry)
         ];
         foreach ($globals as $g) {
             $bits .= ((int) (bool) get_config('local_ai_course_assistant', $g));
@@ -677,6 +656,62 @@ class context_builder {
      *
      * @return string
      */
+    /**
+     * v4.11.0: One consolidated "Output markers" block. Replaces five
+     * scattered marker explanation paragraphs that previously bloated
+     * the system prompt by ~500 tokens. Listed near the top of the
+     * prompt so the model sees them before producing its response.
+     *
+     * @param bool $hasrag Whether RAG chunks are present (controls citation marker).
+     * @param bool $offtopic Whether off-topic detection is enabled.
+     * @param bool $hasfaq Whether FAQ content is appended.
+     * @param bool $hasnext Whether SOLA_NEXT suggestions are wired (always true today).
+     * @return string
+     */
+    private static function get_marker_instructions(bool $hasrag, bool $offtopic, bool $hasfaq, bool $hasnext = true): string {
+        $lines = ["\n\n## Output markers\nUse exactly the markers below when applicable, on their own line at the very end of your response unless otherwise noted. Markers are stripped before display."];
+        if ($hasrag) {
+            $lines[] = "- `[[c:N]]` inline (not at end) — cite a retrieved passage you actually used. Example: \"Photosynthesis occurs in chloroplasts [[c:0]].\"";
+        }
+        $lines[] = "- `[SOURCE:page]` or `[SOURCE:activity:ID]` or `[SOURCE:course]` or `[SOURCE:general]` — exactly one per response, indicating where the answer is grounded. Prefer activity:ID when an obvious activity matches.";
+        if ($hasnext) {
+            $lines[] = "- `[SOLA_NEXT]chip 1||chip 2||chip 3||chip 4[/SOLA_NEXT]` — four short (3-8 word) follow-up suggestions tied to the answer.";
+        }
+        if ($offtopic) {
+            $lines[] = "- `[OFF_TOPIC]` — only if the message is clearly unrelated to this course or learning.";
+        }
+        if ($hasfaq) {
+            $lines[] = "- `[NEEDS_ESCALATION]` — only on a support/admin question the FAQ does not cover.";
+        }
+        return implode("\n", $lines);
+    }
+
+    /**
+     * v4.11.0: One consolidated "House style" block. Replaces four separate
+     * sections (brevity, AI literacy, wellbeing, struggle detection) that
+     * previously contributed ~600 tokens of scattered behavioral guidance.
+     * Modern hosted models follow these rules from a tight summary; the
+     * verbose versions remain available as private helpers if needed.
+     *
+     * @param bool $wellbeingon Whether wellbeing/safety guidance is enabled.
+     * @return string
+     */
+    private static function get_house_style_instructions(bool $wellbeingon): string {
+        $remote = remote_config_manager::get_value('instruction_blocks', []);
+        if (!empty($remote['house_style'])) {
+            return "\n\n## House style\n" . $remote['house_style'];
+        }
+        $rules = [
+            "Reply in 2-4 short sentences or bullets unless the learner asks for depth. After answering, you may occasionally offer one follow-up (\"Want me to go deeper on any part?\")—not every turn.",
+            "If the learner shows signs of struggle (\"I don't get it\", repeated questions, all caps), acknowledge the difficulty, switch to a slower pace, and try a different angle.",
+            "Treat AI as a learning tool, not authority. Encourage the learner to verify against course material; flag when output is general knowledge vs. drawn from sources.",
+        ];
+        if ($wellbeingon) {
+            $rules[] = "If the learner expresses self-harm, crisis, or severe distress: acknowledge with empathy, state you are not a counselor, point them to https://findahelpline.com (200+ countries) and Crisis Text Line (text HOME to 741741 US / SHOUT to 85258 UK), and offer to return to studying when they are ready. Never minimise feelings or promise everything will be okay.";
+        }
+        return "\n\n## House style\n- " . implode("\n- ", $rules);
+    }
+
     private static function get_ai_literacy_instructions(): string {
         $blocks = remote_config_manager::get_value('instruction_blocks', []);
         if (!empty($blocks['ai_literacy'])) {
