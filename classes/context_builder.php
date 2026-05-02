@@ -111,7 +111,10 @@ class context_builder {
         if (!$ragmode) {
             $togglefp = self::course_toggles_fingerprint($courseid);
             $cache = \cache::make('local_ai_course_assistant', 'systemprompt');
-            $cachekey = "prompt_{$courseid}_{$userid}_" . ($lang ?: 'auto') . "_{$togglefp}";
+            // v5.0.1: pageid included so the per-page topic_focus section
+            // can flow through the structured assembly and budget pipeline
+            // without per-request post-cache appending.
+            $cachekey = "prompt_{$courseid}_{$userid}_{$pageid}_" . ($lang ?: 'auto') . "_{$togglefp}";
             $cached = $cache->get($cachekey);
             if ($cached !== false) {
                 return $cached;
@@ -238,6 +241,14 @@ class context_builder {
         if (!empty(trim($studyblock))) {
             $sections[] = new section('study_plan', section::CAT_LEARNER, 40, $studyblock, 0);
         }
+        // v5.0.1: topic_focus replaces the legacy post-cache "Current Page"
+        // injection. Lives in LEARNER category at priority 80 so it does
+        // not drop under default budget pressure. Empty string from helper
+        // when no pagetitle — section construction skipped.
+        $focusblock = self::get_topic_focus_instructions($pagetitle);
+        if ($focusblock !== '') {
+            $sections[] = new section('topic_focus', section::CAT_LEARNER, 80, $focusblock, 0);
+        }
 
         // Behaviour sections.
         $sections[] = new section(
@@ -264,6 +275,8 @@ class context_builder {
                 0
             );
         }
+        // v5.0.1: memory_handling rules for using conversation history.
+        $sections[] = new section('memory_handling', section::CAT_BEHAVIOR, 60, self::get_memory_handling_instructions(), 0);
         $sections[] = new section('practice_scoring', section::CAT_BEHAVIOR, 50, self::get_scoring_instructions(), 0);
         // v5.0.0: multilingual priority bumped from 40 → 70 so non-English
         // learner courses do not lose this section under default budget
@@ -325,26 +338,9 @@ class context_builder {
             $cache->set($cachekey, $prompt);
         }
 
-        // Append current-page context AFTER caching — it is per-request, not per-course.
-        // v4.11.0: skip when a RAG chunk for this cmid is already in context;
-        // the chunk content already grounds the model on this page.
-        if (!empty($pagetitle)) {
-            $ragcoversthispage = false;
-            if ($ragmode && $pageid > 0) {
-                foreach ($retrieved_chunks as $chunk) {
-                    if ((int) ($chunk['cmid'] ?? 0) === $pageid) {
-                        $ragcoversthispage = true;
-                        break;
-                    }
-                }
-            }
-            if (!$ragcoversthispage) {
-                $prompt .= "\n\n## Current Page\n"
-                    . "The student is currently viewing the resource or activity titled: \"{$pagetitle}\". "
-                    . "When relevant, tailor your explanations and examples to this specific page or topic.";
-            }
-        }
-
+        // v5.0.1: legacy post-cache "Current Page" injection removed —
+        // its informational hint is now subsumed by the directional
+        // topic_focus section which flows through the structured assembly.
         return $prompt;
     }
 
@@ -752,6 +748,46 @@ class context_builder {
             return "\n\n## Socratic mode\nLead with one guiding question at a time; do NOT give direct answers to subject-matter questions. Wait for the learner's reply before asking the next question. Exception: if they explicitly ask (\"just tell me\", \"I give up\"), give a procedural question, or have already reasoned through and only need confirmation, answer plainly.";
         }
         return "\n\n## Socratic mode\nLead with one guiding question at a time; do NOT give direct answers to subject-matter questions. Exception: if the learner explicitly asks (\"just tell me\", \"I give up\"), gives a procedural question, or has already reasoned through and only needs confirmation, answer plainly.";
+    }
+
+    /**
+     * v5.0.1: directive that focuses the model on the current chapter / page.
+     * Tomi Molnár's feedback: the prior `## Current Page` injection was
+     * informational ("the learner is viewing X") rather than directional;
+     * the model could ignore it and wander. This section names the chapter
+     * and tells the model to redirect off-topic asks back. Lives in the
+     * LEARNER category so it sits alongside personalisation and study plan.
+     *
+     * @param string $pagetitle Title of the current resource/activity, or empty.
+     * @return string Empty when no pagetitle is provided.
+     */
+    private static function get_topic_focus_instructions(string $pagetitle): string {
+        if ($pagetitle === '') {
+            return '';
+        }
+        return "\n\n## Current focus\n"
+            . "The learner is currently studying: \"" . $pagetitle . "\". Prioritise this topic in your responses; tailor examples and explanations to this specific chapter or page when possible. "
+            . "If they ask about a different chapter or activity, briefly answer the question (no more than two sentences) then steer them back: \"Want me to keep notes on that for after we finish this section?\" "
+            . "Do NOT redirect on basic clarifying questions, definitions of terms used in this chapter, or follow-ups to your own previous answer.";
+    }
+
+    /**
+     * v5.0.1: rules for how the model should use conversation history.
+     * Tomi Molnár's feedback: the model was given message history with no
+     * guidance on how to use it (build on prior turns, recognise resets,
+     * not over-promise persistence past the cap). Lives in the BEHAVIOR
+     * category at priority 60 — important but droppable under hard budget
+     * pressure since the underlying conversation_manager cap (50 turns)
+     * still applies regardless of whether this section lands.
+     *
+     * @return string
+     */
+    private static function get_memory_handling_instructions(): string {
+        return "\n\n## Conversation memory\n"
+            . "Use prior turns in this conversation actively: build on what the learner has demonstrated they understand, acknowledge what you have already explained (\"we covered X earlier — let me extend it\"), and avoid repeating identical explanations. "
+            . "The conversation history caps at 50 turns; older messages may be elided — do NOT reference content older than that. "
+            . "Persistent context across sessions lives in the Student Learning Profile above (when present); do NOT promise to remember new facts between sessions yourself. "
+            . "If the learner appears to start fresh (the conversation history is empty or they explicitly reset), treat that as a clean slate rather than referencing turns the model can no longer see.";
     }
 
     /**
