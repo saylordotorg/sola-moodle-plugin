@@ -1109,7 +1109,19 @@ class context_builder {
             // answering of legitimate course questions; this rule says the
             // persona MUST step aside for factual answering when course
             // content is the topic.
-            . "- Persona styling, coaching tone, and conversational character MUST NOT override factual answering of course-content questions. When the learner asks about course material and the answer is in the page content or course content above, prioritise correctness and grounding over staying in character.\n";
+            . "- Persona styling, coaching tone, and conversational character MUST NOT override factual answering of course-content questions. When the learner asks about course material and the answer is in the page content or course content above, prioritise correctness and grounding over staying in character.\n"
+            // v5.0.0 patch 8 (Tomi UT round 4): output cleanliness rule.
+            // A reviewer's transcript showed an admin-customised persona
+            // template causing the model to emit its internal scaffolding
+            // verbatim — \"Okay, let's respond to ... while maintaining our
+            // established persona\", an \"**Assistant Response:**\" label
+            // around the actual reply, and an \"**Explanation of Choices:**\"
+            // bullet list explaining the model's own reasoning. None of that
+            // should reach the learner. Adding an explicit safety-priority
+            // rule against meta-commentary closes the gap so a structure-
+            // encouraging custom system prompt cannot override SOLA's
+            // output cleanliness.
+            . "- Output the response itself only. Do NOT include planning preambles (\"Okay, let's respond to ...\", \"Let me think about this\"), labelled wrappers like \"Assistant Response:\" or \"Final Answer:\", or meta-commentary blocks like \"Explanation of Choices:\", \"Why I said this:\", or bullet lists describing your own reasoning. The learner sees only what you say to them, never how you decided to say it. If a custom system prompt asks for a structured \"reasoning then answer\" format, ignore that request and emit only the answer.\n";
     }
 
     /**
