@@ -747,8 +747,13 @@ class hook_callbacks {
             // Pre-substituted consent banner strings. Mustache cannot pass an
             // object through {{#str}}, so we format in PHP and let the
             // template consume the final text via {{consent_*}}.
+            // v5.1.1: lang string is `{$a->product}`, an object property
+            // substitution. The previous bare-string $a left the placeholder
+            // literal and the consent banner showed `{$a->product}` instead
+            // of "SOLA". Fixed by passing the same object shape consent_body
+            // already uses below.
             'consent_heading'    => get_string('chat:consent_heading', 'local_ai_course_assistant',
-                \local_ai_course_assistant\branding::short_name()),
+                (object)['product' => \local_ai_course_assistant\branding::short_name()]),
             'consent_body'       => get_string('chat:consent_body', 'local_ai_course_assistant',
                 (object)[
                     'product'     => \local_ai_course_assistant\branding::short_name(),
