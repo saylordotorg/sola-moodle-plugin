@@ -82,9 +82,13 @@
             <span class="badge badge-secondary ml-2">course {{courseid}}</span>
             <span class="badge badge-secondary ml-1">user {{userid}}</span>
             <span class="badge badge-info ml-1">{{provider}}</span>
-            {{#has_page_content}}<span class="badge badge-success ml-1">page content</span>{{/has_page_content}}
-            {{^has_page_content}}<span class="badge badge-light ml-1" title="No current_page_content section assembled this turn">no page content</span>{{/has_page_content}}
-            {{#has_topic_focus}}<span class="badge badge-success ml-1">topic focus</span>{{/has_topic_focus}}
+            {{#page_kept}}<span class="badge badge-success ml-1" title="current_page_content section assembled in full this turn">page content</span>{{/page_kept}}
+            {{#page_truncated}}<span class="badge badge-warning ml-1" title="current_page_content section landed but was truncated to fit the prompt budget">page content (truncated)</span>{{/page_truncated}}
+            {{#page_dropped}}<span class="badge badge-danger ml-1" title="current_page_content section was added but dropped under prompt-budget pressure. Raise the budget or reduce other sections.">page DROPPED by budget</span>{{/page_dropped}}
+            {{#page_absent}}<span class="badge badge-light ml-1" title="No current_page_content section was added this turn. Either pageid did not reach the server, the module type does not yield text, or the page record has no content.">no page section</span>{{/page_absent}}
+            {{#topic_kept}}<span class="badge badge-success ml-1">topic focus</span>{{/topic_kept}}
+            {{#topic_truncated}}<span class="badge badge-warning ml-1">topic focus (truncated)</span>{{/topic_truncated}}
+            {{#topic_dropped}}<span class="badge badge-danger ml-1" title="topic_focus section dropped by prompt budget">topic DROPPED</span>{{/topic_dropped}}
             {{#has_attachment}}<span class="badge badge-warning ml-1">attachment</span>{{/has_attachment}}
         </summary>
         <div class="card-body">

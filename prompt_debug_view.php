@@ -175,27 +175,88 @@ function parse_one_entry(string $block): ?array {
     $message = extract_named_block($block, 'CURRENT USER MESSAGE');
     $attachment = extract_named_block($block, 'ATTACHMENT');
 
-    // Quick "did the page section land?" indicator for at-a-glance scanning.
-    $has_page_content = (bool) preg_match('/(^|\n)\S*current_page_content\b/i', $sections_text)
-        || strpos((string) $system_prompt, '## Current Page Content') !== false;
-    $has_topic_focus = (bool) preg_match('/(^|\n)\S*topic_focus\b/i', $sections_text);
+    // v5.0.0 patch 13: previous "did the page section land?" badges were a
+    // false-positive trap. The regex matched the section name appearing
+    // anywhere in the breakdown text — so a section with [DROPPED] still
+    // turned the badge green, exactly the case Tomi hit when his admin's
+    // tight prompt budget dropped current_page_content. Now both badges
+    // require non-zero chars AND no DROPPED flag in the breakdown line.
+    // The TRUNCATED state surfaces as a separate badge so the diagnosis
+    // is unambiguous from the card header alone.
+    $page_state = section_state($sections_text, 'current_page_content', (string) $system_prompt, '## Current Page Content');
+    $topic_state = section_state($sections_text, 'topic_focus', (string) $system_prompt, '## Current focus');
 
     return [
-        'timestamp'        => $timestamp,
-        'courseid'         => $courseid,
-        'userid'           => $userid,
-        'provider'         => $provider,
-        'total'            => $total,
-        'budget'           => $budget,
-        'sections'         => $sections_text,
-        'system_prompt'    => (string) $system_prompt,
-        'history'          => (string) $history,
-        'message'          => (string) $message,
-        'attachment'       => (string) $attachment,
-        'has_attachment'   => $attachment !== null && trim($attachment) !== '',
-        'has_page_content' => $has_page_content,
-        'has_topic_focus'  => $has_topic_focus,
+        'timestamp'         => $timestamp,
+        'courseid'          => $courseid,
+        'userid'            => $userid,
+        'provider'          => $provider,
+        'total'             => $total,
+        'budget'            => $budget,
+        'sections'          => $sections_text,
+        'system_prompt'     => (string) $system_prompt,
+        'history'           => (string) $history,
+        'message'           => (string) $message,
+        'attachment'        => (string) $attachment,
+        'has_attachment'    => $attachment !== null && trim($attachment) !== '',
+        // 'kept' / 'truncated' / 'dropped' / 'absent' for the page-content
+        // and topic-focus sections. 'absent' = the section was never even
+        // added (page module not detected, get_module_content empty, or
+        // pageid never reached the server). The mustache template renders
+        // a different badge per state so admins can read the diagnosis
+        // straight from the card header.
+        'page_state'        => $page_state,
+        'page_kept'         => $page_state === 'kept',
+        'page_truncated'    => $page_state === 'truncated',
+        'page_dropped'      => $page_state === 'dropped',
+        'page_absent'       => $page_state === 'absent',
+        'topic_state'       => $topic_state,
+        'topic_kept'        => $topic_state === 'kept',
+        'topic_truncated'   => $topic_state === 'truncated',
+        'topic_dropped'     => $topic_state === 'dropped',
+        'topic_absent'      => $topic_state === 'absent',
     ];
+}
+
+/**
+ * Resolve a section's state from the breakdown text and (as a fallback)
+ * from whether its heading appears in the assembled prompt body.
+ *
+ * Returns one of:
+ *   'kept'      — non-zero chars, no flags
+ *   'truncated' — non-zero chars, [TRUNCATED] flag
+ *   'dropped'   — section appears in breakdown but flagged [DROPPED]
+ *   'absent'    — section name never appears in breakdown (never added)
+ *
+ * @param string $sections_text The "Sections (by category):" body.
+ * @param string $section_name  e.g. "current_page_content".
+ * @param string $prompt_body   The full assembled system prompt (fallback heading match).
+ * @param string $heading       Heading to look for in the body (e.g. "## Current Page Content").
+ * @return string
+ */
+function section_state(string $sections_text, string $section_name, string $prompt_body, string $heading): string {
+    // Match a breakdown line like:
+    //     1880  current_page_content
+    //        0  current_page_content [DROPPED]
+    //      500  current_page_content [TRUNCATED]
+    $pattern = '/^\s*(\d+)\s+' . preg_quote($section_name, '/') . '\b(.*)$/m';
+    if (preg_match($pattern, $sections_text, $m)) {
+        $chars = (int) $m[1];
+        $flags = (string) $m[2];
+        if (stripos($flags, 'DROPPED') !== false || $chars === 0) {
+            return 'dropped';
+        }
+        if (stripos($flags, 'TRUNCATED') !== false) {
+            return 'truncated';
+        }
+        return 'kept';
+    }
+    // Fallback: if the breakdown is missing (legacy entries or malformed),
+    // fall back to a body-heading match.
+    if ($heading !== '' && strpos($prompt_body, $heading) !== false) {
+        return 'kept';
+    }
+    return 'absent';
 }
 
 /**
