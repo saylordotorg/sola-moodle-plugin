@@ -3334,6 +3334,9 @@ define([
     /** @type {HTMLElement|null} Stop button shown during TTS playback */
     var ttsStopBtn = null;
 
+    /** @type {HTMLElement|null} Speak button currently in --loading state. */
+    var ttsLoadingBtn = null;
+
     /**
      * Remove the TTS stop button if present.
      */
@@ -3342,6 +3345,18 @@ define([
             ttsStopBtn.parentNode.removeChild(ttsStopBtn);
         }
         ttsStopBtn = null;
+    };
+
+    /**
+     * Clear the --loading visual on the speak button. Called when audio
+     * actually starts playing, when playback errors, or when the learner
+     * cancels.
+     */
+    const clearTtsLoadingState = function() {
+        if (ttsLoadingBtn) {
+            ttsLoadingBtn.classList.remove('local-ai-course-assistant__btn-speak--loading');
+            ttsLoadingBtn = null;
+        }
     };
 
     /**
@@ -3355,6 +3370,7 @@ define([
         Speech.stopSpeaking();
         UI.stopWordHighlight();
         removeTtsStopButton();
+        clearTtsLoadingState();
     };
 
     /**
@@ -3421,7 +3437,7 @@ define([
             for (var i = 0; i < byteChars.length; i++) {
                 byteArr[i] = byteChars.charCodeAt(i);
             }
-            var ctx = getOrCreateAudioContext();
+            var ctx = getOrCreateAudioCtx();
             if (!ctx || !ctx.decodeAudioData) { throw new Error('no audio context'); }
             return new Promise(function(resolve, reject) {
                 ctx.decodeAudioData(byteArr.buffer, resolve, reject);
@@ -3451,7 +3467,12 @@ define([
             return;
         }
         var voice = localStorage.getItem('aica_tts_voice');
-        var ctx = getOrCreateAudioContext();
+        // v5.1.2: was getOrCreateAudioContext (undefined). The typo caused a
+        // ReferenceError that killed the chunked TTS path silently — every
+        // long-text read-aloud click fell through to browser TTS, which on
+        // Chrome desktop can take 30+ seconds to initialize voices on first
+        // use. Renamed to match the defined helper.
+        var ctx = getOrCreateAudioCtx();
         if (!ctx) { Speech.speak(text, callback); return; }
 
         var promises = chunks.map(function(c) {
@@ -3488,6 +3509,9 @@ define([
                 analyser.connect(ctx.destination);
                 if (thisIdx === 0) {
                     UI.startMouthSyncFromAnalyser(analyser);
+                    // v5.1.2: first chunk audio is about to play — clear
+                    // the loading indicator on the speak button.
+                    clearTtsLoadingState();
                 }
                 currentSource = source;
                 source.onended = function() {
@@ -3499,6 +3523,7 @@ define([
                 stopped = true;
                 currentAudio = null;
                 UI.stopMouthSync();
+                clearTtsLoadingState();
                 Speech.speak(chunks.slice(thisIdx).join(' '), callback);
             });
         };
@@ -3539,6 +3564,7 @@ define([
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (!data.audio) {
+                clearTtsLoadingState();
                 Speech.speak(text, callback);
                 return;
             }
@@ -3629,10 +3655,13 @@ define([
                                 if (callback) { callback(); }
                             };
                         }
+                        // v5.1.2: audio actually starts now — clear loading.
+                        clearTtsLoadingState();
                         source.start(0);
                     }, function() {
                         // decodeAudioData failed -- fall back to browser TTS.
                         currentAudio = null;
+                        clearTtsLoadingState();
                         Speech.speak(text, callback);
                     });
                     return;
@@ -3725,6 +3754,15 @@ define([
         stopAllTts();
 
         UI.setSpeakingState(msgEl, true);
+        // v5.1.2: visible loading indicator. The fetch-decode-play chain can
+        // take a couple of seconds even on a healthy provider (longer if the
+        // OS speech engine is initializing), so without this the button
+        // appears to do nothing for that window. The CSS pulse on
+        // --loading gives the learner immediate feedback that the click
+        // registered. Cleared in the audio-onstart hooks below so the
+        // pulse stops the moment audio actually plays.
+        btnEl.classList.add('local-ai-course-assistant__btn-speak--loading');
+        ttsLoadingBtn = btnEl;
 
         // Show a stop button below the speaking message.
         var messagesContainer = UI.getElements().messages;
@@ -3760,6 +3798,11 @@ define([
             // Browser TTS: enable word-by-word highlighting via onboundary events.
             const cleanText = Speech.cleanTextForSpeech(text);
             const wordSpans = UI.startWordHighlight(msgEl, cleanText);
+            // v5.1.2: browser TTS does not have a "fetch + decode" loading
+            // window in the same sense, and we have no clean onstart hook.
+            // Clear the loading indicator immediately so the button does not
+            // pulse forever when the browser engine is the slow-to-start one.
+            clearTtsLoadingState();
             Speech.speak(text, onDone, wordSpans ? function(charIndex) {
                 UI.highlightWordAt(wordSpans, charIndex);
             } : null);
