@@ -48,6 +48,16 @@ class demo_seeder {
             return $existing;
         }
 
+        // v5.3.1: do not trust the supplied $category. Stock Moodle ships
+        // "Miscellaneous" as id=1, but staging and production sites often
+        // delete or rename it, which makes a hardcoded category id throw
+        // "Can't find data record in database table course_categories".
+        // Fall back to whatever Moodle currently considers the default
+        // category, which is guaranteed to exist.
+        if ($category <= 0 || !$DB->record_exists('course_categories', ['id' => $category])) {
+            $category = (int)\core_course_category::get_default()->id;
+        }
+
         $coursedata = (object) [
             'category'      => $category,
             'shortname'     => $shortname,
