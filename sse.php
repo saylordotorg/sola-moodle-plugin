@@ -278,6 +278,30 @@ try {
         }
     }
 
+    // v5.3.0: record activity for streak tracking. Idempotent within a day.
+    // Also feed stage-1 struggle classifier from the user's message — score is
+    // pure-function on the text, then a single insert. No external IO.
+    try {
+        $milestonereached = \local_ai_course_assistant\streak_tracker::record_activity($userid, $courseid);
+        // Crossing 7/30/completion is dispatched by the daily scheduled task,
+        // not from inside the request, to avoid double-firing under race.
+        unset($milestonereached);
+    } catch (\Throwable $e) {
+        debugging('streak_tracker failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+    }
+    try {
+        $score = \local_ai_course_assistant\struggle_classifier::stage1_score((string)$message);
+        if ($score > 0) {
+            $sessid = substr(sha1($userid . '|' . $courseid . '|' . userdate(time(), '%Y-%m-%d')), 0, 32);
+            $topichint = $pagetitle !== '' ? $pagetitle : ('course:' . $courseid);
+            \local_ai_course_assistant\struggle_classifier::record_stage1(
+                $userid, $courseid, $sessid, $topichint, $score
+            );
+        }
+    } catch (\Throwable $e) {
+        debugging('struggle_classifier stage1 failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+    }
+
     // RAG retrieval: embed user query and fetch relevant chunks.
     $retrievedchunks = [];
     $ragcourseraw = get_config('local_ai_course_assistant', 'rag_enabled_course_' . $courseid);

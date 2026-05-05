@@ -852,5 +852,106 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026050600, 'local', 'ai_course_assistant');
     }
 
+    // v5.3.0 (2026050700): empathetic communications + carryover memory.
+    // Adds learner_goals, streak, learner_memory, struggle_signal, and
+    // outreach_log tables. Struggle classifier writes private memory
+    // notes (never email). Milestones email through outreach_sender.
+    if ($oldversion < 2026050700) {
+        // Goals.
+        $table = new xmldb_table('local_ai_course_assistant_learner_goals');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('q1_answer', XMLDB_TYPE_TEXT, null, null, null);
+            $table->add_field('q2_answer', XMLDB_TYPE_TEXT, null, null, null);
+            $table->add_field('q3_answer', XMLDB_TYPE_TEXT, null, null, null);
+            $table->add_field('consented_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('dismissed_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('userid_fk', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_key('user_course_uniq', XMLDB_KEY_UNIQUE, ['userid', 'courseid']);
+            $dbman->create_table($table);
+        }
+
+        // Streak.
+        $table = new xmldb_table('local_ai_course_assistant_streak');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('current_streak_days', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('longest_streak_days', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('last_active_date', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('last_milestone_kind', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('last_milestone_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('userid_fk', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_key('user_course_streak_uniq', XMLDB_KEY_UNIQUE, ['userid', 'courseid']);
+            $dbman->create_table($table);
+        }
+
+        // Learner memory (carryover personalisation across sessions).
+        $table = new xmldb_table('local_ai_course_assistant_learner_memory');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('notes_json', XMLDB_TYPE_TEXT, null, null, null);
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('userid_fk_mem', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_key('courseid_fk_mem', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_key('user_course_mem_uniq', XMLDB_KEY_UNIQUE, ['userid', 'courseid']);
+            $dbman->create_table($table);
+        }
+
+        // Struggle signal.
+        $table = new xmldb_table('local_ai_course_assistant_struggle_signal');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('session_id', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('topic_hint', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('stage1_score', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('stage2_label', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('followup_sent_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('userid_fk_strug', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_key('courseid_fk_strug', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+            $table->add_index('user_course_session', XMLDB_INDEX_NOTUNIQUE, ['userid', 'courseid', 'session_id']);
+            $table->add_index('time_label', XMLDB_INDEX_NOTUNIQUE, ['timecreated', 'stage2_label']);
+            $dbman->create_table($table);
+        }
+
+        // Outreach log.
+        $table = new xmldb_table('local_ai_course_assistant_outreach_log');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('channel', XMLDB_TYPE_CHAR, '40', null, XMLDB_NOTNULL);
+            $table->add_field('trigger_reason', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('message_id', XMLDB_TYPE_CHAR, '80', null, XMLDB_NOTNULL, null, '');
+            $table->add_field('timesent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('userid_fk_out', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+            $table->add_index('user_time_outreach', XMLDB_INDEX_NOTUNIQUE, ['userid', 'timesent']);
+            $table->add_index('channel_time', XMLDB_INDEX_NOTUNIQUE, ['channel', 'timesent']);
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2026050700, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

@@ -119,7 +119,14 @@ class context_builder {
             // can flow through the structured assembly and budget pipeline
             // without per-request post-cache appending.
             $qmkey = $quizmode !== '' ? $quizmode : 'free';
-            $cachekey = "prompt_{$courseid}_{$userid}_{$pageid}_" . ($lang ?: 'auto') . "_{$togglefp}_{$qmkey}";
+            // v5.3.0: personalisation freshness marker. Goals and carryover
+            // memory mutate per-learner per-course; encode the latest
+            // timemodified of both rows (or 0 if absent) in the cache key
+            // so a save invalidates this learner's cached prompt without
+            // a manual purge.
+            $persfp = self::personalisation_fingerprint($userid, $courseid);
+            $cachekey = "prompt_{$courseid}_{$userid}_{$pageid}_" . ($lang ?: 'auto')
+                . "_{$togglefp}_{$qmkey}_{$persfp}";
             $cached = $cache->get($cachekey);
             if ($cached !== false) {
                 return $cached;
@@ -224,6 +231,24 @@ class context_builder {
             self::get_personalization_instructions($firstname),
             0
         );
+
+        // v5.3.0: learner goals (volunteered career/why-here answers).
+        // Sits just below personalization so the model sees who the learner
+        // is, then why they came; never forces the connection.
+        if ($userid > 0) {
+            $goalsblock = learner_goals_manager::build_prompt_section($userid, $courseid);
+            if ($goalsblock !== '') {
+                $sections[] = new section('learner_goals', section::CAT_LEARNER, 75, $goalsblock, 0);
+            }
+
+            // v5.3.0: carryover memory (sticking points + style prefs from
+            // prior sessions). Below goals so explicit purpose outranks
+            // accumulated state.
+            $memblock = learner_memory_manager::build_prompt_section($userid, $courseid);
+            if ($memblock !== '') {
+                $sections[] = new section('learner_memory', section::CAT_LEARNER, 70, $memblock, 0);
+            }
+        }
         if ($userid > 0 && $userrole === 'student') {
             $profile = student_profile_manager::get_profile($userid, $courseid);
             if (!empty($profile)) {
@@ -527,6 +552,26 @@ class context_builder {
      * Keep this list in sync with every toggle that course_settings.php can
      * flip and that build_system_prompt() reads.
      *
+     * Per-learner personalisation freshness marker (v5.3.0). Hashes the
+     * latest timemodified of the learner's goals and memory rows in this
+     * course so a save invalidates the cached prompt without a manual
+     * purge. Returns "0" when neither row exists.
+     *
+     * @param int $userid
+     * @param int $courseid
+     * @return string
+     */
+    private static function personalisation_fingerprint(int $userid, int $courseid): string {
+        global $DB;
+        $goalsmod = (int)$DB->get_field('local_ai_course_assistant_learner_goals', 'timemodified',
+            ['userid' => $userid, 'courseid' => $courseid], IGNORE_MISSING);
+        $memmod = (int)$DB->get_field('local_ai_course_assistant_learner_memory', 'timemodified',
+            ['userid' => $userid, 'courseid' => $courseid], IGNORE_MISSING);
+        $combined = max($goalsmod, $memmod);
+        return (string)$combined;
+    }
+
+    /**
      * @param int $courseid
      * @return string 12-char fingerprint
      */

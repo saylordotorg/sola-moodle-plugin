@@ -173,4 +173,29 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        // v5.3.0 — Daily milestone reflections (7-day, 30-day, completion).
+        // Sends only when per-feature kill switch + per-learner consent +
+        // 7-day cooldown all clear. Default off at the outreach_master
+        // level so a fresh install never emails until an admin enables it.
+        'classname' => \local_ai_course_assistant\task\milestone_check::class,
+        'blocking' => 0,
+        'minute' => '30',
+        'hour' => '8',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        // v5.3.0 — Hourly aggregation of stage-1 struggle signals into
+        // per-session labels. Output is private learner-memory notes,
+        // never an email. Default disabled via struggle_classifier_enabled.
+        'classname' => \local_ai_course_assistant\task\struggle_signal_review::class,
+        'blocking' => 0,
+        'minute' => '40',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];

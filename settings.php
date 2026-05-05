@@ -1778,6 +1778,63 @@ if ($hassiteconfig) {
         . implode(' &middot; ', $statusparts) . '</p>'
     ));
 
+    // ── v5.3.0: Empathetic communications + carryover memory ───────────────
+    $settings->add(new admin_setting_heading(
+        'local_ai_course_assistant/empathy_heading',
+        get_string('empathy:title', 'local_ai_course_assistant'),
+        get_string('empathy:desc', 'local_ai_course_assistant')
+    ));
+
+    // Master kill switch for ALL outreach emails. Default OFF on fresh install.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/outreach_master_enabled',
+        get_string('empathy:outreach_master_enabled', 'local_ai_course_assistant'),
+        get_string('empathy:outreach_master_enabled_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+
+    // Goals feature (in-chat only; no emails). Safe to default ON.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/goals_feature_enabled',
+        get_string('empathy:goals_enabled', 'local_ai_course_assistant'),
+        get_string('empathy:goals_enabled_desc', 'local_ai_course_assistant'),
+        '1'
+    ));
+
+    // Milestone reflections (emails). Default OFF; explicit admin opt-in.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/milestones_feature_enabled',
+        get_string('empathy:milestones_enabled', 'local_ai_course_assistant'),
+        get_string('empathy:milestones_enabled_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+
+    // Carryover memory (in-chat only; powers personalisation). Default ON.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/memory_feature_enabled',
+        get_string('empathy:memory_enabled', 'local_ai_course_assistant'),
+        get_string('empathy:memory_enabled_desc', 'local_ai_course_assistant'),
+        '1'
+    ));
+
+    // Struggle classifier (in-chat only; writes memory notes). Default OFF.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/struggle_classifier_enabled',
+        get_string('empathy:struggle_enabled', 'local_ai_course_assistant'),
+        get_string('empathy:struggle_enabled_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+
+    // Dry-run mode. When on, milestone email task logs intent without
+    // sending — safe way to verify cooldown + consent logic on a fresh
+    // install before going live.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/outreach_dryrun',
+        get_string('empathy:outreach_dryrun', 'local_ai_course_assistant'),
+        get_string('empathy:outreach_dryrun_desc', 'local_ai_course_assistant'),
+        '0'
+    ));
+
     $settings->add(new admin_setting_heading(
         'local_ai_course_assistant/updates_heading',
         get_string('update:title', 'local_ai_course_assistant'),

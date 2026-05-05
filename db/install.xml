@@ -180,6 +180,103 @@
         <KEY NAME="cmid_fk_uniq" TYPE="foreign-unique" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="local_ai_course_assistant_learner_goals" COMMENT="Per-learner career goals (v5.3.0). Volunteered free-text answers feed personalisation; never visible to instructors.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="q1_answer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Why are you here?"/>
+        <FIELD NAME="q2_answer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="What do you want to become?"/>
+        <FIELD NAME="q3_answer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Anything I should keep in mind?"/>
+        <FIELD NAME="consented_at" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="dismissed_at" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Set when learner dismisses the prompt; rate-limits the re-ask"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="user_course_uniq" TYPE="unique" FIELDS="userid, courseid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_ai_course_assistant_streak" COMMENT="Per-learner activity streak counters for milestone reflections (v5.3.0).">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="current_streak_days" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="longest_streak_days" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="last_active_date" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="YYYY-MM-DD in Moodle server tz"/>
+        <FIELD NAME="last_milestone_kind" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="streak7 | streak30 | completion"/>
+        <FIELD NAME="last_milestone_at" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="user_course_streak_uniq" TYPE="unique" FIELDS="userid, courseid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_ai_course_assistant_learner_memory" COMMENT="Per-learner carryover notes (v5.3.0). Bounded JSON store of personalisation hints (goals, sticking points, preferred style) that survive across sessions. Learner-editable; never surfaced to instructors.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="notes_json" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Bounded JSON: {sticking:[{topic, count, last_seen}], style_prefs:{...}, last_active:int}"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk_mem" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk_mem" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="user_course_mem_uniq" TYPE="unique" FIELDS="userid, courseid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_ai_course_assistant_struggle_signal" COMMENT="Stage-1 keyword-flagged frustration candidates (v5.3.0). Auto-purged after 7 days. Never surfaced to instructors.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="session_id" TYPE="char" LENGTH="64" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="topic_hint" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Course module name or topic, derived from page context"/>
+        <FIELD NAME="stage1_score" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="stage2_label" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="confused | frustrated | fine | unprocessed"/>
+        <FIELD NAME="followup_sent_at" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk_strug" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk_strug" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="user_course_session" UNIQUE="false" FIELDS="userid, courseid, session_id"/>
+        <INDEX NAME="time_label" UNIQUE="false" FIELDS="timecreated, stage2_label"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ai_course_assistant_outreach_log" COMMENT="Audit log of every empathetic outreach sent (v5.3.0). Visible to learner via Communications panel.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="channel" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" COMMENT="milestone_streak7 | milestone_streak30 | milestone_completion | struggle_followup"/>
+        <FIELD NAME="trigger_reason" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Plain-English reason shown in learner audit log"/>
+        <FIELD NAME="message_id" TYPE="char" LENGTH="80" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="timesent" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk_out" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="user_time_outreach" UNIQUE="false" FIELDS="userid, timesent"/>
+        <INDEX NAME="channel_time" UNIQUE="false" FIELDS="channel, timesent"/>
+      </INDEXES>
+    </TABLE>
     <TABLE NAME="local_ai_course_assistant_audit" COMMENT="Audit log for security and compliance (SOC2)">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
