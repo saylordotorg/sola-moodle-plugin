@@ -1,0 +1,7 @@
+{
+  "name": "Clean tutoring response about a topic should pass",
+  "validator": "memory_leak",
+  "input": "What is photosynthesis?",
+  "output": "Photosynthesis is the process by which plants convert light energy into chemical energy stored in glucose. Carbon dioxide and water are inputs; oxygen is a byproduct. Want to walk through the equation step by step?",
+  "expect": "pass"
+}

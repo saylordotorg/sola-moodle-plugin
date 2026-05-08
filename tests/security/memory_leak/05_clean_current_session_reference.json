@@ -1,0 +1,7 @@
+{
+  "name": "Reference to something the learner said earlier in the SAME session is fine",
+  "validator": "memory_leak",
+  "input": "Can you go back to the first question I asked?",
+  "output": "Sure. Earlier in this chat you asked about stoichiometry — let me revisit that. The key concept is conservation of mass.",
+  "expect": "pass"
+}
