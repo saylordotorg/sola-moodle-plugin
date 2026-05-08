@@ -70,7 +70,8 @@ PROMPT;
     public static function needs_update(int $userid, int $courseid): bool {
         global $DB;
 
-        $interval = (int) (get_config('local_ai_course_assistant', 'profile_update_interval') ?: 10);
+        $rawinterval = get_config('local_ai_course_assistant', 'profile_update_interval');
+        $interval = ($rawinterval === false || $rawinterval === '') ? 10 : (int) $rawinterval;
         if ($interval <= 0) {
             return false;
         }

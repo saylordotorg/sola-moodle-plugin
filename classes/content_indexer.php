@@ -47,7 +47,8 @@ class content_indexer {
     public static function index_course(int $courseid, bool $force = false): array {
         global $DB;
 
-        $chunksize = (int) (get_config('local_ai_course_assistant', 'rag_chunksize') ?: 400);
+        $rawchunksize = get_config('local_ai_course_assistant', 'rag_chunksize');
+        $chunksize = ($rawchunksize === false || $rawchunksize === '') ? 400 : (int) $rawchunksize;
         $provider  = base_embedding_provider::create_from_config();
         $modelname = get_config('local_ai_course_assistant', 'embed_model') ?: 'text-embedding-3-small';
 
@@ -181,7 +182,8 @@ class content_indexer {
             }
         }
 
-        $chunksize = (int) (get_config('local_ai_course_assistant', 'rag_chunksize') ?: 400);
+        $rawchunksize = get_config('local_ai_course_assistant', 'rag_chunksize');
+        $chunksize = ($rawchunksize === false || $rawchunksize === '') ? 400 : (int) $rawchunksize;
         $provider  = base_embedding_provider::create_from_config();
         $modelname = get_config('local_ai_course_assistant', 'embed_model') ?: 'text-embedding-3-small';
 

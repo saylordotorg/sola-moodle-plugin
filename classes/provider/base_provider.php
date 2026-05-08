@@ -60,9 +60,15 @@ abstract class base_provider implements provider_interface {
                 ? $adminmodel
                 : (\local_ai_course_assistant\remote_config_manager::get_value('model_default') ?: $this->get_default_model()));
 
-        $this->temperature = isset($overrides['temperature']) && $overrides['temperature'] !== ''
-            ? (float) $overrides['temperature']
-            : (float) (get_config('local_ai_course_assistant', 'temperature') ?: 0.7);
+        // Note: ?: would treat the string "0" as falsy and silently apply 0.7
+        // when an admin explicitly set temperature=0 for deterministic output.
+        // Use an explicit default-when-unset check instead.
+        if (isset($overrides['temperature']) && $overrides['temperature'] !== '') {
+            $this->temperature = (float) $overrides['temperature'];
+        } else {
+            $rawtemp = get_config('local_ai_course_assistant', 'temperature');
+            $this->temperature = ($rawtemp === false || $rawtemp === '') ? 0.7 : (float) $rawtemp;
+        }
 
         $configurl = !empty($overrides['apibaseurl'])
             ? $overrides['apibaseurl']

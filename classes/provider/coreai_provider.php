@@ -58,9 +58,12 @@ class coreai_provider extends base_provider {
         $this->apikey = '';
         $this->model = 'moodle_core_ai';
         $this->baseurl = '';
-        $this->temperature = isset($overrides['temperature']) && $overrides['temperature'] !== ''
-            ? (float) $overrides['temperature']
-            : (float) (get_config('local_ai_course_assistant', 'temperature') ?: 0.7);
+        if (isset($overrides['temperature']) && $overrides['temperature'] !== '') {
+            $this->temperature = (float) $overrides['temperature'];
+        } else {
+            $rawtemp = get_config('local_ai_course_assistant', 'temperature');
+            $this->temperature = ($rawtemp === false || $rawtemp === '') ? 0.7 : (float) $rawtemp;
+        }
     }
 
     protected function get_default_model(): string {

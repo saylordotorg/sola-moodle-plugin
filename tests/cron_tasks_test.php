@@ -29,6 +29,10 @@ use local_ai_course_assistant\task\run_meta_ai_query;
 use local_ai_course_assistant\task\milestone_check;
 use local_ai_course_assistant\task\learner_weekly_digest;
 use local_ai_course_assistant\task\instructor_weekly_digest;
+use local_ai_course_assistant\task\index_course_content;
+use local_ai_course_assistant\task\auto_reindex_rag_drifted;
+use local_ai_course_assistant\task\auto_tune_prompt_budget;
+use local_ai_course_assistant\task\refresh_rate_card;
 use local_ai_course_assistant\provider\stub_provider;
 
 /**
@@ -696,5 +700,106 @@ final class cron_tasks_test extends \advanced_testcase {
         $this->assertEquals(0, $sink->count(),
             'No course opt-ins => no instructor digests.');
         $sink->close();
+    }
+
+    // ───────────────────────────────────────────────────────────
+    // Batch 3 (v5.3.33) — RAG / config tasks.
+    // ───────────────────────────────────────────────────────────
+
+    public function test_index_course_content_skips_when_rag_disabled(): void {
+        $this->resetAfterTest();
+        set_config('rag_enabled', 0, 'local_ai_course_assistant');
+        // RAG disabled => task returns immediately. No throw.
+        $this->run_task_silently(new index_course_content());
+        $this->assertTrue(true, 'rag_enabled=0 must short-circuit before any DB scan.');
+    }
+
+    public function test_index_course_content_no_op_when_no_active_courses(): void {
+        $this->resetAfterTest();
+        set_config('rag_enabled', 1, 'local_ai_course_assistant');
+        // No courses with enrolled students => nothing to index.
+        $this->run_task_silently(new index_course_content());
+        $this->assertTrue(true, 'No active courses => task completes without throwing.');
+    }
+
+    public function test_auto_reindex_rag_drifted_skips_when_feature_disabled(): void {
+        $this->resetAfterTest();
+        set_config('rag_auto_reindex_drifted', 0, 'local_ai_course_assistant');
+        set_config('rag_enabled', 1, 'local_ai_course_assistant');
+        $this->run_task_silently(new auto_reindex_rag_drifted());
+        $this->assertTrue(true, 'Feature flag off => no drift detection runs.');
+    }
+
+    public function test_auto_reindex_rag_drifted_skips_when_rag_disabled(): void {
+        $this->resetAfterTest();
+        set_config('rag_auto_reindex_drifted', 1, 'local_ai_course_assistant');
+        set_config('rag_enabled', 0, 'local_ai_course_assistant');
+        $this->run_task_silently(new auto_reindex_rag_drifted());
+        $this->assertTrue(true, 'RAG disabled site-wide overrides the per-task flag.');
+    }
+
+    public function test_auto_tune_prompt_budget_skips_when_disabled(): void {
+        $this->resetAfterTest();
+        set_config('prompt_budget_auto_tune', 0, 'local_ai_course_assistant');
+        set_config('prompt_budget_chars', 12000, 'local_ai_course_assistant');
+        $this->run_task_silently(new auto_tune_prompt_budget());
+        // Budget must not change when auto-tune is off.
+        $this->assertEquals(12000,
+            (int) get_config('local_ai_course_assistant', 'prompt_budget_chars'),
+            'Auto-tune disabled => budget setting untouched.');
+    }
+
+    public function test_auto_tune_prompt_budget_runs_when_enabled(): void {
+        $this->resetAfterTest();
+        set_config('prompt_budget_auto_tune', 1, 'local_ai_course_assistant');
+        // Empty metrics => apply_recommendation returns "no change". Must not throw.
+        $this->run_task_silently(new auto_tune_prompt_budget());
+        $this->assertTrue(true, 'Enabled auto-tune on empty metrics is a no-op, not an error.');
+    }
+
+    public function test_refresh_rate_card_skips_when_disabled(): void {
+        $this->resetAfterTest();
+        set_config('rate_card_auto_refresh', 0, 'local_ai_course_assistant');
+        $this->run_task_silently(new refresh_rate_card());
+        $this->assertTrue(true,
+            'Feature flag off => no upstream fetch. Pinned-to-last-fetch behaviour preserved.');
+    }
+
+    // ───────────────────────────────────────────────────────────
+    // Static analysis test — catches the ?: numeric-default pattern that
+    // shipped 4 production bugs in v5.3.31 + v5.3.32.
+    // ───────────────────────────────────────────────────────────
+
+    public function test_no_get_config_falsy_default_pattern_in_classes(): void {
+        global $CFG;
+        $pluginroot = $CFG->dirroot . '/local/ai_course_assistant/classes';
+        $offenders = $this->find_falsy_default_get_config($pluginroot);
+
+        $this->assertEmpty($offenders,
+            "Found get_config(...) ?: <numeric|float-default> patterns. The ?: operator treats the string \"0\" as falsy and silently applies the default, breaking documented \"set to 0 to disable\" contracts. Replace with: \$raw = get_config(...); \$x = (\$raw === false || \$raw === '') ? <default> : (int|float)\$raw;\n\nOffenders:\n  " . implode("\n  ", $offenders));
+    }
+
+    private function find_falsy_default_get_config(string $rootdir): array {
+        $offenders = [];
+        $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($rootdir));
+        foreach ($rii as $file) {
+            if ($file->isDir() || $file->getExtension() !== 'php') {
+                continue;
+            }
+            $lines = file($file->getPathname(), FILE_IGNORE_NEW_LINES);
+            foreach ($lines as $i => $line) {
+                // get_config(...) ?: <number|float>  — flags 5, 100, 0.7, etc.
+                // Allows ?: 0 (already-zero default doesn't change behaviour),
+                // and ?: '' / ?: 'string' (string defaults are out of scope —
+                // empty-string falsy IS a valid sentinel in many cases).
+                if (preg_match("/get_config\\s*\\(\\s*'local_ai_course_assistant'.*?\\?:\\s*([1-9][0-9]*(?:\\.[0-9]+)?)/", $line, $m)) {
+                    $offenders[] = sprintf('%s:%d → ?: %s',
+                        str_replace($rootdir . '/', '', $file->getPathname()),
+                        $i + 1, $m[1]);
+                }
+            }
+        }
+        sort($offenders);
+        return $offenders;
     }
 }

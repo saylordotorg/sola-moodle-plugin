@@ -81,7 +81,8 @@ class review_queue {
         } catch (\Throwable $e) { /* tables may not exist on stripped installs */ }
 
         // 2. Conversations that hit the off-topic threshold.
-        $offtopicmin = (int) (get_config('local_ai_course_assistant', 'offtopic_max_per_session') ?: 3);
+        $rawofftopic = get_config('local_ai_course_assistant', 'offtopic_max_per_session');
+        $offtopicmin = ($rawofftopic === false || $rawofftopic === '') ? 3 : (int) $rawofftopic;
         try {
             $convs = $DB->get_records_sql(
                 "SELECT id AS sourceid, userid, offtopic_count, timemodified AS twhen

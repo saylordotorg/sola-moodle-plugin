@@ -468,7 +468,8 @@ class context_builder {
         // v5.0.0 patch (Tomi UT round 2): code-level fallback raised
         // 10000 → 12000 to give the new current_page_content section
         // headroom alongside the existing learner + behavior sections.
-        $budget = (int) (get_config('local_ai_course_assistant', 'prompt_budget_chars') ?: 12000);
+        $rawbudget = get_config('local_ai_course_assistant', 'prompt_budget_chars');
+        $budget = ($rawbudget === false || $rawbudget === '') ? 12000 : (int) $rawbudget;
         $assembled = prompt_builder::assemble($sections, $budget);
 
         // v5.0.0 patch 14 (Tomi UT round 7 follow-up): couple the SAFETY-tail
@@ -764,9 +765,13 @@ class context_builder {
     private static function build_course_content(int $courseid, int $preemptcmid = 0): string {
         global $DB;
 
-        // Per-resource character cap and total cap.
-        $maxperresource = (int)(get_config('local_ai_course_assistant', 'max_content_per_resource') ?: 1500);
-        $maxtotal       = (int)(get_config('local_ai_course_assistant', 'max_total_content') ?: 15000);
+        // Per-resource character cap and total cap. Use explicit-default
+        // helpers so a literal 0 ("disable resource content entirely") is
+        // not silently re-enabled by ?: fall-through to the default.
+        $rawper = get_config('local_ai_course_assistant', 'max_content_per_resource');
+        $maxperresource = ($rawper === false || $rawper === '') ? 1500 : (int) $rawper;
+        $rawtotal = get_config('local_ai_course_assistant', 'max_total_content');
+        $maxtotal = ($rawtotal === false || $rawtotal === '') ? 15000 : (int) $rawtotal;
         $total          = 0;
         $sections       = [];
 

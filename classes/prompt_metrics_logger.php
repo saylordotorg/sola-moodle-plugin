@@ -228,7 +228,8 @@ class prompt_metrics_logger {
     public static function apply_recommendation(): array {
         $agg = self::aggregate();
         $rec = self::recommend($agg);
-        $current = (int) (get_config('local_ai_course_assistant', 'prompt_budget_chars') ?: 12000);
+        $rawcurrent = get_config('local_ai_course_assistant', 'prompt_budget_chars');
+        $current = ($rawcurrent === false || $rawcurrent === '') ? 12000 : (int) $rawcurrent;
         if ($rec === null) {
             return ['applied' => false, 'old' => $current, 'new' => null, 'reason' => 'no recommendation (insufficient data or current value already optimal)'];
         }

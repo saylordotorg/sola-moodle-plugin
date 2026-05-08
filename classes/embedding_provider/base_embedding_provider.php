@@ -45,7 +45,8 @@ abstract class base_embedding_provider {
     public function __construct() {
         $this->apikey     = (string) (get_config('local_ai_course_assistant', 'embed_apikey') ?: '');
         $this->model      = (string) (get_config('local_ai_course_assistant', 'embed_model') ?: $this->get_default_model());
-        $this->dimensions = (int)   (get_config('local_ai_course_assistant', 'embed_dimensions') ?: 1536);
+        $rawdim = get_config('local_ai_course_assistant', 'embed_dimensions');
+        $this->dimensions = ($rawdim === false || $rawdim === '') ? 1536 : (int) $rawdim;
 
         $configurl = get_config('local_ai_course_assistant', 'embed_apibaseurl');
         $this->baseurl = !empty($configurl) ? rtrim($configurl, '/') : $this->get_default_base_url();

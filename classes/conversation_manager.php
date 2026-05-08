@@ -240,7 +240,8 @@ class conversation_manager {
      * @return array Array of ['role' => '...', 'content' => '...'].
      */
     public static function get_history_for_api(int $conversationid): array {
-        $maxpairs = (int) (get_config('local_ai_course_assistant', 'maxhistory') ?: 20);
+        $rawmax = get_config('local_ai_course_assistant', 'maxhistory');
+        $maxpairs = ($rawmax === false || $rawmax === '') ? 20 : (int) $rawmax;
         $maxmessages = $maxpairs * 2;
 
         $messages = self::get_messages($conversationid);

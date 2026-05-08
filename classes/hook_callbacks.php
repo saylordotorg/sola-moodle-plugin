@@ -26,6 +26,21 @@ namespace local_ai_course_assistant;
 class hook_callbacks {
 
     /**
+     * Read an int plugin config value, falling back to $default ONLY when the
+     * config has never been set. A literal "0" returns 0, not the default —
+     * the ?: shortcut would silently apply the default and break documented
+     * "set to 0 to disable / corner-snap / always-trigger" contracts.
+     *
+     * @param string $key Config key under local_ai_course_assistant.
+     * @param int $default Value to return when the config is unset or empty string.
+     * @return int
+     */
+    private static function config_int_with_default(string $key, int $default): int {
+        $raw = get_config('local_ai_course_assistant', $key);
+        return ($raw === false || $raw === '') ? $default : (int) $raw;
+    }
+
+    /**
      * Inject the chat widget into course pages via the before_footer hook.
      *
      * Wraps the real implementation in a try/catch so that any unexpected
@@ -543,9 +558,11 @@ class hook_callbacks {
             }
         }
 
-        // Position offsets for fine-grained widget placement.
-        $offsetx = (int)(get_config('local_ai_course_assistant', 'position_offset_x') ?: 95);
-        $offsety = (int)(get_config('local_ai_course_assistant', 'position_offset_y') ?: 20);
+        // Position offsets for fine-grained widget placement. ?: would treat
+        // a literal 0 ("snap to corner") as falsy and silently apply the
+        // default; use the explicit-default helper.
+        $offsetx = self::config_int_with_default('position_offset_x', 95);
+        $offsety = self::config_int_with_default('position_offset_y', 20);
 
         // Talking avatar availability — pedagogy default + configured driver.
         $talkingavatardriver = \local_ai_course_assistant\talking_avatar\provider_factory::make();
@@ -710,7 +727,7 @@ class hook_callbacks {
             'usertestingenabled'  => self::is_usertesting_enabled($courseid),
             'usertestingexternalurl' => get_config('local_ai_course_assistant', 'usertesting_external_url') ?: '',
             'surveyenabled'      => get_config('local_ai_course_assistant', 'survey_enabled') !== '0' ? '1' : '0',
-            'surveytrigger'      => (int)(get_config('local_ai_course_assistant', 'survey_trigger_messages') ?: 10),
+            'surveytrigger'      => self::config_int_with_default('survey_trigger_messages', 10),
             'completionpct'      => $completionpct,
             'contextdebugvisible' => $cansiteconfig,
             'starters'           => $starters,

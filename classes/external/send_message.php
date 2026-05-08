@@ -79,7 +79,8 @@ class send_message extends external_api {
                 if (!content_indexer::is_course_indexed($params['courseid'])) {
                     content_indexer::index_course($params['courseid']);
                 }
-                $topk = (int) (get_config('local_ai_course_assistant', 'rag_topk') ?: 5);
+                $rawtopk = get_config('local_ai_course_assistant', 'rag_topk');
+                $topk = ($rawtopk === false || $rawtopk === '') ? 5 : (int) $rawtopk;
                 $retrievedchunks = rag_retriever::retrieve($params['courseid'], $params['message'], $topk);
             } catch (\Exception $e) {
                 debugging('RAG retrieval failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
