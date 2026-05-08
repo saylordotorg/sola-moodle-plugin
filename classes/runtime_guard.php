@@ -19,6 +19,7 @@ namespace local_ai_course_assistant;
 use local_ai_course_assistant\validators\credential_leak_validator;
 use local_ai_course_assistant\validators\guard;
 use local_ai_course_assistant\validators\hallucination_validator;
+use local_ai_course_assistant\validators\memory_leak_validator;
 use local_ai_course_assistant\validators\pii_echo_validator;
 use local_ai_course_assistant\validators\second_person_validator;
 
@@ -65,6 +66,16 @@ class runtime_guard {
               ->add(new credential_leak_validator())
               ->add(new hallucination_validator())
               ->add(new second_person_validator());
+
+        // v5.4.0: gate the memory_leak_validator behind its own flag for
+        // staged roll-out. The validator was added in v5.3.35 and the
+        // jailbreak suite has corroborated its threat-pattern coverage,
+        // but it has zero production exposure — admins opt in per site
+        // and watch the audit_log for false-positives at 'annotate' mode
+        // before promoting the parent `validators_runtime_mode` to 'block'.
+        if ((bool) get_config('local_ai_course_assistant', 'validators_runtime_memory_leak_enabled')) {
+            $guard->add(new memory_leak_validator());
+        }
 
         try {
             $results = $guard->check($response, $context);

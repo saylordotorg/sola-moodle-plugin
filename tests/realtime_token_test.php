@@ -215,4 +215,130 @@ final class realtime_token_test extends \advanced_testcase {
         $this->assertStringContainsString('Photosynthesis Basics', $result['instructions'],
             'pagetitle must surface in the voice-mode instructions tail.');
     }
+
+    // ───────────────────────────────────────────────────────────
+    // v5.4.0 — OpenAI Realtime path with curl mocking.
+    // ───────────────────────────────────────────────────────────
+
+    /**
+     * Wire up an OpenAI voice provider as the active realtime provider.
+     * Pairs with get_realtime_token::$test_http_response to short-circuit
+     * the upstream curl call.
+     */
+    private function configure_openai_voice(): void {
+        // Format: provider|apikey|label|realtime_voice|tts_voice
+        set_config('voice_providers',
+            "openai|sk-openai-test|MyOpenAI|alloy|alloy",
+            'local_ai_course_assistant');
+        set_config('voice_active_realtime', 'MyOpenAI', 'local_ai_course_assistant');
+    }
+
+    protected function tearDown(): void {
+        // Always clear the test override so a leak from one test cannot
+        // affect the next or, worse, leak into a non-test path.
+        get_realtime_token::$test_http_response = null;
+        parent::tearDown();
+    }
+
+    public function test_openai_happy_path_returns_minted_ephemeral_token(): void {
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+
+        // Mock the OpenAI Realtime client_secrets endpoint response.
+        get_realtime_token::$test_http_response = [
+            'body' => json_encode([
+                'client_secret' => ['value' => 'eph_sk_test_abcdef123456'],
+            ]),
+            'http_code' => 200,
+        ];
+
+        $result = get_realtime_token::execute((int)$course->id);
+
+        $this->assertEquals('openai', $result['provider']);
+        $this->assertEquals('alloy', $result['voice']);
+        $this->assertEquals('eph_sk_test_abcdef123456', $result['token'],
+            'The minted ephemeral secret must be returned verbatim to the client.');
+        $this->assertNotEmpty($result['endpoint'],
+            'The OpenAI Realtime endpoint URL is sourced from voice_registry config.');
+    }
+
+    public function test_openai_falls_back_to_top_level_value_field(): void {
+        // Older OpenAI Realtime API responses returned `{"value": "..."}` at
+        // the top level instead of the nested `client_secret.value`. The
+        // service has a fallback for both shapes.
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+
+        get_realtime_token::$test_http_response = [
+            'body' => json_encode(['value' => 'eph_sk_legacy_shape']),
+            'http_code' => 200,
+        ];
+
+        $result = get_realtime_token::execute((int)$course->id);
+        $this->assertEquals('eph_sk_legacy_shape', $result['token']);
+    }
+
+    public function test_openai_401_unauthorized_throws_with_provider_message(): void {
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+
+        get_realtime_token::$test_http_response = [
+            'body' => json_encode([
+                'error' => ['message' => 'Incorrect API key provided'],
+            ]),
+            'http_code' => 401,
+        ];
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessageMatches('/Incorrect API key/');
+        get_realtime_token::execute((int)$course->id);
+    }
+
+    public function test_openai_500_throws_with_generic_message_when_no_error_field(): void {
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+
+        get_realtime_token::$test_http_response = [
+            'body' => '<html>500 Internal Server Error</html>',
+            'http_code' => 500,
+        ];
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessageMatches('/API error 500/');
+        get_realtime_token::execute((int)$course->id);
+    }
+
+    public function test_openai_200_with_no_token_throws_unexpected_response(): void {
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+
+        get_realtime_token::$test_http_response = [
+            'body' => json_encode(['client_secret' => ['value' => '']]),
+            'http_code' => 200,
+        ];
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessageMatches('/Unexpected response/');
+        get_realtime_token::execute((int)$course->id);
+    }
+
+    public function test_openai_clean_returnvalue_round_trip(): void {
+        $this->resetAfterTest();
+        $this->configure_openai_voice();
+        [$course, $user] = $this->enrolled_student();
+        get_realtime_token::$test_http_response = [
+            'body' => json_encode(['client_secret' => ['value' => 'eph_sk_round_trip']]),
+            'http_code' => 200,
+        ];
+
+        $result = get_realtime_token::execute((int)$course->id);
+        $clean = \core_external\external_api::clean_returnvalue(
+            get_realtime_token::execute_returns(), $result);
+        $this->assertEquals($result, $clean);
+    }
 }

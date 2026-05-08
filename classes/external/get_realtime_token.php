@@ -31,6 +31,18 @@ use core_external\external_value;
 class get_realtime_token extends external_api {
 
     /**
+     * Test-only override for the OpenAI Realtime curl call (v5.4.0).
+     *
+     * Set to ['body' => string, 'http_code' => int] to short-circuit the
+     * upstream network call in PHPUnit. Production paths must never set
+     * this — the static is always null at boot and is only mutated from
+     * within the test suite. Reset to null in test tearDown.
+     *
+     * @var array{body:string,http_code:int}|null
+     */
+    public static ?array $test_http_response = null;
+
+    /**
      * Returns description of method parameters.
      *
      * @return external_function_parameters
@@ -176,22 +188,7 @@ class get_realtime_token extends external_api {
         }
 
         // OpenAI: mint an ephemeral client secret so the key never reaches the browser.
-        $body = '{}';
-        $ch = curl_init('https://api.openai.com/v1/realtime/client_secrets');
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $body,
-            CURLOPT_HTTPHEADER     => [
-                'Authorization: Bearer ' . $cfg['apikey'],
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($body),
-            ],
-            CURLOPT_TIMEOUT        => 5,
-        ]);
-        $response = curl_exec($ch);
-        $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        [$response, $httpcode] = self::call_openai_realtime((string) $cfg['apikey']);
 
         if ($httpcode !== 200) {
             $errdata = json_decode($response, true);
@@ -225,6 +222,42 @@ class get_realtime_token extends external_api {
      */
     private static function b64url(string $data): string {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * Hit the OpenAI Realtime ephemeral-token endpoint.
+     *
+     * Returns [body, http_code]. Tests can short-circuit the upstream
+     * network call by populating self::$test_http_response — when that
+     * static is set, the curl call is skipped entirely.
+     *
+     * @param string $apikey OpenAI API key (Bearer).
+     * @return array{0:string,1:int} [response body, HTTP status]
+     */
+    private static function call_openai_realtime(string $apikey): array {
+        if (self::$test_http_response !== null) {
+            return [
+                (string) (self::$test_http_response['body'] ?? ''),
+                (int) (self::$test_http_response['http_code'] ?? 0),
+            ];
+        }
+        $body = '{}';
+        $ch = curl_init('https://api.openai.com/v1/realtime/client_secrets');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $body,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $apikey,
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($body),
+            ],
+            CURLOPT_TIMEOUT        => 5,
+        ]);
+        $response = (string) curl_exec($ch);
+        $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return [$response, $httpcode];
     }
 
     /**
