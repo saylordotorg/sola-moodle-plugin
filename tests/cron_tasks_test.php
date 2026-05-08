@@ -782,20 +782,32 @@ final class cron_tasks_test extends \advanced_testcase {
     private function find_falsy_default_get_config(string $rootdir): array {
         $offenders = [];
         $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($rootdir));
+        // Only flag numeric / float / constant defaults inside an (int) or
+        // (float) cast — those are the bug. `(string) X ?: 'DEFAULT_URL'` is
+        // intentional: empty-string is a valid sentinel for "use default" on
+        // string-typed configs, and `?: '0'` (a literal-zero string) is not
+        // a sensible setting on those.
+        // Catches the four real-world shapes the codebase has shipped:
+        //   (int) (get_config(...) ?: 365)
+        //   (float) (get_config(...) ?: 0.7)
+        //   (int) (get_config(...) ?: self::DEFAULT_X)
+        //   (int) (get_config(...) ?: SomeClass::CONST)
+        $defaultpatterns = [
+            '[1-9][0-9]*(?:\\.[0-9]+)?',                          // numeric / float literal, non-zero
+            '(?:self|static|[A-Z][A-Za-z0-9_]+)::[A-Z][A-Z0-9_]+', // ::CONSTANT
+        ];
+        $regex = "/\\((int|float)\\)\\s*\\(\\s*get_config\\s*\\(\\s*'local_ai_course_assistant'.*?\\?:\\s*("
+            . implode('|', $defaultpatterns) . ")/";
         foreach ($rii as $file) {
             if ($file->isDir() || $file->getExtension() !== 'php') {
                 continue;
             }
             $lines = file($file->getPathname(), FILE_IGNORE_NEW_LINES);
             foreach ($lines as $i => $line) {
-                // get_config(...) ?: <number|float>  — flags 5, 100, 0.7, etc.
-                // Allows ?: 0 (already-zero default doesn't change behaviour),
-                // and ?: '' / ?: 'string' (string defaults are out of scope —
-                // empty-string falsy IS a valid sentinel in many cases).
-                if (preg_match("/get_config\\s*\\(\\s*'local_ai_course_assistant'.*?\\?:\\s*([1-9][0-9]*(?:\\.[0-9]+)?)/", $line, $m)) {
-                    $offenders[] = sprintf('%s:%d → ?: %s',
+                if (preg_match($regex, $line, $m)) {
+                    $offenders[] = sprintf('%s:%d → (%s) (... ?: %s)',
                         str_replace($rootdir . '/', '', $file->getPathname()),
-                        $i + 1, $m[1]);
+                        $i + 1, $m[1], $m[2]);
                 }
             }
         }

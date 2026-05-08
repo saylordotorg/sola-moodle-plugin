@@ -89,7 +89,8 @@ class scorm_extractor {
                 return '';
             }
 
-            $maxmb = (int) (get_config('local_ai_course_assistant', 'rag_scorm_max_mb') ?: self::DEFAULT_MAX_MB);
+            $rawmm = get_config('local_ai_course_assistant', 'rag_scorm_max_mb');
+            $maxmb = ($rawmm === false || $rawmm === '') ? self::DEFAULT_MAX_MB : (int) $rawmm;
             if ($maxmb <= 0) {
                 $maxmb = self::DEFAULT_MAX_MB;
             }

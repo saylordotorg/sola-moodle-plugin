@@ -75,7 +75,8 @@ class attachment_manager {
      * @return int
      */
     public static function get_max_size_bytes(): int {
-        $mb = (int) (get_config('local_ai_course_assistant', 'attachment_max_size_mb') ?: self::DEFAULT_MAX_MB);
+        $rawmb = get_config('local_ai_course_assistant', 'attachment_max_size_mb');
+        $mb = ($rawmb === false || $rawmb === '') ? self::DEFAULT_MAX_MB : (int) $rawmb;
         if ($mb < 1) {
             $mb = self::DEFAULT_MAX_MB;
         }

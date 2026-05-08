@@ -325,8 +325,10 @@ class objective_manager {
      * @return array{score:float, attempts:int, status:string, last:int}
      */
     public static function compute_mastery(int $userid, int $objectiveid): array {
-        $threshold = (float) (get_config('local_ai_course_assistant', 'mastery_threshold') ?: self::DEFAULT_THRESHOLD);
-        $window = (int) (get_config('local_ai_course_assistant', 'mastery_window') ?: self::DEFAULT_WINDOW);
+        $rawthresh = get_config('local_ai_course_assistant', 'mastery_threshold');
+        $threshold = ($rawthresh === false || $rawthresh === '') ? self::DEFAULT_THRESHOLD : (float) $rawthresh;
+        $rawwindow = get_config('local_ai_course_assistant', 'mastery_window');
+        $window = ($rawwindow === false || $rawwindow === '') ? self::DEFAULT_WINDOW : (int) $rawwindow;
 
         $attempts = self::get_attempts($userid, $objectiveid, $window);
         $count = count($attempts);
@@ -370,8 +372,8 @@ class objective_manager {
         $decayenabled = (bool) get_config('local_ai_course_assistant', 'mastery_decay_enabled');
         $decaymultiplier = 1.0;
         if ($decayenabled && $last > 0) {
-            $halflifedays = (int) (get_config('local_ai_course_assistant', 'mastery_decay_half_life_days')
-                ?: self::DEFAULT_DECAY_HALF_LIFE_DAYS);
+            $rawhl = get_config('local_ai_course_assistant', 'mastery_decay_half_life_days');
+            $halflifedays = ($rawhl === false || $rawhl === '') ? self::DEFAULT_DECAY_HALF_LIFE_DAYS : (int) $rawhl;
             if ($halflifedays > 0) {
                 $agedays = max(0, (time() - $last) / 86400);
                 $decaymultiplier = pow(0.5, $agedays / $halflifedays);
