@@ -35,7 +35,10 @@ class audit_cleanup extends \core\task\scheduled_task {
 
     public function execute(): void {
         global $DB;
-        $days = (int) (get_config('local_ai_course_assistant', 'audit_retention_days') ?: 365);
+        // Use ?? for default-when-unset; ?: would fall through on the
+        // string "0" and silently break the documented "0 disables" contract.
+        $raw = get_config('local_ai_course_assistant', 'audit_retention_days');
+        $days = ($raw === false || $raw === '') ? 365 : (int) $raw;
         if ($days <= 0) {
             return;
         }

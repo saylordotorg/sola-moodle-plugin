@@ -33,7 +33,11 @@ class send_inactivity_reminders extends \core\task\scheduled_task {
     public function execute(): void {
         global $DB;
 
-        $threshold = (int) get_config('local_ai_course_assistant', 'inactivity_threshold_days') ?: 7;
+        // Use ?? for default-when-unset; ?: would fall through on a literal
+        // "0" config value and apply the 7-day default instead of the admin's
+        // explicit choice.
+        $rawthreshold = get_config('local_ai_course_assistant', 'inactivity_threshold_days');
+        $threshold = ($rawthreshold === false || $rawthreshold === '') ? 7 : (int) $rawthreshold;
         $cutoff = time() - ($threshold * 86400);
         $display_name = get_config('local_ai_course_assistant', 'display_name') ?: 'SOLA';
 
