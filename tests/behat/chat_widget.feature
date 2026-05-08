@@ -74,6 +74,24 @@ Feature: AI Course Assistant widget
     When I click on ".local-ai-course-assistant__btn-close" "css_element"
     Then "#local-ai-course-assistant-drawer" "css_element" should not be visible
 
+  @javascript
+  Scenario: Sending a message returns a streamed reply from the stub provider
+    # The full SSE pipeline: chat.js -> sse.php -> base_provider ->
+    # stub_provider -> stream chunks -> DOM. Catches regressions in SSE
+    # wiring, message rendering, and the conversation manager that no
+    # static check can reach. The v5.3.26 stub provider returns
+    # 'Stub assistant reply.' for prompts that don't match a more specific
+    # category, so the assertion below is exact.
+    Given the following config values are set as admin:
+      | provider | stub | local_ai_course_assistant |
+      | apikey   | x    | local_ai_course_assistant |
+    And I log in as "student1"
+    And I am on "Test Course" course homepage
+    When I click on "#local-ai-course-assistant-toggle" "css_element"
+    And I set the field "Ask a question..." to "Hello tutor"
+    And I click on ".local-ai-course-assistant__btn-send" "css_element"
+    Then I should see "Stub assistant reply" in the ".local-ai-course-assistant__messages" "css_element"
+
   Scenario: Chat widget not visible when plugin is disabled
     Given the following config values are set as admin:
       | enabled | 0 | local_ai_course_assistant |
