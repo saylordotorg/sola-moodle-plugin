@@ -1319,7 +1319,7 @@ if ($hassiteconfig) {
         'local_ai_course_assistant/mastery_threshold',
         get_string('settings:mastery_threshold', 'local_ai_course_assistant'),
         get_string('settings:mastery_threshold_desc', 'local_ai_course_assistant'),
-        '0.85',
+        '0.75',
         PARAM_RAW
     ));
     $settings->add(new admin_setting_configtext(

@@ -953,5 +953,25 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026050700, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026050837) {
+        // v5.3.37: lower the default mastery_threshold from 0.85 to 0.75.
+        // The previous default (0.85) was mathematically unreachable given
+        // the PRIOR_ALPHA/BETA=2/2 + DEFAULT_WINDOW=8 combination — the
+        // best achievable score is ≈ 0.79, so no learner could ever reach
+        // `mastered` status with the default settings. The new 0.75
+        // default crosses on 5 perfect attempts.
+        //
+        // Only update the stored value when it equals the legacy default
+        // (or is unset). Admin customisations other than 0.85 are left
+        // alone. Callers who explicitly set 0.85 ARE migrated; that is
+        // intentional since 0.85 produced the unreachable-mastery bug.
+        $stored = get_config('local_ai_course_assistant', 'mastery_threshold');
+        if ($stored === false || $stored === '' || (string) $stored === '0.85') {
+            set_config('mastery_threshold', '0.75', 'local_ai_course_assistant');
+        }
+
+        upgrade_plugin_savepoint(true, 2026050837, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

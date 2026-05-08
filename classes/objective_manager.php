@@ -48,8 +48,19 @@ class objective_manager {
     private const PRIOR_BETA = 2.0;
     /** How many most-recent attempts feed the estimator by default. */
     private const DEFAULT_WINDOW = 8;
-    /** Default mastery threshold. */
-    private const DEFAULT_THRESHOLD = 0.85;
+    /**
+     * Default mastery threshold.
+     *
+     * Pre-v5.3.37 this was 0.85. With PRIOR_ALPHA=2 / PRIOR_BETA=2 and
+     * DEFAULT_WINDOW=8, the maximum achievable score for all-correct
+     * attempts is approximately 0.79 — so 0.85 was unreachable and no
+     * learner could ever flip to `mastered` with default settings. v5.3.37
+     * lowered the constant to 0.75, which 5 consecutive correct attempts
+     * cross. One mistake on a recent attempt correctly delays mastery by
+     * approximately one attempt. See `.wiki/Mastery-Tracking.md` for the
+     * full math and the four design alternatives we considered.
+     */
+    private const DEFAULT_THRESHOLD = 0.75;
     /** Minimum attempts before the status can flip to "mastered". */
     private const MIN_ATTEMPTS_FOR_MASTERY = 3;
     /** v4.0 / M4 — Default half-life for the time-decay factor in days. */

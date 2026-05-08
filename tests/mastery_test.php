@@ -208,6 +208,110 @@ final class mastery_test extends \advanced_testcase {
         $this->assertLessThan(1.0, $with['decay_multiplier']);
     }
 
+    // ───────────────────────────────────────────────────────────
+    // v5.3.37 — Threshold tuning pins. The default threshold dropped
+    // from 0.85 to 0.75 because 0.85 was mathematically unreachable with
+    // PRIOR_ALPHA=2/PRIOR_BETA=2/WINDOW=8 (max achievable ≈ 0.79). These
+    // tests pin the new mastery curve so a future tuning change cannot
+    // silently regress to "mastery is unreachable" again.
+    // ───────────────────────────────────────────────────────────
+
+    public function test_default_threshold_five_perfect_attempts_promotes_to_mastered(): void {
+        $this->resetAfterTest();
+        // Clear any stored config — the test asserts the constant default,
+        // not whatever the install-time setting wrote (which may be the
+        // legacy 0.85 in older installs that have not yet run the v5.3.37
+        // upgrade savepoint).
+        unset_config('mastery_threshold', 'local_ai_course_assistant');
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $objid = objective_manager::create((int)$course->id, 'X');
+
+        // 5 perfect attempts at weight 1.0: score ≈ 0.753, just over 0.75.
+        for ($i = 0; $i < 5; $i++) {
+            objective_manager::record_attempt(
+                (int)$user->id, (int)$course->id, $objid, true, 'quiz', 1.0, null, null);
+        }
+
+        $m = objective_manager::compute_mastery((int)$user->id, $objid);
+
+        $this->assertEquals('mastered', $m['status'],
+            'Default tuning must reach mastered after 5 perfect attempts.');
+        $this->assertGreaterThanOrEqual(0.75, $m['score']);
+    }
+
+    public function test_default_threshold_four_perfect_attempts_stays_at_learning(): void {
+        $this->resetAfterTest();
+        unset_config('mastery_threshold', 'local_ai_course_assistant');
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $objid = objective_manager::create((int)$course->id, 'X');
+
+        // 4 perfect attempts: score ≈ 0.731, just below the 0.75 threshold.
+        // The boundary between "learning" and "mastered" is between attempt 4 and 5.
+        for ($i = 0; $i < 4; $i++) {
+            objective_manager::record_attempt(
+                (int)$user->id, (int)$course->id, $objid, true, 'quiz', 1.0, null, null);
+        }
+
+        $m = objective_manager::compute_mastery((int)$user->id, $objid);
+
+        $this->assertEquals('learning', $m['status'],
+            'Four perfect attempts must NOT reach mastered — boundary lives between 4 and 5.');
+        $this->assertLessThan(0.75, $m['score']);
+    }
+
+    public function test_default_threshold_one_mistake_in_window_blocks_mastery(): void {
+        $this->resetAfterTest();
+        unset_config('mastery_threshold', 'local_ai_course_assistant');
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $objid = objective_manager::create((int)$course->id, 'X');
+
+        // 7 attempts, one wrong (the second-most-recent). Even with 6 of 7
+        // correct the score only reaches ~0.69 — below 0.75. Mastery requires
+        // the wrong attempt to age out of the 8-attempt window before
+        // promotion can fire. This is intentional: mastered means "perfect
+        // recent practice", not "mostly correct in the long run".
+        for ($i = 0; $i < 7; $i++) {
+            $iscorrect = ($i !== 1); // mark attempt index 1 (second-most-recent) wrong.
+            objective_manager::record_attempt(
+                (int)$user->id, (int)$course->id, $objid, $iscorrect, 'quiz', 1.0, null, null);
+        }
+
+        $m = objective_manager::compute_mastery((int)$user->id, $objid);
+
+        $this->assertEquals('learning', $m['status'],
+            'One mistake within the 8-attempt window must block mastery promotion.');
+        $this->assertLessThan(0.75, $m['score']);
+    }
+
+    public function test_default_threshold_eight_perfect_attempts_reaches_window_ceiling(): void {
+        $this->resetAfterTest();
+        unset_config('mastery_threshold', 'local_ai_course_assistant');
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $objid = objective_manager::create((int)$course->id, 'X');
+
+        // 8 perfect attempts fills the window. The decay-weighted-sum
+        // ceiling is W = (1 - 0.9^8) / 0.1 ≈ 5.695, giving a score of
+        // (2 + 5.695) / (4 + 5.695) ≈ 0.794. This pin documents the
+        // achievable maximum so any future change to PRIOR/DECAY/WINDOW
+        // surfaces here.
+        for ($i = 0; $i < 8; $i++) {
+            objective_manager::record_attempt(
+                (int)$user->id, (int)$course->id, $objid, true, 'quiz', 1.0, null, null);
+        }
+
+        $m = objective_manager::compute_mastery((int)$user->id, $objid);
+
+        $this->assertEquals('mastered', $m['status']);
+        $this->assertGreaterThanOrEqual(0.79, $m['score'],
+            'Window-ceiling score for all-correct attempts is ~0.794.');
+        $this->assertLessThan(0.80, $m['score'],
+            'And no higher than that — geometric decay caps the contribution of further attempts.');
+    }
+
     public function test_get_weak_objectives_returns_lowest_scoring_first(): void {
         $this->resetAfterTest();
         $course = $this->getDataGenerator()->create_course();
