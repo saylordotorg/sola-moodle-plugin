@@ -46,7 +46,7 @@ jobs:
 
       - name: Open GitHub issue on failure
         if: failure() && steps.smoke.outcome == 'failure'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const title = `⚠️ API Smoke Test Failed — ${new Date().toISOString().slice(0,10)}`;
