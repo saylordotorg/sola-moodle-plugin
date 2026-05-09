@@ -973,5 +973,29 @@ function xmldb_local_ai_course_assistant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026050837, 'local', 'ai_course_assistant');
     }
 
+    if ($oldversion < 2026050843) {
+        // v5.4.3: per-recipient email opt-out table. Stores (email,
+        // optout_type) pairs so SOLA can suppress sends for admins / staff /
+        // learners who have unsubscribed from a specific email family. The
+        // unique key on (email, optout_type) makes "is opted out?" a single
+        // record_exists call and idempotent re-record on duplicate links.
+        $table = new xmldb_table('local_ai_course_assistant_email_optout');
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('email', XMLDB_TYPE_CHAR, '190', null, XMLDB_NOTNULL);
+            $table->add_field('optout_type', XMLDB_TYPE_CHAR, '60', null, XMLDB_NOTNULL);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, null);
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_key('email_type_uniq', XMLDB_KEY_UNIQUE, ['email', 'optout_type']);
+            $table->add_index('userid_idx', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+            $table->add_index('optout_type_idx', XMLDB_INDEX_NOTUNIQUE, ['optout_type']);
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2026050843, 'local', 'ai_course_assistant');
+    }
+
     return true;
 }

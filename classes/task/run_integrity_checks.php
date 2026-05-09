@@ -109,6 +109,10 @@ class run_integrity_checks extends \core\task\scheduled_task {
             $body .= "PASSED ({$results['passed']}):\n  " . implode("\n  ", $passlines) . "\n";
         }
 
+        // v5.4.3: append unsubscribe footer + check opt-out per recipient.
+        $reason = 'You receive this report because your address is configured '
+            . 'as the SOLA integrity-report destination.';
+
         // Send using Moodle messaging.
         if (!empty($email)) {
             // Support comma-separated email addresses.
@@ -120,6 +124,15 @@ class run_integrity_checks extends \core\task\scheduled_task {
                     mtrace("Skipping invalid email: {$addr}");
                     continue;
                 }
+                if (\local_ai_course_assistant\email_optout::is_opted_out($addr,
+                        \local_ai_course_assistant\email_optout::TYPE_INTEGRITY_REPORT)) {
+                    mtrace("Integrity report skipped (unsubscribed): {$addr}");
+                    continue;
+                }
+                $bodywithfooter = \local_ai_course_assistant\email_footer::append_text(
+                    $body, $addr,
+                    \local_ai_course_assistant\email_optout::TYPE_INTEGRITY_REPORT,
+                    $reason);
                 $touser = \core_user::get_noreply_user();
                 $touser->email = $addr;
                 $touser->id = -1;
@@ -134,24 +147,32 @@ class run_integrity_checks extends \core\task\scheduled_task {
                 $touser->auth = 'manual';
                 $touser->confirmed = 1;
 
-                email_to_user($touser, $fromuser, $subject, $body, nl2br(s($body)));
+                email_to_user($touser, $fromuser, $subject, $bodywithfooter, nl2br(s($bodywithfooter)));
                 mtrace("Integrity report sent to {$addr}.");
             }
-        } else {
+        } else if (!\local_ai_course_assistant\email_optout::is_opted_out(
+                (string) $admin->email,
+                \local_ai_course_assistant\email_optout::TYPE_INTEGRITY_REPORT)) {
             // Send via Moodle message to admin.
+            $bodywithfooter = \local_ai_course_assistant\email_footer::append_text(
+                $body, (string) $admin->email,
+                \local_ai_course_assistant\email_optout::TYPE_INTEGRITY_REPORT,
+                $reason);
             $message = new \core\message\message();
             $message->component = 'local_ai_course_assistant';
             $message->name = 'integrity_report';
             $message->userfrom = \core_user::get_noreply_user();
             $message->userto = $admin;
             $message->subject = $subject;
-            $message->fullmessage = $body;
+            $message->fullmessage = $bodywithfooter;
             $message->fullmessageformat = FORMAT_PLAIN;
-            $message->fullmessagehtml = nl2br(s($body));
+            $message->fullmessagehtml = nl2br(s($bodywithfooter));
             $message->smallmessage = $subject;
             $message->notification = 1;
             message_send($message);
             mtrace("Integrity report sent to admin user #{$admin->id}.");
+        } else {
+            mtrace('Integrity report skipped: admin has unsubscribed.');
         }
     }
 }

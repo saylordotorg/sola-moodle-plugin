@@ -629,5 +629,23 @@
         <INDEX NAME="open_sessions" UNIQUE="false" FIELDS="ended_at, started_at"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="local_ai_course_assistant_email_optout" COMMENT="v5.4.3: per-recipient opt-out per email type. Covers admin/staff destinations (Learning Radar, anomaly digest, etc.) and learner emails for which the legacy reminder/digest tokens are not the right fit.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="email" TYPE="char" LENGTH="190" NOTNULL="true" SEQUENCE="false" COMMENT="Recipient email address (lowercased)"/>
+        <FIELD NAME="optout_type" TYPE="char" LENGTH="60" NOTNULL="true" SEQUENCE="false" COMMENT="Email type key, e.g. learning_radar, anomaly_digest, integrity_report, spend_alert"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optional Moodle user id when known; null for arbitrary admin/staff email destinations"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optional course context"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="email_type_uniq" TYPE="unique" FIELDS="email, optout_type"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="optout_type_idx" UNIQUE="false" FIELDS="optout_type"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

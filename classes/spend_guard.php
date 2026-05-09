@@ -272,12 +272,20 @@ class spend_guard {
             . "They will resume automatically at the start of the next period, or when the cap is raised.\n\n"
             . "Manage spend caps: Site admin > Plugins > Local plugins > AI Course Assistant > Settings.";
 
+        // v5.4.3: per-recipient unsubscribe footer + opt-out check.
+        $reason = 'You receive this alert because your address is configured '
+            . 'as a SOLA spend-guard recipient.';
         foreach (array_filter(array_map('trim', explode(',', $recipients))) as $email) {
+            if (email_optout::is_opted_out($email, email_optout::TYPE_SPEND_ALERT)) {
+                continue;
+            }
+            $bodywithfooter = email_footer::append_text($body, $email,
+                email_optout::TYPE_SPEND_ALERT, $reason);
             $user = \core_user::get_noreply_user();
             $to = clone $user;
             $to->email = $email;
             $to->id = -99;
-            email_to_user($to, $user, $subject, $body);
+            email_to_user($to, $user, $subject, $bodywithfooter);
         }
 
         set_config($flagkey, 1, 'local_ai_course_assistant');

@@ -101,8 +101,19 @@ class outreach_sender {
             if (!$user || !empty($user->deleted) || !empty($user->suspended)) {
                 return false;
             }
+            // v5.4.3: per-recipient unsubscribe footer + opt-out check.
+            if (email_optout::is_opted_out((string) $user->email,
+                    email_optout::TYPE_OUTREACH)) {
+                return false;
+            }
+            $reason = 'You receive these from time to time when you hit a '
+                . 'milestone or finish a streak in your SOLA-supported course.';
+            $bodytextf = email_footer::append_text(
+                $bodytext, (string) $user->email, email_optout::TYPE_OUTREACH, $reason);
+            $bodyhtmlf = email_footer::append_html(
+                $bodyhtml, (string) $user->email, email_optout::TYPE_OUTREACH, $reason);
             $from = \core_user::get_noreply_user();
-            $sent = email_to_user($user, $from, $subject, $bodytext, $bodyhtml);
+            $sent = email_to_user($user, $from, $subject, $bodytextf, $bodyhtmlf);
             if (!$sent) {
                 return false;
             }

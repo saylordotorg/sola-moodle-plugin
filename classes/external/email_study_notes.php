@@ -51,20 +51,40 @@ class email_study_notes extends external_api {
         $course = $DB->get_record('course', ['id' => $params['courseid']], 'id,fullname', MUST_EXIST);
         $display_name = get_config('local_ai_course_assistant', 'display_name') ?: 'SOLA';
 
+        // v5.4.3: per-recipient unsubscribe footer + opt-out check.
+        // Study notes are user-initiated (the learner clicked "email me my notes")
+        // so opting out is rare in practice — but the link is required for
+        // CAN-SPAM consistency across every SOLA email type.
+        $useremail = (string) $USER->email;
+        if (\local_ai_course_assistant\email_optout::is_opted_out($useremail,
+                \local_ai_course_assistant\email_optout::TYPE_STUDY_NOTES)) {
+            return ['success' => false];
+        }
+        $reason = 'You are receiving this because you clicked "Email my notes" '
+            . 'from the SOLA chat drawer.';
+
+        $textbody = \local_ai_course_assistant\email_footer::append_text(
+            $params['notes'], $useremail,
+            \local_ai_course_assistant\email_optout::TYPE_STUDY_NOTES, $reason);
+        $htmlbody = '<div style="font-family:sans-serif;max-width:600px">'
+            . '<h2>' . $display_name . ' Study Notes</h2>'
+            . '<p><strong>Course:</strong> ' . htmlspecialchars($course->fullname) . '</p>'
+            . '<hr>'
+            . '<div style="white-space:pre-wrap">' . htmlspecialchars($params['notes']) . '</div>'
+            . '</div>';
+        $htmlbody = \local_ai_course_assistant\email_footer::append_html(
+            $htmlbody, $useremail,
+            \local_ai_course_assistant\email_optout::TYPE_STUDY_NOTES, $reason);
+
         $message = new \core\message\message();
         $message->component = 'local_ai_course_assistant';
         $message->name = 'study_notes';
         $message->userfrom = \core_user::get_noreply_user();
         $message->userto = $USER;
         $message->subject = $display_name . ' Study Notes — ' . $course->fullname;
-        $message->fullmessage = $params['notes'];
+        $message->fullmessage = $textbody;
         $message->fullmessageformat = FORMAT_PLAIN;
-        $message->fullmessagehtml = '<div style="font-family:sans-serif;max-width:600px">'
-            . '<h2>' . $display_name . ' Study Notes</h2>'
-            . '<p><strong>Course:</strong> ' . htmlspecialchars($course->fullname) . '</p>'
-            . '<hr>'
-            . '<div style="white-space:pre-wrap">' . htmlspecialchars($params['notes']) . '</div>'
-            . '</div>';
+        $message->fullmessagehtml = $htmlbody;
         $message->smallmessage = 'Your study notes from ' . $course->fullname;
         $message->notification = 1;
 

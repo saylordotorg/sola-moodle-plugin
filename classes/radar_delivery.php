@@ -169,13 +169,27 @@ class radar_delivery {
         }
 
         $subject = "SOLA Learning Radar — {$subjectprefix}";
+
+        // v5.4.3: per-recipient opt-out check + unsubscribe footer.
+        // Recipients who clicked the unsubscribe link in a prior report
+        // are silently skipped here. The footer goes on every send.
+        if (email_optout::is_opted_out($emailaddress, email_optout::TYPE_LEARNING_RADAR)) {
+            return false;
+        }
+        $reason = 'You receive this report because your address is configured '
+            . 'as a SOLA Learning Radar recipient.';
+
         $payload = self::format($format, $query, $response, $meta);
 
         if ($format === 'text') {
+            $payload = email_footer::append_text($payload, $emailaddress,
+                email_optout::TYPE_LEARNING_RADAR, $reason);
             return (bool) email_to_user($recipient, $admin, $subject, $payload);
         }
 
         // Non-text formats: attach as a file with a brief plain-text body.
+        // The unsubscribe footer goes on the human-readable body, not the
+        // attached CSV/JSON/markdown payload.
         global $CFG;
         list($filename, ) = self::format_meta($format);
         $tmpdir = $CFG->tempdir . '/sola_radar';
@@ -186,6 +200,8 @@ class radar_delivery {
         file_put_contents($tmpfile, $payload);
         $body = "Your SOLA Learning Radar report is attached.\n\n"
             . "Query: {$query}\n\nAll student data is anonymized.";
+        $body = email_footer::append_text($body, $emailaddress,
+            email_optout::TYPE_LEARNING_RADAR, $reason);
         $sent = (bool) email_to_user($recipient, $admin, $subject, $body, '', $tmpfile, $filename);
         @unlink($tmpfile);
         return $sent;
