@@ -6,10 +6,52 @@ The AI Course Assistant plugin implements comprehensive security measures to ens
 
 ## Version
 
-- **Plugin Version:** 0.3.0 (2025011500)
+- **Plugin Version:** 5.4.5+
 - **Moodle Requirement:** 4.5+
-- **Maturity:** BETA
-- **Last Updated:** January 2025
+- **Maturity:** STABLE (in production at saylor.org, 30-course pilot)
+- **Last Updated:** May 2026
+
+## Reporting a Security Issue
+
+Email `security@saylor.org` or open a GitHub Security Advisory on
+[saylordotorg/moodle-local_ai_course_assistant](https://github.com/saylordotorg/moodle-local_ai_course_assistant).
+Acknowledgement target: 1 business day. Patch target for HIGH or CRITICAL: 7 days.
+
+The full incident-response runbook (decision tree, emergency-disable CLI, audit-log queries, post-mortem template) lives at [`.wiki/Security-Incident-Response.md`](https://github.com/saylordotorg/moodle-local_ai_course_assistant/wiki/Security-Incident-Response).
+
+## Production Hardening Checklist (v5.4.5)
+
+For every production install of SOLA:
+
+- [ ] **Provider API keys are scoped.** See [`.wiki/Provider-Key-Scoping.md`](https://github.com/saylordotorg/moodle-local_ai_course_assistant/wiki/Provider-Key-Scoping) for the minimum-permission setting per provider (OpenAI project-scoped, Anthropic workspace-scoped, Vertex AI service account, etc.).
+- [ ] **Provider keys rotated within 90 days** and on every staff turnover.
+- [ ] **`spend_cap_site` set** in plugin admin settings, sized to the institution's monthly LLM budget × 0.9. The provider-side cap is the redundant safety net (1.2×).
+- [ ] **`audit_retention_days` set** to a value compatible with the institution's data-retention policy (default 365).
+- [ ] **`conversation_retention_days` set** to a value compatible with FERPA / GDPR Article 5 storage limitation (default 730).
+- [ ] **`validators_runtime_mode` is `annotate` or `block`** (not `off`). v4.8.0+ default is `annotate`.
+- [ ] **Health check passes:** `php admin/cli/health_check.php --strict` exits 0 immediately after deploy.
+- [ ] **Dependency scanning enabled:** Dependabot config at `.github/dependabot.yml` for npm + github-actions ecosystems.
+- [ ] **Emergency-disable runbook reviewed:** the on-call admin knows where `php admin/cli/emergency_disable.php` lives.
+
+## What gets logged (and what does not)
+
+The plugin's audit log records security-relevant events but **never the content of learner messages or assistant responses**. The full data inventory:
+
+| Event | Captured | Not captured |
+|-------|----------|--------------|
+| `message_sent` | userid, courseid, conversation_id, role, message_length (int) | message text |
+| `runtime_validator_fail` | userid, courseid, validator names, mode | response text |
+| `consent_given` | userid | — |
+| `data_download_self` | userid, bundle_keys | learner data values |
+| `admin_export_learner_data` | admin userid, target userid | learner data values |
+| `sse_error` | userid, courseid, exception class, exception message, pageid | request body, response chunks |
+| `model_fallback` | userid, courseid, from-provider, to-provider, reason | message content |
+| `emergency_disable` (v5.4.5+) | invoker, flags, touched config keys, reason | — |
+| `runtime_validator_fail` audit row | validators, mode | the actual response that tripped the validator |
+
+The `local_ai_course_assistant_msgs` table DOES store full chat history (the conversation feature requires it), with `conversation_retention_days` enforced cleanup. Access is gated to the learner themselves (`settings_user.php`), site admins (`admin_user_data.php`), and the privacy provider's GDPR Article 15/17 endpoints.
+
+`debugging()` / `error_log()` / `mtrace()` calls in the plugin source were audited at v5.4.5 — none emit learner message, prompt, response, body, or query content.
 
 ## SOC2 Compliance Measures
 

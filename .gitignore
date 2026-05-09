@@ -24,3 +24,17 @@ cdn/node_modules/
 # Local dev overrides
 *.local.php
 config.local.php
+
+# Secrets — never commit (v5.4.5). GitHub's built-in secret scanning catches
+# live tokens in pushes, but excluding these patterns from the index in the
+# first place is cheaper than revoking a leaked key.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
+service-account*.json

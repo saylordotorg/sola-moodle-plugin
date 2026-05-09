@@ -1,0 +1,50 @@
+# Dependabot configuration for SOLA — added in v5.4.5.
+#
+# SOLA is a Moodle plugin and pulls zero composer dependencies of its
+# own (Moodle core's vendored libs are out of scope). The two ecosystems
+# we DO depend on:
+#
+# 1. npm (devDependencies) — cdn/ build chain (rollup) and tests/a11y/
+#    (pa11y-ci). These are dev-only; a vulnerable transitive package
+#    in either folder cannot reach a learner. Updated weekly.
+#
+# 2. github-actions — the workflows in .github/workflows/ pin
+#    moodlehq/moodle-plugin-ci, shivammathur/setup-php, etc. Updated
+#    weekly so we pick up patched action versions automatically.
+#
+# Cloudflare Worker at services/xai_rt_proxy/ is a single worker.js
+# with no package.json — nothing to scan there.
+#
+# Dependabot also runs GitHub's built-in secret scanning automatically
+# on push; that catches the live-token-in-PR class of leaks separately.
+#
+# @copyright 2026 Saylor
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/cdn"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "cdn"
+
+  - package-ecosystem: "npm"
+    directory: "/tests/a11y"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "a11y"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
