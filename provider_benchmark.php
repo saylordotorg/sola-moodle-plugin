@@ -85,6 +85,11 @@ if ($export !== '') {
 /**
  * Tiny inline file-streamer. Avoids the full Moodle file API since the
  * payload is in-memory and ephemeral. Sets Content-Disposition: attachment.
+ *
+ * @param string $body Raw bytes to send as the response body.
+ * @param string $filename Filename surfaced in Content-Disposition.
+ * @param string $contenttype MIME type for the Content-Type header.
+ * @return void
  */
 function send_file_handler(string $body, string $filename, string $contenttype): void {
     header('Content-Type: ' . $contenttype);
