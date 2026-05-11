@@ -54,10 +54,10 @@ class emergency_control {
     /**
      * Disable the named subsystems and write an audit row.
      *
-     * @param array<int,string> $flags Subset of FLAG_* constants.
+     * @param array $flags Subset of FLAG_* constants.
      * @param string $reason Free-text reason recorded in the audit row.
      * @param string $invoker 'cli' | 'admin_ui' | 'test' — recorded only.
-     * @return array<int,string> Human-readable list of touched config keys.
+     * @return array Human-readable list of touched config keys.
      */
     public static function disable(array $flags, string $reason = '', string $invoker = 'cli'): array {
         $set = self::flag_set($flags);
@@ -105,10 +105,10 @@ class emergency_control {
      * Restore the named subsystems. Call with the same flags you used
      * to disable; pass FLAG_ALL to restore everything that was touched.
      *
-     * @param array<int,string> $flags Subset of FLAG_* constants.
+     * @param array $flags Subset of FLAG_* constants.
      * @param string $reason Free-text reason recorded in the audit row.
      * @param string $invoker
-     * @return array<int,string>
+     * @return array
      */
     public static function restore(array $flags, string $reason = '', string $invoker = 'cli'): array {
         $set = self::flag_set($flags);
@@ -152,8 +152,8 @@ class emergency_control {
      * Normalise an array of flag strings into a boolean-keyed lookup.
      * Unknown flags are ignored — defensive against partner-tooling drift.
      *
-     * @param array<int,string> $flags
-     * @return array<string,bool>
+     * @param array $flags
+     * @return array
      */
     private static function flag_set(array $flags): array {
         $valid = [self::FLAG_ALL, self::FLAG_VOICE, self::FLAG_RAG,
@@ -173,10 +173,10 @@ class emergency_control {
      * the actual disable from taking effect.
      *
      * @param string $action 'disable' | 'restore'
-     * @param array<int,string> $flags
+     * @param array $flags
      * @param string $reason
      * @param string $invoker
-     * @param array<int,string> $touched
+     * @param array $touched
      * @return void
      */
     private static function write_audit(string $action, array $flags, string $reason,
