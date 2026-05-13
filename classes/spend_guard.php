@@ -359,11 +359,14 @@ class spend_guard {
     /**
      * Look up a chat/analytics failover label against the
      * comparison_providers registry. Lines are pipe-delimited:
-     * label | apikey | models | temperature.
+     * label | apikey | models | temperature [ | apibaseurl ].
+     *
+     * v5.5.2: 5th column is an optional per-row base URL override that
+     * threads through to the failover_chain decorator.
      *
      * @param string $label
      * @param string $raw Raw comparison_providers config (passed in so callers can read once).
-     * @return array|null ['provider' => string, 'apikey' => string, 'label' => string] or null
+     * @return array|null ['provider' => string, 'apikey' => string, 'label' => string, 'apibaseurl' => string] or null
      */
     private static function lookup_chat_label(string $label, string $raw): ?array {
         foreach (preg_split("/\r?\n/", $raw) as $cprow) {
@@ -374,9 +377,10 @@ class spend_guard {
             $parts = array_map('trim', explode('|', $cprow));
             if (strtolower($parts[0] ?? '') === strtolower($label) && !empty($parts[1])) {
                 return [
-                    'provider' => strtolower($parts[0]),
-                    'apikey'   => $parts[1],
-                    'label'    => $label,
+                    'provider'   => strtolower($parts[0]),
+                    'apikey'     => $parts[1],
+                    'label'      => $label,
+                    'apibaseurl' => $parts[4] ?? '',
                 ];
             }
         }

@@ -173,7 +173,8 @@ function mode_run(string $providersfilter, string $outdir, string $datetag, int 
         . "Match the learner's language. Stay focused on the course material.";
 
     foreach ($rows as $row) {
-        printf("\n[provider] %s (%s)\n", $row['label'], $row['models']);
+        $urltag = !empty($row['apibaseurl']) ? ' @ ' . $row['apibaseurl'] : '';
+        printf("\n[provider] %s (%s)%s\n", $row['label'], $row['models'], $urltag);
         foreach ($prompts as $p) {
             $result = run_one_call($row, $systemprompt, $p['text']);
             fputcsv($fh, [
@@ -586,7 +587,12 @@ function load_prompts(): array {
 /**
  * Parse comparison_providers admin setting into an array of rows.
  *
- * @return array<int, array{label: string, provider: string, models: string, apikey: string, temperature: string}>
+ * v5.5.2: 5th column is an optional per-row base URL. Blank or absent means
+ * the provider class's hardcoded default is used. The harness reads it here
+ * for log display only; the actual provider construction picks it up via
+ * base_provider::lookup_comparison_row, which reads the same config row.
+ *
+ * @return array<int, array{label: string, provider: string, models: string, apikey: string, temperature: string, apibaseurl: string}>
  */
 function parse_comparison_providers(): array {
     $raw = (string) (get_config('local_ai_course_assistant', 'comparison_providers') ?: '');
@@ -606,6 +612,7 @@ function parse_comparison_providers(): array {
             'apikey'      => $parts[1],
             'models'      => $parts[2],
             'temperature' => $parts[3] ?? '',
+            'apibaseurl'  => $parts[4] ?? '',
         ];
     }
     return $out;

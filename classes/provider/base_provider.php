@@ -295,6 +295,15 @@ abstract class base_provider implements provider_interface {
                         $entryoverrides = $overrides;
                         $entryoverrides['provider'] = $entry['provider'];
                         $entryoverrides['apikey']   = $entry['apikey'];
+                        // v5.5.2: per-row base URL override flows from
+                        // comparison_providers through resolve_failover_chain.
+                        if (!empty($entry['apibaseurl'])) {
+                            $entryoverrides['apibaseurl'] = $entry['apibaseurl'];
+                        } else {
+                            // Make sure a parent override doesn't leak into
+                            // a row that didn't set one.
+                            unset($entryoverrides['apibaseurl']);
+                        }
                         $fallbacks[] = [
                             'provider' => self::instantiate($entry['provider'], $entryoverrides),
                             'label'    => $entry['label'],
@@ -386,6 +395,11 @@ abstract class base_provider implements provider_interface {
             if ($row['temperature'] !== '') {
                 $overrides['temperature'] = $row['temperature'];
             }
+            // v5.5.2: per-row base URL override (5th column). Empty means
+            // use the provider class's hardcoded default.
+            if (!empty($row['apibaseurl'])) {
+                $overrides['apibaseurl'] = $row['apibaseurl'];
+            }
         }
 
         return self::instantiate($providerid, $overrides);
@@ -394,8 +408,11 @@ abstract class base_provider implements provider_interface {
     /**
      * Look up a comparison provider row from the admin textarea.
      *
+     * v5.5.2: added optional `apibaseurl` field as the 5th column of each
+     * row. Blank or absent means "use the provider class's default base URL."
+     *
      * @param string $providerid
-     * @return array|null Row with apikey, models, temperature keys, or null if not found.
+     * @return array|null Row with apikey, models, temperature, apibaseurl keys, or null if not found.
      */
     private static function lookup_comparison_row(string $providerid): ?array {
         $raw = get_config('local_ai_course_assistant', 'comparison_providers') ?: '';
@@ -410,6 +427,7 @@ abstract class base_provider implements provider_interface {
                     'apikey'      => $parts[1] ?? '',
                     'models'      => $parts[2] ?? '',
                     'temperature' => $parts[3] ?? '',
+                    'apibaseurl'  => $parts[4] ?? '',
                 ];
             }
         }

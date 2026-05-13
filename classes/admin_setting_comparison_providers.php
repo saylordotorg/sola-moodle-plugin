@@ -65,7 +65,11 @@ class admin_setting_comparison_providers extends \admin_setting {
     /**
      * Parse the stored pipe-delimited config into structured rows.
      *
-     * @return array Array of ['provider' => string, 'apikey' => string, 'models' => string, 'temperature' => string]
+     * v5.5.2: added optional `apibaseurl` field as the 5th column. Blank means
+     * "use the provider class's hardcoded default base URL." Backward compatible
+     * with existing 4-field rows.
+     *
+     * @return array Array of ['provider' => string, 'apikey' => string, 'models' => string, 'temperature' => string, 'apibaseurl' => string]
      */
     private function parse_rows(): array {
         $raw = $this->get_setting() ?: '';
@@ -81,6 +85,7 @@ class admin_setting_comparison_providers extends \admin_setting {
                 'apikey'      => $parts[1] ?? '',
                 'models'      => $parts[2] ?? '',
                 'temperature' => $parts[3] ?? '',
+                'apibaseurl'  => $parts[4] ?? '',
             ];
         }
         return $rows;
@@ -99,10 +104,11 @@ class admin_setting_comparison_providers extends \admin_setting {
         $html = '<div id="' . $id . '-wrap">';
         $html .= '<table class="table table-sm table-bordered" id="' . $id . '-table" style="max-width:900px">';
         $html .= '<thead><tr>'
-            . '<th style="width:160px">Provider</th>'
-            . '<th style="width:220px">API Key</th>'
+            . '<th style="width:140px">Provider</th>'
+            . '<th style="width:200px">API Key</th>'
             . '<th>Models (comma-separated)</th>'
-            . '<th style="width:90px" title="Leave blank to use global default">Temp.</th>'
+            . '<th style="width:80px" title="Leave blank to use global default">Temp.</th>'
+            . '<th style="width:200px" title="Leave blank to use the provider class default">Base URL</th>'
             . '<th style="width:50px"></th>'
             . '</tr></thead>';
         $html .= '<tbody>';
@@ -141,6 +147,8 @@ class admin_setting_comparison_providers extends \admin_setting {
             . 'value="' . s($row['models']) . '" placeholder="model-name-1, model-name-2"></td>'
             . '<td><input type="number" step="0.1" min="0" max="2" class="form-control form-control-sm sola-cp-temp" '
             . 'value="' . s($row['temperature']) . '" placeholder="0.7"></td>'
+            . '<td><input type="text" class="form-control form-control-sm sola-cp-baseurl" '
+            . 'value="' . s($row['apibaseurl']) . '" placeholder="https://... (optional)"></td>'
             . '<td><button type="button" class="btn btn-sm btn-outline-danger sola-cp-remove" title="Remove">&times;</button></td>'
             . '</tr>';
     }
@@ -163,10 +171,17 @@ class admin_setting_comparison_providers extends \admin_setting {
             var k = tr.querySelector('.sola-cp-key').value;
             var m = tr.querySelector('.sola-cp-models').value;
             var t = tr.querySelector('.sola-cp-temp').value.trim();
+            var b = tr.querySelector('.sola-cp-baseurl').value.trim();
             if (p && k) {
+                // Emit the minimum number of fields needed. The base URL is
+                // 5th; if it is set but temperature is not, write an empty
+                // 4th slot so positions line up for the parser.
                 var line = p + '|' + k + '|' + m;
-                if (t !== '') {
+                if (t !== '' || b !== '') {
                     line += '|' + t;
+                }
+                if (b !== '') {
+                    line += '|' + b;
                 }
                 lines.push(line);
             }
@@ -181,6 +196,7 @@ class admin_setting_comparison_providers extends \admin_setting {
             + '<small class="text-muted sola-cp-key-hint" style="font-size:11px"></small></td>'
             + '<td><input type="text" class="form-control form-control-sm sola-cp-models" placeholder="model-name-1, model-name-2"></td>'
             + '<td><input type="number" step="0.1" min="0" max="2" class="form-control form-control-sm sola-cp-temp" placeholder="0.7"></td>'
+            + '<td><input type="text" class="form-control form-control-sm sola-cp-baseurl" placeholder="https://... (optional)"></td>'
             + '<td><button type="button" class="btn btn-sm btn-outline-danger sola-cp-remove" title="Remove">&times;</button></td>';
         tbody.appendChild(tr);
         bindRow(tr);
@@ -196,6 +212,7 @@ class admin_setting_comparison_providers extends \admin_setting {
         tr.querySelector('.sola-cp-key').addEventListener('input', serialize);
         tr.querySelector('.sola-cp-models').addEventListener('input', serialize);
         tr.querySelector('.sola-cp-temp').addEventListener('input', serialize);
+        tr.querySelector('.sola-cp-baseurl').addEventListener('input', serialize);
     }
 
     tbody.querySelectorAll('tr').forEach(bindRow);
