@@ -57,4 +57,16 @@ $definitions = [
         'simpledata' => false,
         'ttl'        => 60,
     ],
+    // v5.5.0: per-provider failover circuit state. Stores the timestamp at which
+    // a label's circuit was opened (after a failed call). Lookups treat an
+    // open circuit as "skip this provider until TTL elapses." TTL of 900s
+    // matches the 15-minute back-off in failover_chain. Keyed by failover
+    // label (e.g. "fireworks-llama8b") so the same provider used by
+    // multiple groups shares circuit state.
+    'failover_circuit' => [
+        'mode'       => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'ttl'        => 900,
+    ],
 ];

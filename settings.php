@@ -827,6 +827,40 @@ if ($hassiteconfig) {
         ''
     ));
 
+    // v5.5.0: per-call failover. Off by default. When enabled, every chat
+    // call wraps the primary provider in a failover_chain decorator that
+    // tries each entry above on per-call timeout / 5xx, with a 15-minute
+    // circuit on the failing label. Stays off-by-default so existing
+    // installs see no behavior change on upgrade.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_ai_course_assistant/failover_per_call_enabled',
+        'Per-call failover (v5.5.0)',
+        'When on, every chat call wraps the primary provider in a failover-chain decorator. '
+        . 'On per-call timeout or 5xx error, SOLA rotates to the next entry in <strong>Failover chain</strong> '
+        . 'above and opens a 15-minute circuit on the failing provider. Emits an audit row '
+        . '(<code>failover_fallthrough</code>) on every fall-through; check Admin -> SOLA -> Audit log '
+        . 'after enabling to verify the chain is healthy. Off by default; turn on once the chain has been '
+        . 'validated and Saylor legal has confirmed FERPA addenda on each chain entry.',
+        0
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/failover_timeout_chat',
+        'Per-call failover: chat timeout (seconds)',
+        'How long to wait for the first token from a chat provider before falling through. Default 8s. '
+        . 'Lower values fall over faster on slow providers at the cost of false-positives on temporarily-slow '
+        . 'requests; higher values keep the chain on the primary longer. Only consulted when <strong>Per-call '
+        . 'failover</strong> is on.',
+        '8', PARAM_INT
+    ));
+    $settings->add(new admin_setting_configtext(
+        'local_ai_course_assistant/failover_timeout_voice',
+        'Per-call failover: voice timeout (seconds)',
+        'Equivalent timeout for the voice/realtime path. Default 3s; voice has tighter latency expectations '
+        . 'than chat. Only consulted when <strong>Per-call failover</strong> is on (and voice failover is '
+        . 'wired through; chat-only in v5.5.0).',
+        '3', PARAM_INT
+    ));
+
     $settings->add(new admin_setting_configtext(
         'local_ai_course_assistant/spend_notify_emails',
         'Spend alert recipients',

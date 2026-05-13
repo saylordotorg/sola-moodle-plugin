@@ -257,7 +257,7 @@ abstract class base_provider implements provider_interface {
 
         // Spend guard: consult the cap before instantiation. If the site is
         // over the cap for chat/analytics workload, try the failover chain.
-        // If no failover is configured, throw — the SSE handler catches this
+        // If no failover is configured, throw; the SSE handler catches this
         // and shows a friendly "budget paused" message to the student.
         // Read defensively; a fresh install has no caps and this is a no-op.
         try {
@@ -279,7 +279,70 @@ abstract class base_provider implements provider_interface {
             // Never let the guard break core flow on a fresh install.
         }
 
-        return self::instantiate($provider, $overrides);
+        $primary = self::instantiate($provider, $overrides);
+
+        // v5.5.0: optional per-call failover. Off by default until admins
+        // build confidence. When the failover_per_call_enabled flag is set
+        // AND the configured chain has at least one resolvable fallback,
+        // wrap the primary in a failover_chain decorator that tries each
+        // fallback on per-call timeout / 5xx.
+        if ((bool) get_config('local_ai_course_assistant', 'failover_per_call_enabled')) {
+            try {
+                $chain = spend_guard::resolve_failover_chain('chat');
+                if (!empty($chain)) {
+                    $fallbacks = [];
+                    foreach ($chain as $entry) {
+                        $entryoverrides = $overrides;
+                        $entryoverrides['provider'] = $entry['provider'];
+                        $entryoverrides['apikey']   = $entry['apikey'];
+                        $fallbacks[] = [
+                            'provider' => self::instantiate($entry['provider'], $entryoverrides),
+                            'label'    => $entry['label'],
+                        ];
+                    }
+                    global $USER;
+                    $primarylabel = self::label_for_active_provider($provider, $overrides);
+                    $timeoutseconds = (int) (get_config('local_ai_course_assistant', 'failover_timeout_chat') ?: 8);
+                    $primary = new failover_chain($primary, $primarylabel, $fallbacks, [
+                        'timeout_seconds' => $timeoutseconds,
+                        'audit'           => true,
+                        'courseid'        => $courseid,
+                        'userid'          => (int) ($USER->id ?? 0),
+                    ]);
+                }
+            } catch (\Throwable $ignore) {
+                // Never let chain construction break the primary call path.
+            }
+        }
+
+        return $primary;
+    }
+
+    /**
+     * Derive a stable label for the primary provider so the failover_chain
+     * decorator can track its circuit state. Tries to find a matching row
+     * in comparison_providers (where labels and provider IDs are the same
+     * shape); falls back to "<providerid>-primary" if no match exists.
+     *
+     * @param string $providerid
+     * @param array $overrides
+     * @return string
+     */
+    private static function label_for_active_provider(string $providerid, array $overrides): string {
+        $raw = (string) (get_config('local_ai_course_assistant', 'comparison_providers') ?: '');
+        $apikey = (string) ($overrides['apikey'] ?? '');
+        foreach (preg_split("/\r?\n/", $raw) as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+            $parts = array_map('trim', explode('|', $line));
+            if (strtolower($parts[0] ?? '') === strtolower($providerid)
+                && ($apikey === '' || ($parts[1] ?? '') === $apikey)) {
+                return strtolower($parts[0]);
+            }
+        }
+        return strtolower($providerid) . '-primary';
     }
 
     /**

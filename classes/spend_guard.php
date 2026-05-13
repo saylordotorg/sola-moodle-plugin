@@ -293,56 +293,110 @@ class spend_guard {
 
     /**
      * Resolve a failover provider for a given capability.
-     * The failover chain is configured as one label per line in the
-     * spend_failover_chain setting. Labels correspond to entries in
-     * comparison_providers (for chat) or voice_providers (for voice).
+     * Returns only the FIRST matching entry from the configured chain.
+     * Kept for backward compatibility with the budget-cap-triggered
+     * failover path in base_provider::create_from_config.
+     *
+     * v5.5.0: callers that want the whole chain should use
+     * resolve_failover_chain() instead.
      *
      * @param string $capability
      * @return array|null ['provider' => string, 'apikey' => string, 'label' => string] or null
      */
     public static function resolve_failover(string $capability): ?array {
-        $chain = trim((string) (get_config('local_ai_course_assistant', 'spend_failover_chain') ?: ''));
-        if ($chain === '') {
-            return null;
+        $chain = self::resolve_failover_chain($capability);
+        return $chain === [] ? null : $chain[0];
+    }
+
+    /**
+     * Resolve the full ordered failover chain for a given capability.
+     * Each entry is the result of looking up one line of
+     * spend_failover_chain against the appropriate registry
+     * (comparison_providers for chat/analytics, voice_registry for
+     * voice/realtime/tts/stt).
+     *
+     * Order is preserved from the spend_failover_chain config; the
+     * head of the returned array is the first fallback to try.
+     * Lines that don't resolve (missing label, missing apikey) are
+     * silently dropped rather than failing the whole chain.
+     *
+     * v5.5.0: feeds the per-call failover_chain decorator. The pre-v5.5.0
+     * budget-cap failover only consumed the first entry (via the wrapper
+     * resolve_failover() above), so behavior on the budget path is
+     * unchanged.
+     *
+     * @param string $capability
+     * @return array Each entry: ['provider' => string, 'apikey' => string, 'label' => string]
+     */
+    public static function resolve_failover_chain(string $capability): array {
+        $raw = trim((string) (get_config('local_ai_course_assistant', 'spend_failover_chain') ?: ''));
+        if ($raw === '') {
+            return [];
         }
-        foreach (preg_split("/\r?\n/", $chain) as $line) {
+        $isvoice = in_array($capability, ['voice', 'realtime', 'tts', 'stt'], true);
+        $cmpraw  = !$isvoice ? (string) (get_config('local_ai_course_assistant', 'comparison_providers') ?: '') : '';
+        $result = [];
+        foreach (preg_split("/\r?\n/", $raw) as $line) {
             $line = trim($line);
             if ($line === '' || $line[0] === '#') {
                 continue;
             }
             // Each line: capability:label (e.g. "chat:claude-cheap" or "voice:openai-prod").
             [$chaincap, $label] = array_pad(array_map('trim', explode(':', $line, 2)), 2, '');
-            if ($chaincap !== $capability) {
+            if ($chaincap !== $capability || $label === '') {
                 continue;
             }
-            // Check both registries for a matching label.
-            if (in_array($capability, ['voice', 'realtime', 'tts', 'stt'], true)) {
-                foreach (voice_registry::parse_rows() as $row) {
-                    if ($row['label'] === $label && !empty($row['apikey'])) {
-                        return [
-                            'provider' => $row['provider'],
-                            'apikey'   => $row['apikey'],
-                            'label'    => $label,
-                        ];
-                    }
-                }
-            } else {
-                // Chat/analytics: look up in comparison_providers.
-                $raw = get_config('local_ai_course_assistant', 'comparison_providers') ?: '';
-                foreach (preg_split("/\r?\n/", $raw) as $cprow) {
-                    $cprow = trim($cprow);
-                    if ($cprow === '' || $cprow[0] === '#') {
-                        continue;
-                    }
-                    $parts = array_map('trim', explode('|', $cprow));
-                    if (strtolower($parts[0] ?? '') === strtolower($label) && !empty($parts[1])) {
-                        return [
-                            'provider' => strtolower($parts[0]),
-                            'apikey'   => $parts[1],
-                            'label'    => $label,
-                        ];
-                    }
-                }
+            $entry = $isvoice
+                ? self::lookup_voice_label($label)
+                : self::lookup_chat_label($label, $cmpraw);
+            if ($entry !== null) {
+                $result[] = $entry;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Look up a chat/analytics failover label against the
+     * comparison_providers registry. Lines are pipe-delimited:
+     * label | apikey | models | temperature.
+     *
+     * @param string $label
+     * @param string $raw Raw comparison_providers config (passed in so callers can read once).
+     * @return array|null ['provider' => string, 'apikey' => string, 'label' => string] or null
+     */
+    private static function lookup_chat_label(string $label, string $raw): ?array {
+        foreach (preg_split("/\r?\n/", $raw) as $cprow) {
+            $cprow = trim($cprow);
+            if ($cprow === '' || $cprow[0] === '#') {
+                continue;
+            }
+            $parts = array_map('trim', explode('|', $cprow));
+            if (strtolower($parts[0] ?? '') === strtolower($label) && !empty($parts[1])) {
+                return [
+                    'provider' => strtolower($parts[0]),
+                    'apikey'   => $parts[1],
+                    'label'    => $label,
+                ];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Look up a voice/realtime failover label against the voice_registry.
+     *
+     * @param string $label
+     * @return array|null ['provider' => string, 'apikey' => string, 'label' => string] or null
+     */
+    private static function lookup_voice_label(string $label): ?array {
+        foreach (voice_registry::parse_rows() as $row) {
+            if ($row['label'] === $label && !empty($row['apikey'])) {
+                return [
+                    'provider' => $row['provider'],
+                    'apikey'   => $row['apikey'],
+                    'label'    => $label,
+                ];
             }
         }
         return null;
