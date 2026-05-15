@@ -65,6 +65,17 @@ define([], function() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
+            // v5.5.4 security hardening: cap the SSE accumulator so a
+            // malicious provider sending an unbounded chunk without a
+            // newline can not exhaust client memory. 1 MB is roughly
+            // 100x the size of the longest legitimate SSE payload we
+            // emit (a large RAG chunk). Beyond this we surface an error
+            // and stop reading.
+            const MAX_BUFFER_BYTES = 1024 * 1024;
+            // Same cap for a single data: line's JSON parse, since a
+            // single oversized line could OOM the parser even if the
+            // buffer is healthy.
+            const MAX_JSON_BYTES = 256 * 1024;
 
             const processStream = function() {
                 reader.read().then(function(result) {
@@ -90,6 +101,12 @@ define([], function() {
 
                     buffer += decoder.decode(result.value, {stream: true});
 
+                    if (buffer.length > MAX_BUFFER_BYTES) {
+                        callbacks.onError('Stream payload exceeded safety cap');
+                        try { reader.cancel(); } catch (e) { /* noop */ }
+                        return;
+                    }
+
                     // Process complete SSE lines.
                     const lines = buffer.split('\n');
                     // Keep the last incomplete line in the buffer.
@@ -103,6 +120,11 @@ define([], function() {
                         }
 
                         const jsonStr = trimmed.substring(6);
+                        if (jsonStr.length > MAX_JSON_BYTES) {
+                            callbacks.onError('Stream payload line exceeded safety cap');
+                            try { reader.cancel(); } catch (e) { /* noop */ }
+                            return;
+                        }
                         try {
                             const data = JSON.parse(jsonStr);
 

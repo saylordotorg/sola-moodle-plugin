@@ -2837,13 +2837,24 @@ define([
         panel.setAttribute('role', 'region');
         panel.setAttribute('aria-label', 'Welcome');
 
+        // v5.5.4 security hardening: encode interpolated values to prevent
+        // attribute / element escape if dataset.avatarurl or the admin-set
+        // greeting ever contains characters that could break out. URL goes
+        // through encodeURI to neutralize quotes without breaking valid
+        // path segments; titles get full HTML-entity escape, not just `<`.
+        var escHtml = function(s) {
+            return String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        };
+        var safeAvatarUrl = avatarUrl ? encodeURI(avatarUrl).replace(/"/g, '%22') : '';
         panel.innerHTML =
-            (avatarUrl
-                ? '<img src="' + avatarUrl + '" alt="" class="local-ai-course-assistant__welcome-avatar" aria-hidden="true" />'
+            (safeAvatarUrl
+                ? '<img src="' + safeAvatarUrl + '" alt="" class="local-ai-course-assistant__welcome-avatar" aria-hidden="true" />'
                 : '') +
-            '<h2 class="local-ai-course-assistant__welcome-title">' + welcomeTitle.replace(/</g, '&lt;') + '</h2>' +
+            '<h2 class="local-ai-course-assistant__welcome-title">' + escHtml(welcomeTitle) + '</h2>' +
             (welcomeSubtitle
-                ? '<p class="local-ai-course-assistant__welcome-subtitle">' + welcomeSubtitle.replace(/</g, '&lt;') + '</p>'
+                ? '<p class="local-ai-course-assistant__welcome-subtitle">' + escHtml(welcomeSubtitle) + '</p>'
                 : '') +
             '<ul class="local-ai-course-assistant__welcome-features">' +
             '<li>' +
@@ -3554,11 +3565,19 @@ define([
         try { localStorage.removeItem(AVATAR_KEY); } catch (e) { /**/ }
 
         // Replace SVG content in aica-avatar-svg containers with the preset img.
+        // v5.5.4 security hardening: build the img via createElement so the
+        // URL is set via the src property (browser handles escaping) rather
+        // than string-interpolated into HTML.
         root.querySelectorAll('.aica-avatar-svg').forEach(function(container) {
             container.classList.remove('aica-avatar-svg--has-svg');
-            container.innerHTML = '<img src="' + newUrl + '" alt="" aria-hidden="true" ' +
-                'style="width:100%;height:100%;border-radius:50%;display:block;' +
-                'object-fit:cover;object-position:center top;" />';
+            container.innerHTML = '';
+            var presetImg = document.createElement('img');
+            presetImg.src = newUrl;
+            presetImg.alt = '';
+            presetImg.setAttribute('aria-hidden', 'true');
+            presetImg.style.cssText = 'width:100%;height:100%;border-radius:50%;display:block;'
+                + 'object-fit:cover;object-position:center top;';
+            container.appendChild(presetImg);
         });
 
         // Also update any standalone avatar img elements (welcome screen etc).

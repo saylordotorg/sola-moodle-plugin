@@ -483,38 +483,83 @@ TXT;
             return null;
         }
 
-        $ch = curl_init($url);
-        if ($ch === false) {
-            return null;
-        }
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS      => 5,
-            CURLOPT_TIMEOUT        => self::TRANSCRIPT_FETCH_TIMEOUT,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_USERAGENT      => self::TRANSCRIPT_UA,
-            CURLOPT_HTTPHEADER     => self::TRANSCRIPT_HEADERS,
-            CURLOPT_ENCODING       => '',  // Accept any encoding curl supports; auto-decodes gzip/br.
-            CURLOPT_HEADER         => true,
-        ]);
-        $response = curl_exec($ch);
-        if ($response === false) {
+        // v5.5.4 security fix: manual redirect loop with per-hop SSRF
+        // re-validation. With curl's CURLOPT_FOLLOWLOCATION, only the
+        // initial URL was validated, so a malicious server could return
+        // 30x pointing at 127.0.0.1, 169.254.169.254 (cloud metadata),
+        // or any other internal-network endpoint. Each Location target
+        // must be re-validated through is_safe_provider_url before the
+        // next request fires.
+        $currenturl = $url;
+        $hops = 0;
+        $maxhops = 5;
+        $rawheaders = '';
+        $body = '';
+        $httpcode = 0;
+        while ($hops <= $maxhops) {
+            $ch = curl_init($currenturl);
+            if ($ch === false) {
+                return null;
+            }
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => false,
+                CURLOPT_MAXREDIRS      => 0,
+                CURLOPT_TIMEOUT        => self::TRANSCRIPT_FETCH_TIMEOUT,
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_USERAGENT      => self::TRANSCRIPT_UA,
+                CURLOPT_HTTPHEADER     => self::TRANSCRIPT_HEADERS,
+                CURLOPT_ENCODING       => '',
+                CURLOPT_HEADER         => true,
+            ]);
+            $response = curl_exec($ch);
+            if ($response === false) {
+                curl_close($ch);
+                debugging('SOLA transcript fetch failed: ' . $currenturl, DEBUG_DEVELOPER);
+                return null;
+            }
+            $headersize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            debugging('SOLA transcript fetch failed: ' . $url, DEBUG_DEVELOPER);
-            return null;
+
+            $rawheaders = substr($response, 0, $headersize);
+            $body = substr($response, $headersize);
+
+            // Handle redirects manually so we can re-validate each Location.
+            if (in_array($httpcode, [301, 302, 303, 307, 308], true)) {
+                if (++$hops > $maxhops) {
+                    debugging('SOLA transcript fetch: too many redirects from ' . $url, DEBUG_DEVELOPER);
+                    return null;
+                }
+                if (!preg_match('/^Location:\s*(.+?)\r?$/mi', $rawheaders, $m)) {
+                    debugging('SOLA transcript redirect with no Location: ' . $currenturl, DEBUG_DEVELOPER);
+                    return null;
+                }
+                $nexturl = trim($m[1]);
+                // Resolve relative Location against the current URL.
+                if (!preg_match('#^https?://#i', $nexturl)) {
+                    $parts = parse_url($currenturl);
+                    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+                        return null;
+                    }
+                    $nexturl = $parts['scheme'] . '://' . $parts['host']
+                        . ($nexturl[0] === '/' ? $nexturl : '/' . $nexturl);
+                }
+                if (!\local_ai_course_assistant\security::is_safe_provider_url($nexturl)) {
+                    debugging('SOLA transcript redirect blocked by SSRF policy: ' . $nexturl, DEBUG_DEVELOPER);
+                    return null;
+                }
+                $currenturl = $nexturl;
+                continue;
+            }
+            // Non-redirect response; fall through to the body handler.
+            break;
         }
-        $headersize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $httpcode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($httpcode >= 400) {
-            debugging('SOLA transcript fetch HTTP ' . $httpcode . ': ' . $url, DEBUG_DEVELOPER);
+            debugging('SOLA transcript fetch HTTP ' . $httpcode . ': ' . $currenturl, DEBUG_DEVELOPER);
             return null;
         }
-
-        $rawheaders = substr($response, 0, $headersize);
-        $body = substr($response, $headersize);
         if (!is_string($body) || $body === '') {
             return null;
         }

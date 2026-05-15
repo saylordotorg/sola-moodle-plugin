@@ -142,6 +142,12 @@ if ($englishlock) {
 $context = context_course::instance($courseid);
 require_capability('local/ai_course_assistant:use', $context);
 
+// v5.5.4: derive caller role for downstream branches (e.g., post-response
+// student-profile auto-update). Anyone without the manage capability is a
+// student-grade caller; admins/teachers skip the profile refresh path.
+$userrole = has_capability('local/ai_course_assistant:manage', $context, $USER->id, false)
+    ? 'staff' : 'student';
+
 // Rate limiting checks.
 if (rate_limiter::is_rate_limited($USER->id, 'sse_stream', 20, 60)) {
     http_response_code(429);
@@ -331,9 +337,16 @@ try {
     // so context_builder injects the SAFETY-priority coach-mode block. The
     // 'hidden' level is enforced widget-side at injection time, so by the
     // time we get here we only need to distinguish coach from full.
+    //
+    // v5.5.4 security fix: the DB lookup must constrain on `course` as well.
+    // Without it a student in course A could pass a `pageid` belonging to a
+    // quiz in course B to activate coach mode against the wrong course's
+    // configuration, bypassing the teacher's intended assistance level.
     $quizmode = '';
     if ($pageid > 0) {
-        $cm = $DB->get_record('course_modules', ['id' => $pageid], 'id, instance, module', IGNORE_MISSING);
+        $cm = $DB->get_record('course_modules',
+            ['id' => $pageid, 'course' => $courseid],
+            'id, instance, module', IGNORE_MISSING);
         if ($cm) {
             $modname = $DB->get_field('modules', 'name', ['id' => $cm->module]);
             if ($modname === 'quiz') {
@@ -440,8 +453,14 @@ try {
         $maxpdfchars = 24000;
         $pdfsnippet = mb_substr($attachedpdftext, 0, $maxpdfchars);
         $suffix = (mb_strlen($attachedpdftext) > $maxpdfchars) ? "\n\n[Document truncated for length.]" : '';
+        // v5.5.4 security fix: scrub characters that could break prompt
+        // structure or inject pseudo-instructions when the filename is
+        // interpolated into the system prompt. PARAM_FILE upstream limits
+        // the alphabet, but this is a belt-and-suspenders pass.
+        $safefilename = preg_replace('/["\r\n\t\\\\]/u', ' ', (string) $attachmentmeta['filename']);
+        $safefilename = trim(mb_substr($safefilename, 0, 200));
         $systemprompt .= "\n\n## Attached Document\n"
-            . "The student attached a PDF titled \"" . $attachmentmeta['filename'] . "\". "
+            . "The student attached a PDF titled \"" . $safefilename . "\". "
             . "Here is its extracted text. Reason about it directly when it is relevant to the question, "
             . "and quote short passages when helpful.\n\n"
             . $pdfsnippet . $suffix;
@@ -496,10 +515,13 @@ try {
     }
 
     // Emit source attribution metadata before streaming begins.
+    // v5.5.4 security fix: pin get_coursemodule_from_id to the current
+    // course so a foreign pageid can't be resolved against the wrong
+    // course's module list.
     $pageurl = '';
     $courseurl = (new \moodle_url('/course/view.php', ['id' => $courseid]))->out(false);
     if (!empty($pageid)) {
-        $cm = get_coursemodule_from_id('', $pageid, 0, false, IGNORE_MISSING);
+        $cm = get_coursemodule_from_id('', $pageid, $courseid, false, IGNORE_MISSING);
         if ($cm) {
             $pageurl = (new \moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $pageid]))->out(false);
         }
@@ -638,11 +660,52 @@ try {
         }
     }
 
+    // v5.5.4 security fix: scrub known control markers from each chunk
+    // before it reaches the client. The post-stream filter still runs on
+    // $fullresponse for the audit-saved + UI-rendered version, but the
+    // live stream must not leak markers that a compromised provider
+    // emitted (system-prompt fragments, off-topic flags, escalation
+    // flags, SOLA_NEXT chip payloads). We use a small carry-over buffer
+    // so markers split across chunk boundaries are still caught.
+    $carry = '';
+    $streamfilter = function (string $chunk) use (&$fullresponse, &$carry) {
+        $fullresponse .= $chunk;
+        // Combine carry-over with new chunk so split markers reassemble.
+        $buf = $carry . $chunk;
+        // Hold back the trailing 24 bytes as carry so a marker straddling
+        // the next chunk boundary still gets caught. 24 is the length of
+        // the longest control marker we care about: "[/SOLA_NEXT]" plus
+        // a safety margin.
+        $holdback = 24;
+        if (mb_strlen($buf, '8bit') > $holdback) {
+            $emit = substr($buf, 0, -$holdback);
+            $carry = substr($buf, -$holdback);
+        } else {
+            $emit = '';
+            $carry = $buf;
+        }
+        // Strip control markers from the emitted segment.
+        $emit = str_replace(['[OFF_TOPIC]', '[NEEDS_ESCALATION]'], '', $emit);
+        // SOLA_NEXT chips are server-emitted chip text the client parses
+        // separately; the live stream should never show them as raw text.
+        $emit = preg_replace('/\[SOLA_NEXT\].*?\[\/SOLA_NEXT\]/su', '', $emit) ?? $emit;
+        if ($emit !== '') {
+            sse_send(['token' => $emit]);
+        }
+    };
+    $streamflush = function () use (&$carry) {
+        if ($carry === '') { return; }
+        $tail = str_replace(['[OFF_TOPIC]', '[NEEDS_ESCALATION]'], '', $carry);
+        $tail = preg_replace('/\[SOLA_NEXT\].*?\[\/SOLA_NEXT\]/su', '', $tail) ?? $tail;
+        if ($tail !== '') {
+            sse_send(['token' => $tail]);
+        }
+        $carry = '';
+    };
+
     try {
-        $provider->chat_completion_stream($systemprompt, $history, function (string $chunk) use (&$fullresponse) {
-            $fullresponse .= $chunk;
-            sse_send(['token' => $chunk]);
-        }, $streamoptions);
+        $provider->chat_completion_stream($systemprompt, $history, $streamfilter, $streamoptions);
+        $streamflush();
     } catch (\moodle_exception $e) {
         // On 404 (model not found), retry once with the provider's default model.
         if (strpos($e->debuginfo ?? '', 'HTTP 404') !== false
@@ -650,14 +713,13 @@ try {
             if ($provider->can_retry_with_default_model()) {
                 $provider->use_default_model();
                 $fullresponse = '';
-                $provider->chat_completion_stream($systemprompt, $history, function (string $chunk) use (&$fullresponse) {
-                    $fullresponse .= $chunk;
-                    sse_send(['token' => $chunk]);
-                }, $streamoptions);
+                $carry = '';
+                $provider->chat_completion_stream($systemprompt, $history, $streamfilter, $streamoptions);
+                $streamflush();
                 // Log the fallback so admins know.
                 audit_logger::log('model_fallback', $userid, $courseid, [
                     'original_model' => get_config('local_ai_course_assistant', 'model'),
-                    'reason' => 'HTTP 404 — model not found, retried with provider default',
+                    'reason' => 'HTTP 404 model not found, retried with provider default',
                 ]);
             } else {
                 throw $e;

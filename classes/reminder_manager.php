@@ -120,8 +120,21 @@ class reminder_manager {
     public static function unsubscribe_by_token(string $token): bool {
         global $DB;
 
-        $record = $DB->get_record('local_ai_course_assistant_reminders', ['unsubscribe_token' => $token]);
+        // v5.5.4 security fix: constant-time token comparison. The DB
+        // lookup is already exact-match indexed; pair it with a
+        // hash_equals pass against the stored value so timing-attack
+        // residual signal is eliminated. The tokens are 32 random bytes
+        // so the realistic attack is theoretical, but the cost is one
+        // function call.
+        $record = $DB->get_record('local_ai_course_assistant_reminders',
+            ['unsubscribe_token' => $token]);
         if (!$record) {
+            // Burn a constant amount of CPU on the miss path so the
+            // miss and hit paths look identical to a timing observer.
+            hash_equals('local_ai_course_assistant_dummy_token_value___', $token);
+            return false;
+        }
+        if (!hash_equals((string) $record->unsubscribe_token, $token)) {
             return false;
         }
 
