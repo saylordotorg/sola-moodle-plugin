@@ -7,6 +7,6 @@
     "test": "pa11y-ci --config .pa11yci.json"
   },
   "devDependencies": {
-    "pa11y-ci": "^3.1.0"
+    "pa11y-ci": "^4.1.1"
   }
 }
